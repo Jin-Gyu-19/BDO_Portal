@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SH Portal 디자인 시안 비교 — 4가지 방향</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+/* ═══════════ 공통 토큰 (테마별 오버라이드) ═══════════ */
+:root{
+  --red:#E81A3B;          /* BDO 공식 레드 (bdo.kr 추출) */
+  --slate:#5B6E7F;        /* BDO 공식 슬레이트 */
+  --slate-d:#42525F;
+  --blue:#0062B8;         /* BDO 공식 블루 */
+  --ok:#1F9D61;--ok-bg:#EAF6F0;--warn:#D64545;--warn-bg:#FCEEEE;
+  --amber:#C77414;--amber-bg:#FBF2E6;--blue-bg:#EAF1F9;
+}
+/* ── A안: BDO 슬레이트 (기본) ── */
+body{
+  --bg:#F4F6F8;--card:#FFFFFF;--line:#E3E7EB;--line2:#EDF0F3;--fill:#F4F6F8;--fill2:#F9FAFB;
+  --ink:#2A3540;--txt:#404040;--txt2:#68727C;--txt3:#98A2AC;
+  --rail:#42525F;--rail-txt:#B4BEC8;--rail-hi:#FFFFFF;--rail-line:rgba(255,255,255,.08);
+  --accent:var(--red);--btn:#42525F;--btn-hover:#2A3540;--link:var(--blue);
+  --kpi:#2A3540;--prog:#5B6E7F;--head-border:var(--line);
+}
+/* ── B안: 코퍼레이트 라이트 ── */
+body[data-theme="light"]{
+  --bg:#FFFFFF;--card:#FFFFFF;--line:#E7E7E7;--line2:#F2F2F2;--fill:#F8F8F8;--fill2:#FBFBFB;
+  --ink:#26292E;--txt:#404040;--txt2:#6B7076;--txt3:#9CA3AF;
+  --rail:#FFFFFF;--rail-txt:#68727C;--rail-hi:var(--red);--rail-line:#F2F2F2;
+  --accent:var(--red);--btn:var(--red);--btn-hover:#C6112E;--link:var(--blue);
+  --kpi:#26292E;--prog:var(--red);--head-border:var(--line);
+}
+/* ── C안: 잉크 앤 레드 (현재 v0.2) ── */
+body[data-theme="ink"]{
+  --bg:#F6F6F7;--card:#FFFFFF;--line:#E6E6EA;--line2:#EFEFF2;--fill:#F4F4F6;--fill2:#FAFAFB;
+  --ink:#1A1B1E;--txt:#3D3E44;--txt2:#6A6C74;--txt3:#9A9CA4;
+  --rail:#141519;--rail-txt:#9B9DA6;--rail-hi:#FFFFFF;--rail-line:rgba(255,255,255,.07);
+  --accent:#E81E25;--btn:#1A1B1E;--btn-hover:#000;--link:#3B6FD4;
+  --kpi:#1A1B1E;--prog:#1A1B1E;--head-border:var(--line);
+}
+/* ── D안: 다크 프리미엄 ── */
+body[data-theme="dark"]{
+  --bg:#151B22;--card:#1D242D;--line:#2A333E;--line2:#242D37;--fill:#232B35;--fill2:#202832;
+  --ink:#F2F4F6;--txt:#C6CDD4;--txt2:#8D97A1;--txt3:#5F6B76;
+  --rail:#10151B;--rail-txt:#7C8792;--rail-hi:#FFFFFF;--rail-line:rgba(255,255,255,.06);
+  --accent:var(--red);--btn:var(--red);--btn-hover:#FF3355;--link:#5B9BD5;
+  --kpi:#F2F4F6;--prog:var(--red);--head-border:#2A333E;
+  --ok-bg:rgba(31,157,97,.15);--warn-bg:rgba(214,69,69,.15);--amber-bg:rgba(199,116,20,.15);--blue-bg:rgba(0,98,184,.18);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Pretendard Variable',Pretendard,-apple-system,'Malgun Gothic',sans-serif;background:var(--bg);color:var(--txt);font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased;transition:background .3s}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.ic{width:16px;height:16px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.tabnum{font-variant-numeric:tabular-nums}
+
+/* ═══════════ 시안 선택 바 ═══════════ */
+.picker{position:sticky;top:0;z-index:500;background:#10151B;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;box-shadow:0 4px 20px rgba(0,0,0,.25)}
+.picker .pk-title{font-size:14px;font-weight:800;letter-spacing:-.2px;display:flex;align-items:center;gap:8px}
+.picker .pk-title .dot{width:9px;height:9px;background:var(--red);border-radius:2px}
+.pk-btns{display:flex;gap:8px;flex-wrap:wrap}
+.pk-btn{padding:8px 16px;border-radius:9px;border:1px solid rgba(255,255,255,.18);font-size:12px;font-weight:700;color:#B4BEC8;transition:all .15s;display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:150px}
+.pk-btn small{font-size:9.5px;font-weight:500;opacity:.65;letter-spacing:.2px}
+.pk-btn:hover{border-color:#fff;color:#fff}
+.pk-btn.on{background:var(--red);border-color:var(--red);color:#fff}
+.pk-btn.on small{opacity:.85}
+.pk-desc{font-size:11px;color:#8D97A1;flex-basis:100%;line-height:1.6}
+.pk-desc b{color:#fff}
+
+/* ═══════════ 포털 목업 ═══════════ */
+.topbar{background:var(--card);height:58px;display:flex;align-items:center;padding:0 22px;border-bottom:1px solid var(--head-border)}
+.logo{font-size:16px;font-weight:800;color:var(--ink);letter-spacing:-.3px;display:flex;align-items:center;gap:9px}
+.logo .dot{width:9px;height:9px;background:var(--accent);display:inline-block;border-radius:2px}
+.logo span{font-size:10.5px;color:var(--txt3);font-weight:500;margin-left:4px}
+.bdo-member{display:inline-flex;align-items:center;gap:7px;margin-left:16px;padding-left:16px;border-left:1px solid var(--line)}
+.bdo-box{background:var(--red);color:#fff;font-weight:900;font-size:11px;padding:3px 6px;border-radius:2px;font-family:Arial;letter-spacing:.5px}
+.bdo-member .mem{font-size:9.5px;color:var(--txt3);line-height:1.25}
+.search{flex:1;max-width:400px;margin:0 30px;position:relative}
+.search input{width:100%;padding:8px 14px 8px 34px;border:1px solid var(--line);border-radius:9px;background:var(--fill);font-size:12px;outline:none;font-family:inherit;color:var(--ink)}
+.search input::placeholder{color:var(--txt3)}
+.search .ic{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--txt3)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.bell{position:relative;padding:7px;color:var(--txt2)}
+.bell .badge{position:absolute;top:1px;right:0;background:var(--red);color:#fff;font-size:8.5px;font-weight:800;border-radius:8px;padding:1px 4.5px}
+.uchip{display:flex;align-items:center;gap:9px;padding:4px 12px 4px 5px;border:1px solid var(--line);border-radius:99px}
+.uchip .av{width:27px;height:27px;border-radius:50%;background:var(--slate);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px}
+body[data-theme="ink"] .uchip .av{background:#1A1B1E}
+body[data-theme="light"] .uchip .av{background:var(--red)}
+.uchip .un{font-weight:700;font-size:11.5px;color:var(--ink);line-height:1.3}
+.uchip .ur{font-size:9px;color:var(--txt3)}
+
+.layout{display:grid;grid-template-columns:216px 1fr;min-height:calc(100vh - 58px)}
+.sidebar{background:var(--rail);padding:14px 10px;border-right:1px solid var(--rail-line)}
+.sgroup{padding:12px 12px 5px;font-size:9px;font-weight:700;color:var(--rail-txt);opacity:.6;letter-spacing:1.6px;text-transform:uppercase}
+.sitem{padding:8px 12px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--rail-txt);cursor:pointer;border-radius:8px;position:relative;margin-bottom:1px;font-weight:500}
+.sitem:hover{background:rgba(128,140,152,.12)}
+.sitem.active{color:var(--rail-hi);font-weight:700;background:rgba(128,140,152,.14)}
+body[data-theme="light"] .sitem.active{background:#FDF0F2}
+.sitem.active::before{content:'';position:absolute;left:-10px;top:7px;bottom:7px;width:2.5px;background:var(--accent);border-radius:0 2px 2px 0}
+.sitem .count{margin-left:auto;background:rgba(128,140,152,.2);color:inherit;font-size:8.5px;font-weight:700;padding:1.5px 6px;border-radius:8px}
+.sitem.active .count{background:var(--accent);color:#fff}
+
+.main{padding:26px 32px}
+.ptitle{font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-.5px}
+.psub{font-size:12px;color:var(--txt2);margin-top:3px}
+.rule{height:1px;background:var(--line);margin:14px 0 20px}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:18px}
+.kpi{background:var(--card);border-radius:12px;padding:17px 19px;border:1px solid var(--line)}
+.kpi .l{font-size:10.5px;color:var(--txt2);font-weight:600;margin-bottom:7px}
+.kpi .v{font-size:28px;font-weight:800;color:var(--kpi);letter-spacing:-1px}
+.kpi .d{font-size:10px;color:var(--ok);font-weight:700;margin-top:6px}
+.kpi .d.down{color:var(--warn)}
+.kpi .d.mut{color:var(--txt3)}
+
+.grid2{display:grid;grid-template-columns:2fr 1fr;gap:13px}
+.card{background:var(--card);border-radius:12px;padding:19px;border:1px solid var(--line)}
+.card h3{font-size:12.5px;font-weight:800;color:var(--ink);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.card h3 .tag{background:var(--ok-bg);color:var(--ok);font-size:8.5px;padding:2px 7px;border-radius:4px;letter-spacing:1px;font-weight:800}
+.pitem{display:flex;align-items:center;gap:13px;padding:11px 13px;border:1px solid var(--line2);border-radius:10px;background:var(--fill2);margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+.pitem:hover{border-color:var(--slate)}
+body[data-theme="light"] .pitem:hover,body[data-theme="dark"] .pitem:hover{border-color:var(--red)}
+.pico{width:36px;height:36px;border-radius:9px;background:var(--slate);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12.5px;flex-shrink:0}
+body[data-theme="ink"] .pico{background:#1A1B1E}
+body[data-theme="light"] .pico{background:var(--red)}
+.pinfo{flex:1;min-width:0}
+.pname{font-weight:700;font-size:12.5px;color:var(--ink);margin-bottom:1px}
+.pmeta{font-size:10px;color:var(--txt3)}
+.pprog{width:108px;flex-shrink:0}
+.pbar{height:4px;background:var(--line2);border-radius:2px;overflow:hidden}
+.pfill{height:100%;background:var(--prog);border-radius:2px}
+.plabel{font-size:9.5px;color:var(--txt3);font-weight:600;margin-top:4px;text-align:right}
+.pst{font-size:9px;font-weight:800;padding:3.5px 9px;border-radius:6px;white-space:nowrap}
+.st-f{background:var(--amber-bg);color:var(--amber)}
+.st-r{background:var(--blue-bg);color:var(--link)}
+.st-d{background:var(--ok-bg);color:var(--ok)}
+
+.notice{padding:9px 10px 9px 14px;border-radius:8px;font-size:11.5px;position:relative;margin-bottom:2px;cursor:pointer}
+.notice::before{content:'';position:absolute;left:0;top:11px;bottom:11px;width:2px;background:var(--line);border-radius:2px}
+.notice:hover{background:var(--fill2)}
+.notice .t{font-weight:700;color:var(--ink);margin-bottom:1px}
+.notice .d{font-size:9.5px;color:var(--txt3)}
+.notice.urgent::before{background:var(--red)}
+.notice.urgent .t{color:var(--red)}
+
+.apps-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:13px}
+.acard{background:var(--card);border-radius:12px;padding:17px;border:1px solid var(--line);cursor:pointer;transition:transform .15s,border-color .15s;position:relative}
+.acard:hover{transform:translateY(-2px);border-color:var(--slate)}
+body[data-theme="light"] .acard:hover,body[data-theme="dark"] .acard:hover{border-color:var(--red)}
+.achip{position:absolute;top:14px;right:14px;font-size:8.5px;font-weight:800;letter-spacing:.5px;padding:2.5px 7px;border-radius:5px;background:var(--fill);color:var(--txt2);border:1px solid var(--line)}
+.acode{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;margin-bottom:11px}
+.c1{background:var(--slate);color:#fff}
+body[data-theme="ink"] .c1{background:#1A1B1E}
+body[data-theme="light"] .c1{background:#26292E}
+.c2{background:var(--ok-bg);color:var(--ok)}
+.c3{background:rgba(232,26,59,.1);color:var(--red)}
+body[data-theme="dark"] .c3{background:rgba(232,26,59,.2)}
+.c4{background:var(--blue-bg);color:var(--link)}
+.aname{font-size:13px;font-weight:800;color:var(--ink);margin-bottom:3px;letter-spacing:-.2px}
+.adesc{font-size:10.5px;color:var(--txt2);line-height:1.5}
+
+.btn{padding:8px 15px;border-radius:9px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:7px;border:1px solid transparent;transition:background .15s}
+.btn-pri{background:var(--btn);color:#fff}
+.btn-pri:hover{background:var(--btn-hover)}
+
+/* D안 전용: 카드 미묘한 글로우 */
+body[data-theme="dark"] .kpi,body[data-theme="dark"] .card,body[data-theme="dark"] .acard{box-shadow:0 1px 0 rgba(255,255,255,.03) inset}
+
+@media (max-width:1080px){.kpis,.apps-strip{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+@media (max-width:760px){.layout{grid-template-columns:1fr}.sidebar{display:none}.search{display:none}.kpis,.apps-strip{grid-template-columns:1fr}}
+</style>
+</head>
+<body data-theme="slate">
+
+<!-- ═══ 시안 선택 바 ═══ -->
+<div class="picker">
+  <div class="pk-title"><span class="dot"></span>SH Portal 디자인 시안</div>
+  <div class="pk-btns">
+    <button class="pk-btn on" data-t="slate">A. BDO 슬레이트<small>bdo.kr 공식 팔레트 · 슬레이트 레일</small></button>
+    <button class="pk-btn" data-t="light">B. 코퍼레이트 라이트<small>올 화이트 · 레드 포인트</small></button>
+    <button class="pk-btn" data-t="ink">C. 잉크 앤 레드<small>현재 적용본 (v0.2)</small></button>
+    <button class="pk-btn" data-t="dark">D. 다크 프리미엄<small>발표용 임팩트 · 풀 다크</small></button>
+  </div>
+  <div class="pk-desc" id="pkDesc"></div>
+</div>
+
+<!-- ═══ 포털 대시보드 목업 ═══ -->
+<div class="topbar">
+  <div class="logo"><span class="dot"></span>SH Portal<span>성현회계법인 디지털 운영체제</span></div>
+  <div class="bdo-member"><div class="bdo-box">BDO</div><div class="mem">Member Firm<br><span style="opacity:.7">성현회계법인</span></div></div>
+  <div class="search">
+    <svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input placeholder="회사명·조서·규정·판례를 한 번에 검색">
+  </div>
+  <div class="tb-right">
+    <span class="bell"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span class="badge">3</span></span>
+    <div class="uchip"><div class="av">윤길</div><div><div class="un">윤길배 CPA</div><div class="ur">대표이사 · Partner</div></div></div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sgroup">Main</div>
+    <div class="sitem active"><svg class="ic" viewBox="0 0 24 24"><path d="m3 10.5 9-7.5 9 7.5"/><path d="M5.5 9v11h13V9"/></svg>대시보드</div>
+    <div class="sitem"><svg class="ic" viewBox="0 0 24 24"><path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"/><path d="M9 8h5M9 12h5"/></svg>SH Audit Platform</div>
+    <div class="sitem"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M6 16v-5M11 16V7M16 16v-8"/></svg>IFRS 1118호 분석기</div>
+    <div class="sitem"><svg class="ic" viewBox="0 0 24 24"><path d="m12 3 9 5H3z"/><path d="M5 10v7M10 10v7M14 10v7M19 10v7M3 20h18"/></svg>금융기관 조회</div>
+    <div class="sitem"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>App 그리드<span class="count">10</span></div>
+    <div class="sitem"><svg class="ic" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>내 프로젝트<span class="count">12</span></div>
+    <div class="sgroup">Workspace</div>
+    <div class="sitem"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>ERP</div>
+    <div class="sitem"><svg class="ic" viewBox="0 0 24 24"><path d="M4 14a8 8 0 1 1 16 0"/><path d="m12 14 4-4"/><path d="M4 19h16"/></svg>AQI 지표</div>
+    <div class="sitem"><svg class="ic" viewBox="0 0 24 24"><path d="M5 4v16M10 4v16M15 6l4 13.5"/></svg>지식 라이브러리</div>
+  </aside>
+
+  <main class="main">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between">
+      <div>
+        <div class="ptitle">대시보드</div>
+        <div class="psub">윤길배 대표이사님, 오늘 성현은 12건의 프로젝트가 진행 중입니다.</div>
+      </div>
+      <button class="btn btn-pri">+ 새 프로젝트</button>
+    </div>
+    <div class="rule"></div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="l">진행 중 감사</div><div class="v tabnum">12</div><div class="d">▲ 전월 대비 +2건</div></div>
+      <div class="kpi"><div class="l">리뷰 대기 조서</div><div class="v tabnum">47</div><div class="d">▼ 전주 대비 -8건</div></div>
+      <div class="kpi"><div class="l">마감 임박 (7일 내)</div><div class="v tabnum" style="color:var(--warn)">3</div><div class="d down">주의 필요</div></div>
+      <div class="kpi"><div class="l">AQI 지수</div><div class="v tabnum">92.4</div><div class="d mut">ISQM1 기준 충족 · 상세 →</div></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>진행 중 감사 프로젝트 <span class="tag">LIVE</span></h3>
+        <div class="pitem">
+          <div class="pico">A</div>
+          <div class="pinfo"><div class="pname">㈜알파테크 제25기 외부감사</div><div class="pmeta">K-IFRS · 12월 결산 · 인차지 김회계</div></div>
+          <div class="pprog"><div class="pbar"><div class="pfill" style="width:72%"></div></div><div class="plabel tabnum">72%</div></div>
+          <span class="pst st-f">현장수행</span>
+        </div>
+        <div class="pitem">
+          <div class="pico">B</div>
+          <div class="pinfo"><div class="pname">㈜베타홀딩스 연결감사</div><div class="pmeta">K-IFRS · 12월 결산 · 인차지 박회계</div></div>
+          <div class="pprog"><div class="pbar"><div class="pfill" style="width:91%"></div></div><div class="plabel tabnum">91%</div></div>
+          <span class="pst st-r">리뷰</span>
+        </div>
+        <div class="pitem" style="margin-bottom:0">
+          <div class="pico">C</div>
+          <div class="pinfo"><div class="pname">㈜감마물산 제18기 감사</div><div class="pmeta">일반기준 · 12월 결산 · 인차지 이회계</div></div>
+          <div class="pprog"><div class="pbar"><div class="pfill" style="width:45%"></div></div><div class="plabel tabnum">45%</div></div>
+          <span class="pst st-d">완료</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>법인 공지</h3>
+        <div class="notice urgent"><div class="t">ISQM1 2026년 품질관리 보고서 작성 안내</div><div class="d">품질관리본부 · 04/03</div></div>
+        <div class="notice"><div class="t">SH Audit Platform 기초정보 기능 오픈</div><div class="d">AX 추진위 · 04/02</div></div>
+        <div class="notice"><div class="t">4월 정기 파트너 월례회의 (15일 14시)</div><div class="d">경영지원실 · 04/01</div></div>
+        <div class="notice"><div class="t">삼일 TAX Agent 법인 구독 완료</div><div class="d">AX 추진위 · 03/28</div></div>
+      </div>
+    </div>
+
+    <div class="apps-strip">
+      <div class="acard"><span class="achip">자체 개발</span><div class="acode c1">AUD</div><div class="aname">SH Audit Platform</div><div class="adesc">재무제표 구조화 · FSA 매핑 · 감사조서</div></div>
+      <div class="acard"><span class="achip">자체 개발</span><div class="acode c2">FIN</div><div class="aname">금융기관 조회</div><div class="adesc">조회서 발송 · 회신 취합 · 집계표 자동화</div></div>
+      <div class="acard"><span class="achip">자체 개발</span><div class="acode c3">1118</div><div class="aname">K-IFRS 1118호 분석기</div><div class="adesc">표시 기준 분석 · 영업이익 재분류</div></div>
+      <div class="acard"><span class="achip">자체 개발</span><div class="acode c4">XBRL</div><div class="aname">XBRL Comparator</div><div class="adesc">IXD 재무제표 비교 · 공시 정합성 점검</div></div>
+    </div>
+  </main>
+</div>
+
+<script>
+const DESC={
+  slate:'<b>A. BDO 슬레이트</b> — bdo.kr 공식 사이트에서 추출한 진짜 브랜드 팔레트. 슬레이트 블루그레이(#5B6E7F)가 구조를 잡고, BDO 레드(#E81A3B)는 알림·활성 표시에만. 블루(#0062B8)는 링크·상태. 그룹 정체성이 가장 강하게 느껴지는 안.',
+  light:'<b>B. 코퍼레이트 라이트</b> — 올 화이트 캔버스에 사이드바까지 밝게. 레드를 버튼·활성 메뉴에 과감하게 사용해서 밝고 에너지 있는 인상. 낮에 오래 보는 실무 화면에 부담이 적음.',
+  ink:'<b>C. 잉크 앤 레드 (현재 v0.2)</b> — 지금 포털에 적용된 안. 잉크 블랙 다크 레일 + 뉴트럴 캔버스, 레드는 최소한으로. 요즘 SaaS(Linear·Notion) 느낌의 절제된 톤.',
+  dark:'<b>D. 다크 프리미엄</b> — 풀 다크 슬레이트 차콜. 파트너총회 발표 화면·스크린에서 임팩트가 가장 큼. 레드가 어두운 배경 위에서 강하게 살아남. 야간 작업에도 편안.'
+};
+const desc=document.getElementById('pkDesc');
+function setTheme(t){
+  document.body.dataset.theme=t;
+  document.querySelectorAll('.pk-btn').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  desc.innerHTML=DESC[t];
+}
+document.querySelectorAll('.pk-btn').forEach(b=>b.addEventListener('click',()=>setTheme(b.dataset.t)));
+setTheme('slate');
+</script>
+</body>
+</html>

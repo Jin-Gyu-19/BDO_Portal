@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>샘플 4 · AQI 리포트 — 데이터 에디토리얼</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--red:#E81A3B;--slate:#5B6E7F;--blue:#0062B8;--ok:#1F9D61;--amber:#C77414;
+--ink:#17191C;--txt:#3A3D42;--txt2:#71767D;--txt3:#A2A7AE;--line:#E5E6E9;--line-d:#17191C;--bg:#FFFFFF;--fill:#F7F7F8}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Pretendard Variable',Pretendard,-apple-system,'Malgun Gothic',sans-serif;background:var(--bg);color:var(--txt);-webkit-font-smoothing:antialiased}
+.tn{font-variant-numeric:tabular-nums}
+.page{max-width:1040px;margin:0 auto;padding:0 32px 80px}
+
+/* 매스트헤드 */
+.mast{display:flex;align-items:baseline;justify-content:space-between;padding:26px 0 18px;border-bottom:2.5px solid var(--ink)}
+.mast .mt{font-size:12px;font-weight:900;letter-spacing:3.5px;color:var(--ink)}
+.mast .mt .rd{color:var(--red)}
+.mast .mi{font-size:11px;color:var(--txt2);font-weight:600;letter-spacing:.5px}
+
+/* 히어로 */
+.hero{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:end;padding:44px 0 38px;border-bottom:1px solid var(--line)}
+.hero .eyebrow{font-size:11px;font-weight:800;letter-spacing:3px;color:var(--red);margin-bottom:14px}
+.hero h1{font-size:44px;font-weight:800;color:var(--ink);letter-spacing:-1.8px;line-height:1.2;word-break:keep-all}
+.hero p{font-size:13.5px;color:var(--txt2);line-height:1.8;margin-top:16px;max-width:440px;word-break:keep-all}
+.hero .score{text-align:right}
+.hero .score .n{font-size:clamp(96px,13vw,148px);font-weight:800;color:var(--ink);letter-spacing:-8px;line-height:.9}
+.hero .score .n .dec{color:var(--red)}
+.hero .score .cap{font-size:12px;color:var(--txt2);font-weight:600;margin-top:10px;letter-spacing:.3px}
+.hero .score .delta{display:inline-block;margin-top:8px;font-size:12px;font-weight:800;color:var(--ok);background:#EAF6F0;padding:5px 13px;border-radius:99px}
+
+/* 지표 행 (원장 스타일) */
+.ledger{margin:38px 0}
+.ledger .lh{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:16px;padding:0 0 10px;font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--txt3);text-transform:uppercase;border-bottom:1px solid var(--ink)}
+.ledger .lr{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:16px;align-items:center;padding:15px 0;border-bottom:1px solid var(--line);font-size:13px}
+.ledger .lr:last-child{border-bottom:3px double var(--ink)}
+.ledger .nm{font-weight:700;color:var(--ink);display:flex;align-items:center;gap:12px}
+.ledger .nm .no{font-size:10px;font-weight:800;color:var(--txt3);width:20px}
+.ledger .sc{font-weight:800;color:var(--ink);font-size:16px;letter-spacing:-.5px}
+.ledger .sc small{font-size:10.5px;color:var(--txt3);font-weight:600}
+.ledger .tr{font-weight:700;font-size:12px}
+.ledger .tr.up{color:var(--ok)}.ledger .tr.dn{color:var(--red)}
+.ledger .bar{height:5px;background:var(--fill);border-radius:3px;overflow:hidden}
+.ledger .bar i{display:block;height:100%;border-radius:3px;background:var(--slate)}
+.ledger .bar i.top{background:var(--ok)}
+.ledger .bar i.low{background:var(--amber)}
+
+/* 2단: 서사 + 파트너 차트 */
+.duo{display:grid;grid-template-columns:1.1fr 1fr;gap:56px;margin-top:44px}
+.duo h2{font-size:13px;font-weight:900;letter-spacing:2px;color:var(--ink);text-transform:uppercase;padding-bottom:12px;border-bottom:2.5px solid var(--ink);margin-bottom:18px;display:flex;justify-content:space-between}
+.duo h2 small{font-weight:600;color:var(--txt3);letter-spacing:.5px;font-size:10px}
+.duo .lead{font-size:15px;line-height:1.9;color:var(--txt);word-break:keep-all}
+.duo .lead b{color:var(--ink)}
+.duo .lead .hl{background:linear-gradient(transparent 62%,#FDE9EC 62%);font-weight:700;color:var(--ink)}
+.duo p.body{font-size:12.5px;line-height:1.85;color:var(--txt2);margin-top:14px;word-break:keep-all}
+.pull{margin:22px 0;padding:18px 22px;border-left:3px solid var(--red);background:var(--fill);font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.7;border-radius:0 10px 10px 0}
+.pull small{display:block;font-size:10.5px;color:var(--txt2);font-weight:600;margin-top:6px}
+
+.prow{display:grid;grid-template-columns:64px 1fr 52px;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.prow .nm{font-weight:700;color:var(--ink)}
+.prow .track{height:22px;background:var(--fill);border-radius:4px;position:relative;overflow:hidden}
+.prow .track i{position:absolute;inset:0;width:0;background:var(--slate);border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;color:#fff;font-size:10px;font-weight:800}
+.prow:first-of-type .track i{background:var(--ink)}
+.prow .dv{font-weight:800;text-align:right;font-size:11px;color:var(--ok)}
+.prow .dv.dn{color:var(--red)}
+.footnote{margin-top:26px;font-size:10.5px;color:var(--txt3);line-height:1.7;padding-top:14px;border-top:1px solid var(--line)}
+.footnote b{color:var(--txt2)}
+
+@media (max-width:880px){
+  .hero{grid-template-columns:1fr;gap:20px}
+  .hero .score{text-align:left}
+  .duo{grid-template-columns:1fr;gap:40px}
+  .ledger .lh,.ledger .lr{grid-template-columns:1.4fr 1fr 1fr}
+  .ledger .bar{display:none}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="mast">
+    <div class="mt">AQI QUARTERLY<span class="rd">.</span></div>
+    <div class="mi">성현회계법인 감사품질 리포트 · 2026 Q1 · 품질관리본부</div>
+  </div>
+
+  <div class="hero">
+    <div>
+      <div class="eyebrow">AUDIT QUALITY INDICATOR</div>
+      <h1>네 분기 연속 상승,<br>품질이 문화가 되는 중입니다.</h1>
+      <p>ISQM1 및 금융감독원 감사품질지표 기준. 6개 부문 전 항목이 목표 기준선(90점)에 접근했으며, 독립성 부문은 창립 이래 최고치를 기록했습니다.</p>
+    </div>
+    <div class="score">
+      <div class="n tn">92<span class="dec">.4</span></div>
+      <div class="cap">OVERALL SCORE / 100</div>
+      <div class="delta">▲ 4.8p 전년 동기 대비</div>
+    </div>
+  </div>
+
+  <div class="ledger">
+    <div class="lh"><span>부문</span><span>점수</span><span>추이</span><span>수준</span></div>
+    <div class="lr"><span class="nm"><span class="no">01</span>독립성</span><span class="sc tn">98.5<small> /100</small></span><span class="tr up">▲ 0.3</span><span class="bar"><i class="top" style="width:98%"></i></span></div>
+    <div class="lr"><span class="nm"><span class="no">02</span>품질관리체계</span><span class="sc tn">96.8<small> /100</small></span><span class="tr up">▲ 5.2</span><span class="bar"><i class="top" style="width:96%"></i></span></div>
+    <div class="lr"><span class="nm"><span class="no">03</span>감사 인력</span><span class="sc tn">94.2<small> /100</small></span><span class="tr up">▲ 2.1</span><span class="bar"><i style="width:94%"></i></span></div>
+    <div class="lr"><span class="nm"><span class="no">04</span>감사 시간</span><span class="sc tn">89.6<small> /100</small></span><span class="tr up">▲ 1.4</span><span class="bar"><i style="width:89%"></i></span></div>
+    <div class="lr"><span class="nm"><span class="no">05</span>감사 보수</span><span class="sc tn">88.1<small> /100</small></span><span class="tr up">▲ 3.0</span><span class="bar"><i style="width:88%"></i></span></div>
+    <div class="lr"><span class="nm"><span class="no">06</span>교육·훈련</span><span class="sc tn">87.4<small> /100</small></span><span class="tr dn">▼ 1.8</span><span class="bar"><i class="low" style="width:87%"></i></span></div>
+  </div>
+
+  <div class="duo">
+    <div>
+      <h2>분기 총평 <small>QUALITY REVIEW</small></h2>
+      <div class="lead">품질관리체계 부문이 <b>+5.2p</b>로 가장 크게 상승했습니다. <span class="hl">SH Audit Platform 도입 이후 조서 리뷰 리드타임이 평균 3.2일에서 1.4일로 단축</span>된 것이 주요 동력입니다.</div>
+      <p class="body">반면 교육·훈련 부문은 유일하게 하락(-1.8p)했습니다. 2025년 교육 의무시간 미달 구성원 3명이 확인되어, 상반기 중 보충 교육 수강 계획 수립이 필요합니다. 인적 자원 관리 요소는 현재 검토 중으로, 4월 말 완료 예정입니다.</p>
+      <div class="pull">"품질은 감사보고서에 서명하기 전이 아니라, 조서 첫 줄을 쓸 때 결정됩니다."<small>— 품질관리본부, 2026 Q1 리뷰 코멘트</small></div>
+      <p class="body">품질관리보고서 제출 마감(D-12)과 독립성 자가점검 미회신 2건은 이슈 로그에서 추적 중입니다. 자세한 내용은 부록 A를 참조하세요.</p>
+    </div>
+    <div>
+      <h2>파트너별 품질 점수 <small>2026 Q1</small></h2>
+      <div class="prow"><span class="nm">윤길배</span><span class="track"><i style="width:95%">95.2</i></span><span class="dv tn">▲ 2.1</span></div>
+      <div class="prow"><span class="nm">정인훈</span><span class="track"><i style="width:93%">93.5</i></span><span class="dv tn">▲ 1.4</span></div>
+      <div class="prow"><span class="nm">이성민</span><span class="track"><i style="width:91%">91.0</i></span><span class="dv tn">▲ 3.2</span></div>
+      <div class="prow"><span class="nm">최지훈</span><span class="track"><i style="width:90%">90.1</i></span><span class="dv tn">▲ 0.8</span></div>
+      <div class="prow"><span class="nm">한영숙</span><span class="track"><i style="width:89%">89.3</i></span><span class="dv tn">▲ 2.5</span></div>
+      <div class="prow"><span class="nm">박상호</span><span class="track"><i style="width:88%">87.9</i></span><span class="dv dn tn">▼ 0.4</span></div>
+      <div class="footnote"><b>산정 기준</b> — 금융감독원 감사품질지표 공시 가이드 및 ISQM1 10대 요소 자체 평가를 가중 평균. 점수는 분기 말 기준이며 소수점 둘째 자리에서 반올림.</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

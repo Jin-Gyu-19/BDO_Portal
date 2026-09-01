@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>샘플 17 · macOS 3컬럼 — Finder/Mail 스타일</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--red:#E81A3B;--slate:#5B6E7F;--blue:#0062B8;--ok:#1F9D61;--amber:#C77414;
+--ink:#1D1D1F;--txt:#3C3C43;--txt2:#6E6E73;--txt3:#A1A1A6;--line:#E1E1E4;--line2:#EFEFF1;
+--bg:#FFFFFF;--col:#FBFBFC;--side:#F0EFF3}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'SF Pro Text','Malgun Gothic',sans-serif;
+font-size:13px;color:var(--txt);-webkit-font-smoothing:antialiased;overflow:hidden;background:#D9D9DE}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.tn{font-variant-numeric:tabular-nums}
+.ic{width:15px;height:15px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+
+.app{position:fixed;inset:12px;border-radius:12px;overflow:hidden;background:var(--bg);
+box-shadow:0 22px 60px rgba(0,0,0,.22),0 0 0 .5px rgba(0,0,0,.22);
+display:grid;grid-template-columns:212px 300px 1fr;grid-template-rows:52px 1fr}
+
+/* ── 타이틀바 (3분할 공통) ── */
+.tb{display:flex;align-items:center;gap:10px;padding:0 14px;border-bottom:.5px solid var(--line)}
+.tb.a{background:var(--side);border-right:.5px solid var(--line)}
+.tb.b{background:rgba(251,251,252,.9);border-right:.5px solid var(--line)}
+.tb.c{background:rgba(255,255,255,.9)}
+.lights{display:flex;gap:8px;margin-right:4px}
+.lights i{width:12px;height:12px;border-radius:50%;display:block}
+.lights .r{background:#FF5F57}.lights .y{background:#FEBC2E}.lights .g{background:#28C840}
+.tb .ttl{font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.tb .cnt{font-size:11px;color:var(--txt3);font-weight:600}
+.iconbtn{padding:5px;border-radius:6px;color:var(--txt2)}
+.iconbtn:hover{background:rgba(0,0,0,.06);color:var(--ink)}
+.seg{display:flex;background:rgba(0,0,0,.055);border-radius:7px;padding:2px}
+.seg button{padding:3.5px 11px;border-radius:5px;font-size:11px;font-weight:600;color:var(--txt2)}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.13)}
+
+/* ── 컬럼 1: 사이드바 ── */
+.side{background:var(--side);border-right:.5px solid var(--line);padding:8px 9px 10px;overflow-y:auto;
+display:flex;flex-direction:column}
+.who{display:flex;align-items:center;gap:9px;padding:8px;border-radius:8px;margin-bottom:6px}
+.who .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(145deg,#FF5A72,var(--red));color:#fff;
+display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px}
+.who .nm{font-size:12.5px;font-weight:700;color:var(--ink)}
+.who .nm small{display:block;font-size:9.5px;color:var(--txt3);font-weight:500;margin-top:1px}
+.grp{padding:12px 8px 5px;font-size:10.5px;font-weight:700;color:var(--txt3)}
+.mi{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:7px;font-size:12.5px;font-weight:500;
+color:var(--txt);cursor:default;letter-spacing:-.2px}
+.mi:hover{background:rgba(0,0,0,.05)}
+.mi.on{background:var(--red);color:#fff;font-weight:600}
+.mi .ic{width:14px;height:14px;opacity:.75}.mi.on .ic{opacity:1}
+.mi .n{margin-left:auto;font-size:10.5px;font-weight:600;color:var(--txt3)}.mi.on .n{color:rgba(255,255,255,.85)}
+.mi .sw{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.side .ft{margin-top:auto;display:flex;align-items:center;gap:7px;padding:8px;font-size:10px;color:var(--txt3)}
+.side .ft .bdo{background:var(--red);color:#fff;font-weight:900;font-size:9px;padding:2px 5px;border-radius:2px;font-family:Arial}
+
+/* ── 컬럼 2: 리스트 ── */
+.col{background:var(--col);border-right:.5px solid var(--line);overflow-y:auto}
+.srch{margin:10px 12px;display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:7px;
+background:#fff;border:.5px solid var(--line);color:var(--txt3);font-size:11.5px}
+.row{padding:11px 14px;border-bottom:.5px solid var(--line2);cursor:default;position:relative}
+.row:hover{background:#F4F4F6}
+.row.on{background:var(--red)}
+.row.on *{color:#fff !important}
+.row.on .bar{background:rgba(255,255,255,.3)}
+.row.on .bar i{background:#fff}
+.row.on .st{background:rgba(255,255,255,.2)}
+.row .l1{display:flex;align-items:center;gap:7px}
+.row .dot{width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0}
+.row .t{font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:-.25px}
+.row .d{margin-left:auto;font-size:10px;color:var(--txt3);font-weight:600}
+.row .m{font-size:10.5px;color:var(--txt2);margin:3px 0 7px;padding-left:14px}
+.row .l3{display:flex;align-items:center;gap:8px;padding-left:14px}
+.row .st{font-size:9px;font-weight:800;padding:2px 7px;border-radius:99px;background:#EEF0F2;color:var(--slate)}
+.bar{flex:1;height:4px;border-radius:3px;background:var(--line2);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:3px;background:var(--red)}
+.row .pc{font-size:10.5px;font-weight:800;color:var(--ink);min-width:30px;text-align:right}
+.sechd{padding:9px 14px 6px;font-size:9.5px;font-weight:800;letter-spacing:1.2px;color:var(--txt3);
+background:rgba(250,250,251,.9);text-transform:uppercase;border-bottom:.5px solid var(--line2)}
+
+/* ── 컬럼 3: 상세 ── */
+.det{overflow-y:auto;background:#fff}
+.dhero{padding:24px 30px 20px;border-bottom:.5px solid var(--line);
+background:linear-gradient(180deg,#FCFCFD,#fff)}
+.dhero .tag{display:inline-flex;align-items:center;gap:6px;font-size:9.5px;font-weight:800;letter-spacing:.8px;
+color:var(--red);background:#FDECEF;padding:3px 9px;border-radius:99px;text-transform:uppercase}
+.dhero h1{font-size:23px;font-weight:800;color:var(--ink);letter-spacing:-.9px;margin:10px 0 6px}
+.dhero .meta{font-size:11.5px;color:var(--txt2)}
+.dhero .prog{display:flex;align-items:center;gap:12px;margin-top:18px}
+.dhero .prog .bar{height:7px;border-radius:4px}
+.dhero .prog .pc{font-size:19px;font-weight:800;color:var(--ink);letter-spacing:-.8px}
+.acts{display:flex;gap:8px;margin-top:16px}
+.acts button{font-size:11.5px;font-weight:600;padding:7px 14px;border-radius:8px;border:.5px solid var(--line);
+background:#fff;color:var(--txt)}
+.acts button.p{background:var(--red);color:#fff;border-color:transparent;box-shadow:0 1px 2px rgba(232,26,59,.3)}
+.acts button:hover{background:#F6F6F8}
+.acts button.p:hover{background:#D01734}
+
+.dbody{padding:22px 30px 34px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:.5px solid var(--line);
+border-radius:11px;overflow:hidden;margin-bottom:24px}
+.stat{background:#fff;padding:14px 16px}
+.stat .l{font-size:10px;color:var(--txt2);font-weight:600}
+.stat .v{font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-.8px;margin-top:5px}
+.stat .v small{font-size:10.5px;color:var(--txt3);font-weight:600;margin-left:2px}
+.stat.w .v{color:var(--red)}
+.sh{display:flex;align-items:center;margin:0 0 11px}
+.sh h3{font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.sh a{margin-left:auto;font-size:11px;color:var(--blue);font-weight:600;text-decoration:none}
+.tl{border-left:2px solid var(--line);margin:0 0 26px 6px;padding-left:18px;display:flex;flex-direction:column;gap:15px}
+.tl .n{position:relative}
+.tl .n::before{content:'';position:absolute;left:-25px;top:3px;width:11px;height:11px;border-radius:50%;
+background:#fff;border:2.5px solid var(--line)}
+.tl .n.done::before{background:var(--ok);border-color:var(--ok)}
+.tl .n.now::before{background:var(--red);border-color:var(--red);box-shadow:0 0 0 4px rgba(232,26,59,.15)}
+.tl .t{font-size:12px;font-weight:700;color:var(--ink)}
+.tl .d{font-size:10.5px;color:var(--txt3);margin-top:2px}
+.team{display:flex;gap:9px;margin-bottom:26px;flex-wrap:wrap}
+.mem{display:flex;align-items:center;gap:8px;border:.5px solid var(--line);border-radius:10px;padding:8px 12px 8px 8px;background:#fff}
+.mem .av{width:26px;height:26px;border-radius:50%;color:#fff;font-size:10px;font-weight:800;
+display:flex;align-items:center;justify-content:center}
+.mem .n{font-size:11.5px;font-weight:700;color:var(--ink)}
+.mem .r{font-size:9.5px;color:var(--txt3);margin-top:1px}
+.files .f{display:flex;align-items:center;gap:10px;padding:9px 12px;border:.5px solid var(--line);
+border-radius:9px;margin-bottom:7px;background:#fff}
+.files .f .ext{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+font-size:8.5px;font-weight:800;color:#fff}
+.files .f .n{font-size:11.5px;font-weight:600;color:var(--ink)}
+.files .f .s{margin-left:auto;font-size:10px;color:var(--txt3)}
+.note{margin-top:24px;background:#FAFAFB;border:.5px solid var(--line);border-left:3px solid var(--red);
+border-radius:9px;padding:13px 15px}
+.note .h{font-size:10px;font-weight:800;letter-spacing:1px;color:var(--red);text-transform:uppercase}
+.note p{font-size:11.5px;color:var(--txt);line-height:1.65;margin-top:6px}
+@media (max-width:1100px){.app{grid-template-columns:0 300px 1fr}.side,.tb.a{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- 타이틀바 -->
+  <div class="tb a"><div class="lights"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+    <div class="ttl">SH Portal</div></div>
+  <div class="tb b">
+    <div class="ttl">내 프로젝트</div><div class="cnt tn">12건</div>
+    <button class="iconbtn" style="margin-left:auto"><svg class="ic" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg></button>
+    <button class="iconbtn"><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+  </div>
+  <div class="tb c">
+    <div class="seg"><button class="on">개요</button><button>조서</button><button>이슈</button><button>AQI</button></div>
+    <div class="cnt tn" style="margin-left:14px">2026. 4. 5 (일) · 오전 9:41</div>
+    <button class="iconbtn" style="margin-left:auto"><svg class="ic" viewBox="0 0 24 24"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg></button>
+    <button class="iconbtn"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="19" cy="12" r="1.4" fill="currentColor"/><circle cx="5" cy="12" r="1.4" fill="currentColor"/></svg></button>
+  </div>
+
+  <!-- 사이드바 -->
+  <div class="side">
+    <div class="who"><div class="av">윤길</div><div class="nm">윤길배 CPA<small>성현회계법인 · 대표이사</small></div></div>
+    <div class="grp">즐겨찾기</div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>대시보드</div>
+    <div class="mi on"><svg class="ic" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>내 프로젝트 <span class="n">12</span></div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>리뷰함 <span class="n">47</span></div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>알림 <span class="n">3</span></div>
+    <div class="grp">태그</div>
+    <div class="mi"><span class="sw" style="background:var(--red)"></span>마감 임박 <span class="n">3</span></div>
+    <div class="mi"><span class="sw" style="background:var(--blue)"></span>리뷰 대기 <span class="n">6</span></div>
+    <div class="mi"><span class="sw" style="background:var(--ok)"></span>완료 <span class="n">4</span></div>
+    <div class="grp">App</div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>전체 App <span class="n">10</span></div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>AI Assistant 칼</div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg>AQI 지표</div>
+    <div class="ft"><span class="bdo">BDO</span> Member Firm · SH Portal</div>
+  </div>
+
+  <!-- 리스트 -->
+  <div class="col">
+    <div class="srch"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.3-4.3"/></svg>프로젝트 검색</div>
+    <div class="sechd">마감 임박 · 3건</div>
+    <div class="row on">
+      <div class="l1"><span class="dot"></span><span class="t">㈜알파테크 제25기 외부감사</span><span class="d">D-12</span></div>
+      <div class="m">K-IFRS · 12월 결산 · 인차지 김회계</div>
+      <div class="l3"><span class="st">현장수행</span><span class="bar"><i style="width:72%"></i></span><span class="pc tn">72%</span></div>
+    </div>
+    <div class="row">
+      <div class="l1"><span class="dot" style="background:var(--blue)"></span><span class="t">㈜베타홀딩스 연결감사</span><span class="d">D-19</span></div>
+      <div class="m">K-IFRS · 12월 결산 · 인차지 박회계</div>
+      <div class="l3"><span class="st">리뷰</span><span class="bar"><i style="width:91%;background:var(--blue)"></i></span><span class="pc tn">91%</span></div>
+    </div>
+    <div class="row">
+      <div class="l1"><span class="dot" style="background:var(--amber)"></span><span class="t">㈜감마물산 제18기 감사</span><span class="d">D-24</span></div>
+      <div class="m">일반기준 · 12월 결산 · 인차지 이회계</div>
+      <div class="l3"><span class="st">현장수행</span><span class="bar"><i style="width:45%;background:var(--slate)"></i></span><span class="pc tn">45%</span></div>
+    </div>
+    <div class="sechd">진행 중 · 5건</div>
+    <div class="row">
+      <div class="l1"><span class="dot" style="background:var(--slate)"></span><span class="t">㈜엡실론소재 반기검토</span><span class="d">D-46</span></div>
+      <div class="m">K-IFRS · 6월 결산 · 인차지 정회계</div>
+      <div class="l3"><span class="st">계획</span><span class="bar"><i style="width:18%;background:var(--slate)"></i></span><span class="pc tn">18%</span></div>
+    </div>
+    <div class="row">
+      <div class="l1"><span class="dot" style="background:var(--slate)"></span><span class="t">㈜제타건설 내부회계관리제도</span><span class="d">D-58</span></div>
+      <div class="m">ICFR · 12월 결산 · 인차지 한회계</div>
+      <div class="l3"><span class="st">계획</span><span class="bar"><i style="width:31%;background:var(--slate)"></i></span><span class="pc tn">31%</span></div>
+    </div>
+    <div class="sechd">완료 · 4건</div>
+    <div class="row">
+      <div class="l1"><span class="dot" style="background:var(--ok)"></span><span class="t">㈜델타에너지 기말감사</span><span class="d">종료</span></div>
+      <div class="m">K-IFRS · 12월 결산 · 인차지 최회계</div>
+      <div class="l3"><span class="st">완료</span><span class="bar"><i style="width:100%;background:var(--ok)"></i></span><span class="pc tn">100%</span></div>
+    </div>
+  </div>
+
+  <!-- 상세 -->
+  <div class="det">
+    <div class="dhero">
+      <span class="tag">마감 임박 · D-12</span>
+      <h1>㈜알파테크 제25기 외부감사</h1>
+      <div class="meta">K-IFRS · 12월 결산 · 인차지 김회계 · 감사보고서 제출 2026-04-17</div>
+      <div class="prog">
+        <span class="pc tn">72%</span>
+        <span class="bar" style="flex:1"><i style="width:72%"></i></span>
+        <span style="font-size:11px;color:var(--txt3);font-weight:600">현장수행 단계 · 조서 128/178</span>
+      </div>
+      <div class="acts">
+        <button class="p">조서 열기</button>
+        <button>리뷰 요청</button>
+        <button>일정 보기</button>
+        <button>AI 칼에게 묻기</button>
+      </div>
+    </div>
+
+    <div class="dbody">
+      <div class="stats">
+        <div class="stat"><div class="l">작성 조서</div><div class="v tn">128<small>/178</small></div></div>
+        <div class="stat w"><div class="l">리뷰 대기</div><div class="v tn">14<small>건</small></div></div>
+        <div class="stat"><div class="l">미결 이슈</div><div class="v tn">5<small>건</small></div></div>
+        <div class="stat"><div class="l">투입 시간</div><div class="v tn">412<small>h</small></div></div>
+      </div>
+
+      <div class="sh"><h3>감사 진행 단계</h3><a href="#">전체 일정</a></div>
+      <div class="tl">
+        <div class="n done"><div class="t">감사 계획 수립 · 위험 평가</div><div class="d">2026-01-12 완료 · 계획조서 승인</div></div>
+        <div class="n done"><div class="t">내부통제 평가 · 중간감사</div><div class="d">2026-02-28 완료 · 유의적 미비점 1건</div></div>
+        <div class="n now"><div class="t">현장수행 — 실증절차</div><div class="d">진행 중 · 재고실사 완료, 매출 표본 검사 진행</div></div>
+        <div class="n"><div class="t">인차지 · 파트너 리뷰</div><div class="d">예정 2026-04-10</div></div>
+        <div class="n"><div class="t">감사보고서 발행</div><div class="d">예정 2026-04-17 (D-12)</div></div>
+      </div>
+
+      <div class="sh"><h3>담당 팀</h3><a href="#">배정 변경</a></div>
+      <div class="team">
+        <div class="mem"><div class="av" style="background:linear-gradient(145deg,#FF5A72,#E81A3B)">윤길</div><div><div class="n">윤길배</div><div class="r">업무수행이사</div></div></div>
+        <div class="mem"><div class="av" style="background:linear-gradient(145deg,#4E97E0,#0062B8)">김회</div><div><div class="n">김회계</div><div class="r">인차지</div></div></div>
+        <div class="mem"><div class="av" style="background:linear-gradient(145deg,#7C8FA0,#5B6E7F)">이수</div><div><div class="n">이수현</div><div class="r">스탭</div></div></div>
+        <div class="mem"><div class="av" style="background:linear-gradient(145deg,#38C77E,#1F9D61)">박지</div><div><div class="n">박지훈</div><div class="r">스탭</div></div></div>
+      </div>
+
+      <div class="sh"><h3>최근 조서</h3><a href="#">SH Audit Platform에서 열기</a></div>
+      <div class="files">
+        <div class="f"><div class="ext" style="background:#1F9D61">XLS</div><div><div class="n">3200 매출 실증절차 조서</div></div><div class="s tn">김회계 · 2시간 전</div></div>
+        <div class="f"><div class="ext" style="background:#0062B8">DOC</div><div><div class="n">재고실사 입회 보고서</div></div><div class="s tn">이수현 · 어제</div></div>
+        <div class="f"><div class="ext" style="background:#E81A3B">PDF</div><div><div class="n">경영진 확인서 초안 v2</div></div><div class="s tn">박지훈 · 4/3</div></div>
+      </div>
+
+      <div class="note">
+        <div class="h">AI Assistant 칼</div>
+        <p>매출 표본 12건 중 3건에서 인식 시점 검토가 필요합니다. 기말 근접 거래(12/28~12/31)에 집중되어 있어 절사(cut-off) 절차 확대를 권고합니다. 관련 조서 3200-02 및 K-IFRS 1115호 판단 근거를 함께 확인하세요.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

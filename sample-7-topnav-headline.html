@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>샘플 7 · 탑내브 헤드라인 — 슬레이트 밴드</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--red:#E81A3B;--slate:#5B6E7F;--slate-d:#33424E;--slate-dd:#28343E;--blue:#0062B8;--ok:#1F9D61;--amber:#C77414;
+--ink:#22262B;--txt:#43474D;--txt2:#787D84;--txt3:#A8ADB4;--line:#E7E9EB;--line2:#F0F1F3;--bg:#F3F5F6;--card:#FFFFFF}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Pretendard Variable',Pretendard,-apple-system,'Malgun Gothic',sans-serif;background:var(--bg);color:var(--txt);font-size:13px;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.tn{font-variant-numeric:tabular-nums}
+.ic{width:15px;height:15px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── 슬레이트 헤더 밴드 ── */
+.band{background:linear-gradient(160deg,var(--slate-d),var(--slate-dd));color:#fff;padding:0 0 74px}
+.tb{max-width:1120px;margin:0 auto;padding:16px 28px;display:flex;align-items:center;gap:20px}
+.logo{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:800;letter-spacing:-.3px}
+.logo .bdo{background:var(--red);color:#fff;font-weight:900;font-size:11px;padding:3px 6px;border-radius:2px;font-family:Arial;letter-spacing:.5px}
+.tabs{display:flex;gap:2px;margin-left:14px}
+.tab{padding:8px 15px;border-radius:9px;font-size:12.5px;font-weight:600;color:#B9C4CD;transition:all .15s}
+.tab:hover{color:#fff;background:rgba(255,255,255,.07)}
+.tab.on{background:rgba(255,255,255,.13);color:#fff;font-weight:700}
+.tb-r{margin-left:auto;display:flex;align-items:center;gap:14px}
+.tb .srch{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);border-radius:9px;padding:7px 13px;font-size:11.5px;color:#B9C4CD;min-width:210px;cursor:text}
+.bell{position:relative;color:#B9C4CD;padding:6px}
+.bell:hover{color:#fff}
+.bell .bd{position:absolute;top:0;right:0;background:var(--red);color:#fff;font-size:8px;font-weight:800;border-radius:8px;padding:1px 4px}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10.5px}
+
+.hero{max-width:1120px;margin:0 auto;padding:26px 28px 0;display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
+.hero h1{font-size:27px;font-weight:800;letter-spacing:-.8px;line-height:1.3}
+.hero h1 small{display:block;font-size:12px;font-weight:500;color:#AEB9C2;letter-spacing:0;margin-top:6px}
+.hero .actions{display:flex;gap:9px}
+.hbtn{padding:9px 17px;border-radius:10px;font-size:12px;font-weight:700;transition:all .15s}
+.hbtn.pri{background:var(--red);color:#fff}
+.hbtn.pri:hover{background:#FF3355}
+.hbtn.gh{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.16)}
+.hbtn.gh:hover{background:rgba(255,255,255,.18)}
+
+/* ── 오버랩 KPI 카드 ── */
+.deck{max-width:1120px;margin:-52px auto 0;padding:0 28px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.kpi{background:var(--card);border-radius:14px;padding:18px 20px;box-shadow:0 10px 34px rgba(40,52,62,.12);border:1px solid var(--line)}
+.kpi .l{font-size:10.5px;color:var(--txt2);font-weight:700;margin-bottom:7px;letter-spacing:.2px}
+.kpi .v{font-size:27px;font-weight:800;color:var(--ink);letter-spacing:-1.2px}
+.kpi .d{font-size:10px;font-weight:800;margin-top:6px;color:var(--ok)}
+.kpi .d.down{color:var(--red)}
+.kpi .d.mut{color:var(--txt3)}
+.kpi.hot{background:linear-gradient(150deg,#FFF6F7,#fff)}
+.kpi.hot .v{color:var(--red)}
+
+/* 본문 그리드 */
+.body{max-width:1120px;margin:0 auto;padding:0 28px 60px;display:grid;grid-template-columns:1.6fr 1fr;gap:20px;align-items:start}
+.card{background:var(--card);border-radius:14px;border:1px solid var(--line);padding:20px 22px;margin-bottom:20px}
+.card h2{font-size:13.5px;font-weight:800;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;letter-spacing:-.2px}
+.card h2 .more{margin-left:auto;font-size:11px;color:var(--txt3);font-weight:600;cursor:pointer}
+.card h2 .more:hover{color:var(--red)}
+
+.proj{display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid var(--line2)}
+.proj:last-child{border-bottom:none}
+.proj .cb{width:34px;height:34px;border-radius:10px;background:var(--slate-d);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px}
+.proj .nm{flex:1;font-size:12.5px;font-weight:700;color:var(--ink)}
+.proj .nm small{display:block;font-size:10px;color:var(--txt3);font-weight:500;margin-top:1px}
+.proj .ring{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:800;color:var(--ink);position:relative}
+.proj .ring::before{content:'';position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--slate) calc(var(--p)*1%),var(--line2) 0)}
+.proj .ring::after{content:'';position:absolute;inset:4px;border-radius:50%;background:var(--card)}
+.proj .ring span{position:relative;z-index:1}
+.proj .st{font-size:9px;font-weight:800;padding:3.5px 10px;border-radius:99px}
+.st-f{background:#FBF2E6;color:var(--amber)}.st-r{background:#E8F0FA;color:var(--blue)}.st-d{background:#E8F5EE;color:var(--ok)}
+
+/* 앱 그리드 (본문) */
+.apps{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.app{border:1px solid var(--line);border-radius:12px;padding:13px 8px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;transition:all .15s;text-align:center}
+.app:hover{border-color:var(--slate);transform:translateY(-2px);box-shadow:0 8px 22px rgba(40,52,62,.08)}
+.app .cd{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:900}
+.app .nm{font-size:10px;font-weight:700;color:var(--ink);line-height:1.3}
+.app .vv{font-size:8.5px;color:var(--txt3);font-weight:600}
+.c1{background:#E9EEF2;color:var(--slate)}.c2{background:#FBEAED;color:var(--red)}.c3{background:#E8F5EE;color:var(--ok)}
+.c4{background:#E8F0FA;color:var(--blue)}.c5{background:#FBF2E6;color:var(--amber)}.c6{background:#E3F2F1;color:#25837B}
+.c7{background:#EFEAF8;color:#7A5BC7}.c8{background:#EEF0F1;color:var(--txt2)}.c9{background:var(--ink);color:#fff}.c10{background:#EEF0F1;color:var(--txt3)}
+.app.dim{opacity:.55}
+
+/* 우측 컬럼 */
+.aqi{background:linear-gradient(155deg,var(--slate-d),var(--slate-dd));color:#fff;border:none}
+.aqi h2{color:#fff}
+.aqi .row{display:flex;align-items:center;gap:18px}
+.aqi .num{font-size:44px;font-weight:800;letter-spacing:-2.5px}
+.aqi .num small{font-size:12px;color:#AEB9C2;font-weight:600;letter-spacing:0}
+.aqi .meta{font-size:11px;color:#C6CFD6;line-height:1.7}
+.aqi .meta b{color:#5EE2A3}
+.aqi .chip{display:inline-block;margin-top:10px;background:rgba(94,226,163,.16);color:#5EE2A3;font-size:10px;font-weight:800;padding:4px 11px;border-radius:99px}
+.due{border:1px solid #F6D2D8;background:#FDF3F5}
+.due .dd{font-size:24px;font-weight:800;color:var(--red);letter-spacing:-1px}
+.due p{font-size:11.5px;color:var(--txt);line-height:1.65;margin-top:6px}
+.due .go{margin-top:12px;display:inline-block;background:var(--red);color:#fff;font-size:11px;font-weight:700;padding:8px 15px;border-radius:9px}
+.ntc{padding:9px 0 9px 13px;border-left:2px solid var(--line);margin-bottom:6px}
+.ntc.hot{border-left-color:var(--red)}
+.ntc .t{font-size:11.5px;font-weight:700;color:var(--ink);line-height:1.45}
+.ntc.hot .t{color:var(--red)}
+.ntc .d{font-size:9.5px;color:var(--txt3);margin-top:2px}
+
+.foot{max-width:1120px;margin:0 auto;padding:0 28px 34px;font-size:10px;color:var(--txt3);display:flex;justify-content:space-between}
+.foot b{color:var(--red)}
+
+@media (max-width:960px){.body{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.apps{grid-template-columns:repeat(3,1fr)}.tabs{display:none}.tb .srch{display:none}}
+</style>
+</head>
+<body>
+
+<div class="band">
+  <div class="tb">
+    <div class="logo"><span class="bdo">BDO</span>SH Portal</div>
+    <div class="tabs">
+      <button class="tab on">홈</button>
+      <button class="tab">업무</button>
+      <button class="tab">App</button>
+      <button class="tab">AQI</button>
+      <button class="tab">법인</button>
+    </div>
+    <div class="tb-r">
+      <div class="srch"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>회사명·조서·규정 검색…</div>
+      <button class="bell"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span class="bd">3</span></button>
+      <div class="avatar">윤길</div>
+    </div>
+  </div>
+  <div class="hero">
+    <h1>좋은 아침입니다, 윤길배 대표님.<small>2026. 4. 5 (일) · 성현회계법인 디지털 운영체제</small></h1>
+    <div class="actions">
+      <button class="hbtn gh">AI 브리핑 듣기</button>
+      <button class="hbtn pri">+ 새 프로젝트</button>
+    </div>
+  </div>
+</div>
+
+<div class="deck">
+  <div class="kpis">
+    <div class="kpi"><div class="l">진행 중 감사</div><div class="v tn">12</div><div class="d">▲ 전월 +2건</div></div>
+    <div class="kpi"><div class="l">리뷰 대기 조서</div><div class="v tn">47</div><div class="d">▼ 전주 -8건</div></div>
+    <div class="kpi hot"><div class="l">마감 임박 (7일 내)</div><div class="v tn">3</div><div class="d down">품질관리보고서 D-12</div></div>
+    <div class="kpi"><div class="l">AQI 지수</div><div class="v tn">92.4</div><div class="d mut">ISQM1 충족 · 상세 →</div></div>
+  </div>
+</div>
+
+<div class="body">
+  <div>
+    <div class="card">
+      <h2>진행 중 프로젝트 <span class="more">전체 12건 →</span></h2>
+      <div class="proj" style="--p:72"><span class="cb">A</span><span class="nm">㈜알파테크 제25기 외부감사<small>K-IFRS · 12월 결산 · 인차지 김회계</small></span><span class="ring"><span class="tn">72%</span></span><span class="st st-f">현장수행</span></div>
+      <div class="proj" style="--p:91"><span class="cb">B</span><span class="nm">㈜베타홀딩스 연결감사<small>K-IFRS · 12월 결산 · 인차지 박회계</small></span><span class="ring"><span class="tn">91%</span></span><span class="st st-r">리뷰</span></div>
+      <div class="proj" style="--p:45"><span class="cb">C</span><span class="nm">㈜감마물산 제18기 감사<small>일반기준 · 12월 결산 · 인차지 이회계</small></span><span class="ring"><span class="tn">45%</span></span><span class="st st-f">현장수행</span></div>
+      <div class="proj" style="--p:100"><span class="cb">D</span><span class="nm">㈜델타에너지 기말감사<small>K-IFRS · 12월 결산 · 인차지 최회계</small></span><span class="ring"><span class="tn">100%</span></span><span class="st st-d">완료</span></div>
+    </div>
+
+    <div class="card">
+      <h2>전체 App <span class="more">관리 →</span></h2>
+      <div class="apps">
+        <div class="app"><span class="cd c1">AUD</span><span class="nm">Audit Platform</span><span class="vv">v4.0</span></div>
+        <div class="app"><span class="cd c2">1118</span><span class="nm">IFRS 분석기</span><span class="vv">v1.0</span></div>
+        <div class="app"><span class="cd c3">FIN</span><span class="nm">금융기관 조회</span><span class="vv">v2.3</span></div>
+        <div class="app"><span class="cd c4">XBRL</span><span class="nm">Comparator</span><span class="vv">v1.0</span></div>
+        <div class="app"><span class="cd c9">AI</span><span class="nm">칼 어시스턴트</span><span class="vv">상시</span></div>
+        <div class="app"><span class="cd c5">TAX</span><span class="nm">삼일 에이전트</span><span class="vv">SSO</span></div>
+        <div class="app"><span class="cd c6">INS</span><span class="nm">인사이트</span><span class="vv">SSO</span></div>
+        <div class="app dim"><span class="cd c7">LAW</span><span class="nm">소송 조회</span><span class="vv">개발 중</span></div>
+        <div class="app dim"><span class="cd c8">ERP</span><span class="nm">회계·인사·품질</span><span class="vv">Q3</span></div>
+        <div class="app dim"><span class="cd c10">RAG</span><span class="nm">지식 검색</span><span class="vv">예정</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="card aqi">
+      <h2>AQI 감사품질지수</h2>
+      <div class="row">
+        <div class="num tn">92.4<small>/100</small></div>
+        <div class="meta">전년 동기 <b>▲ 4.8p</b><br>업계 평균 대비 <b>▲ 8.2p</b></div>
+      </div>
+      <span class="chip">✓ ISQM1 요건 전면 충족</span>
+    </div>
+
+    <div class="card due">
+      <div class="dd tn">D-12</div>
+      <p><b>ISQM1 품질관리보고서</b> 제출 마감이 다가옵니다. 담당 품질관리본부 · 4/17까지.</p>
+      <button class="go">바로 작성하기 →</button>
+    </div>
+
+    <div class="card">
+      <h2>법인 공지 <span class="more">전체 →</span></h2>
+      <div class="ntc hot"><div class="t">ISQM1 2026년 품질관리 보고서 작성 안내</div><div class="d">품질관리본부 · 04/03</div></div>
+      <div class="ntc"><div class="t">SH Audit Platform 기초정보 기능 오픈</div><div class="d">AX 추진위 · 04/02</div></div>
+      <div class="ntc"><div class="t">4월 파트너 월례회의 (15일 14시)</div><div class="d">경영지원실 · 04/01</div></div>
+      <div class="ntc"><div class="t">삼일 TAX Agent 법인 구독 완료</div><div class="d">AX 추진위 · 03/28</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="foot">
+  <span>© 성현회계법인 · SH Portal &nbsp;|&nbsp; <b>BDO</b> Member Firm</span>
+  <span>People Helping People Achieve Their Dreams</span>
+</div>
+</body>
+</html>

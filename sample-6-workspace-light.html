@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>샘플 6 · 워크스페이스 라이트 — 노션형</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--red:#E81A3B;--slate:#5B6E7F;--blue:#0062B8;--ok:#1F9D61;--amber:#C77414;
+--ink:#26282B;--txt:#45484C;--txt2:#7B7E83;--txt3:#A9ACB1;--line:#EAEAE8;--line2:#F1F1EF;
+--bg:#FBFBFA;--side:#F5F5F3;--card:#FFFFFF;--hov:#EFEFED}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Pretendard Variable',Pretendard,-apple-system,'Malgun Gothic',sans-serif;background:var(--bg);color:var(--txt);font-size:13px;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.tn{font-variant-numeric:tabular-nums}
+.ic{width:15px;height:15px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+
+.shell{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+
+/* ── 사이드바 (노션형 라이트) ── */
+.side{background:var(--side);border-right:1px solid var(--line);padding:14px 10px;display:flex;flex-direction:column}
+.who{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;margin-bottom:6px}
+.who:hover{background:var(--hov)}
+.who .av{width:26px;height:26px;border-radius:7px;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px}
+.who .nm{font-size:12.5px;font-weight:800;color:var(--ink)}
+.who .nm small{display:block;font-size:9.5px;color:var(--txt3);font-weight:500}
+.who .chev{margin-left:auto;color:var(--txt3);font-size:9px}
+.srch{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;background:var(--card);border:1px solid var(--line);color:var(--txt3);font-size:12px;margin-bottom:14px;cursor:pointer}
+.srch .kbd{margin-left:auto;font-size:9px;border:1px solid var(--line);border-radius:4px;padding:1px 5px;background:var(--side)}
+.grp{padding:12px 10px 4px;font-size:9.5px;font-weight:800;color:var(--txt3);letter-spacing:1.4px;text-transform:uppercase}
+.mi{display:flex;align-items:center;gap:9px;padding:6.5px 10px;border-radius:8px;font-size:12.5px;color:var(--txt);cursor:pointer;font-weight:500;margin-bottom:1px}
+.mi:hover{background:var(--hov)}
+.mi.on{background:#FBEAED;color:var(--red);font-weight:700}
+.mi .n{margin-left:auto;font-size:9.5px;font-weight:700;color:var(--txt3);background:var(--hov);padding:1px 6px;border-radius:6px}
+.mi.on .n{background:var(--red);color:#fff}
+.mi .dot{width:7px;height:7px;border-radius:3px;flex-shrink:0}
+.side .foot{margin-top:auto;padding:10px;display:flex;align-items:center;gap:8px;font-size:10px;color:var(--txt3)}
+.side .foot .bdo{background:var(--red);color:#fff;font-weight:900;font-size:9px;padding:2px 5px;border-radius:2px;font-family:Arial}
+
+/* ── 메인 ── */
+.main{padding:34px 44px;max-width:1060px}
+.hd{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:8px}
+.hd h1{font-size:24px;font-weight:800;color:var(--ink);letter-spacing:-.7px}
+.hd .date{font-size:11.5px;color:var(--txt3);font-weight:600}
+.sub{font-size:12.5px;color:var(--txt2);margin-bottom:26px}
+.sub b{color:var(--red);font-weight:800}
+
+/* 인라인 KPI 스트립 */
+.strip{display:flex;gap:0;border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:26px;overflow:hidden}
+.cell{flex:1;padding:16px 20px;border-right:1px solid var(--line2)}
+.cell:last-child{border-right:none}
+.cell .l{font-size:10.5px;color:var(--txt2);font-weight:600;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.cell .l .d{width:6px;height:6px;border-radius:50%}
+.cell .v{font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-.8px}
+.cell .v small{font-size:11px;color:var(--txt3);font-weight:600;margin-left:3px}
+.cell.warn .v{color:var(--red)}
+
+/* 섹션 */
+.sec{margin-bottom:30px}
+.sec-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sec-h h2{font-size:14px;font-weight:800;color:var(--ink);letter-spacing:-.3px}
+.sec-h .more{margin-left:auto;font-size:11px;color:var(--txt3);font-weight:600}
+.sec-h .more:hover{color:var(--ink)}
+
+/* 프로젝트 리스트 (행 스타일) */
+.rows{border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden}
+.row{display:grid;grid-template-columns:auto 1fr 130px 90px 90px;gap:16px;align-items:center;padding:12px 18px;border-bottom:1px solid var(--line2);cursor:pointer}
+.row:last-child{border-bottom:none}
+.row:hover{background:var(--bg)}
+.row .cb{width:28px;height:28px;border-radius:8px;background:var(--side);border:1px solid var(--line);color:var(--ink);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px}
+.row .nm{font-size:12.5px;font-weight:700;color:var(--ink)}
+.row .nm small{display:block;font-size:10px;color:var(--txt3);font-weight:500;margin-top:1px}
+.row .bar{height:4px;background:var(--line2);border-radius:2px;overflow:hidden}
+.row .bar i{display:block;height:100%;background:var(--slate);border-radius:2px}
+.row .pc{font-size:11px;font-weight:700;color:var(--txt2);text-align:right}
+.row .st{font-size:9px;font-weight:800;padding:3.5px 9px;border-radius:6px;text-align:center;letter-spacing:.3px}
+.st-f{background:#FBF2E6;color:var(--amber)}.st-r{background:#E8F0FA;color:var(--blue)}.st-d{background:#E8F5EE;color:var(--ok)}
+
+/* 2단: 공지+마감 / 앱 */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.due{border:1px solid #F6D2D8;background:#FDF3F5;border-radius:12px;padding:15px 18px;display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.due .dd{font-size:20px;font-weight:800;color:var(--red);letter-spacing:-.5px;white-space:nowrap}
+.due .tt{font-size:12px;font-weight:700;color:var(--ink)}
+.due .tt small{display:block;font-size:10px;color:var(--txt2);font-weight:500;margin-top:1px}
+.due .go{margin-left:auto;font-size:11px;font-weight:700;color:#fff;background:var(--red);padding:7px 13px;border-radius:8px;white-space:nowrap}
+.nlist{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:6px}
+.nitem{display:flex;gap:10px;align-items:baseline;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:12px}
+.nitem:hover{background:var(--bg)}
+.nitem .tag{font-size:8.5px;font-weight:800;padding:2.5px 7px;border-radius:5px;background:var(--side);color:var(--txt2);white-space:nowrap;letter-spacing:.3px}
+.nitem .tag.hot{background:#FBEAED;color:var(--red)}
+.nitem .t{font-weight:600;color:var(--ink);flex:1}
+.nitem .d{font-size:9.5px;color:var(--txt3)}
+
+/* 앱: 컴팩트 리스트 */
+.alist{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:6px}
+.aitem{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:8px;cursor:pointer}
+.aitem:hover{background:var(--bg)}
+.aitem .code{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900}
+.aitem .nm{font-size:12.5px;font-weight:700;color:var(--ink);flex:1}
+.aitem .nm small{display:block;font-size:10px;color:var(--txt3);font-weight:500}
+.aitem .vt{font-size:9.5px;color:var(--txt3);font-weight:700}
+.aitem .vt.rd{color:var(--red)}
+.c-aud{background:#E9EEF2;color:var(--slate)}.c-1118{background:#FBEAED;color:var(--red)}.c-fin{background:#E8F5EE;color:var(--ok)}
+.c-xbrl{background:#E8F0FA;color:var(--blue)}.c-tax{background:#FBF2E6;color:var(--amber)}.c-ai{background:var(--ink);color:#fff}
+.amore{display:flex;gap:8px;padding:10px 12px 6px;flex-wrap:wrap}
+.amore .m{font-size:10px;font-weight:700;color:var(--txt2);background:var(--side);border:1px solid var(--line);border-radius:99px;padding:4px 11px;cursor:pointer}
+.amore .m:hover{color:var(--ink);border-color:var(--txt3)}
+
+@media (max-width:960px){.shell{grid-template-columns:1fr}.side{display:none}.main{padding:24px 20px}.two{grid-template-columns:1fr}.strip{flex-wrap:wrap}.cell{min-width:46%}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <div class="who"><div class="av">윤길</div><div class="nm">윤길배 CPA<small>성현회계법인 · 대표이사</small></div><span class="chev">▾</span></div>
+    <div class="srch"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>검색<span class="kbd">⌘K</span></div>
+
+    <div class="grp">홈</div>
+    <div class="mi on"><svg class="ic" viewBox="0 0 24 24"><path d="m3 10.5 9-7.5 9 7.5"/><path d="M5.5 9v11h13V9"/></svg>대시보드</div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>알림<span class="n">3</span></div>
+
+    <div class="grp">업무</div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>내 프로젝트<span class="n">12</span></div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>리뷰함<span class="n">47</span></div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>새 프로젝트</div>
+
+    <div class="grp">App</div>
+    <div class="mi"><span class="dot" style="background:var(--slate)"></span>SH Audit Platform</div>
+    <div class="mi"><span class="dot" style="background:var(--red)"></span>IFRS 1118호 분석기</div>
+    <div class="mi"><span class="dot" style="background:var(--ok)"></span>금융기관 조회</div>
+    <div class="mi"><span class="dot" style="background:var(--blue)"></span>XBRL Comparator</div>
+    <div class="mi"><span class="dot" style="background:var(--ink)"></span>AI Assistant 칼</div>
+    <div class="mi" style="color:var(--txt3)"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>전체 App 보기<span class="n">10</span></div>
+
+    <div class="grp">법인</div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><path d="M4 14a8 8 0 1 1 16 0"/><path d="m12 14 4-4"/><path d="M4 19h16"/></svg>AQI 지표</div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><path d="m4 10 12-5v14L4 14z"/><path d="M16 8.5a3.5 3.5 0 0 1 0 7"/></svg>공지사항</div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><path d="M7 3h10a2 2 0 0 1 2 2v16H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2"/><path d="M9 8h6M9 12h6"/></svg>규정·지침</div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>일정 · ERP</div>
+
+    <div class="foot"><span class="bdo">BDO</span>Member Firm · SH Portal</div>
+  </aside>
+
+  <main class="main">
+    <div class="hd"><h1>대시보드</h1><span class="date">2026. 4. 5 (일) · 2026 Q2</span></div>
+    <div class="sub">윤길배 대표이사님, 오늘 성현은 12건의 프로젝트가 진행 중입니다. 품질관리보고서 마감까지 <b>D-12</b>.</div>
+
+    <div class="strip">
+      <div class="cell"><div class="l"><span class="d" style="background:var(--slate)"></span>진행 중 감사</div><div class="v tn">12<small>건</small></div></div>
+      <div class="cell"><div class="l"><span class="d" style="background:var(--blue)"></span>리뷰 대기 조서</div><div class="v tn">47<small>건</small></div></div>
+      <div class="cell warn"><div class="l"><span class="d" style="background:var(--red)"></span>마감 임박 (7일)</div><div class="v tn">3<small>건</small></div></div>
+      <div class="cell"><div class="l"><span class="d" style="background:var(--ok)"></span>AQI 지수</div><div class="v tn">92.4<small>/100</small></div></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h"><h2>진행 중 프로젝트</h2><button class="more">전체 보기 →</button></div>
+      <div class="rows">
+        <div class="row"><span class="cb">A</span><span class="nm">㈜알파테크 제25기 외부감사<small>K-IFRS · 12월 결산 · 인차지 김회계</small></span><span class="bar"><i style="width:72%"></i></span><span class="pc tn">72%</span><span class="st st-f">현장수행</span></div>
+        <div class="row"><span class="cb">B</span><span class="nm">㈜베타홀딩스 연결감사<small>K-IFRS · 12월 결산 · 인차지 박회계</small></span><span class="bar"><i style="width:91%"></i></span><span class="pc tn">91%</span><span class="st st-r">리뷰</span></div>
+        <div class="row"><span class="cb">C</span><span class="nm">㈜감마물산 제18기 감사<small>일반기준 · 12월 결산 · 인차지 이회계</small></span><span class="bar"><i style="width:45%"></i></span><span class="pc tn">45%</span><span class="st st-f">현장수행</span></div>
+        <div class="row"><span class="cb">D</span><span class="nm">㈜델타에너지 기말감사<small>K-IFRS · 12월 결산 · 인차지 최회계</small></span><span class="bar"><i style="width:100%"></i></span><span class="pc tn">100%</span><span class="st st-d">완료</span></div>
+      </div>
+    </div>
+
+    <div class="two">
+      <div class="sec">
+        <div class="sec-h"><h2>공지 · 마감</h2><button class="more">공지사항 →</button></div>
+        <div class="due"><span class="dd tn">D-12</span><span class="tt">ISQM1 품질관리보고서<small>품질관리본부 · 4/17 마감</small></span><button class="go">작성하기</button></div>
+        <div class="nlist">
+          <div class="nitem"><span class="tag hot">긴급</span><span class="t">ISQM1 2026년 품질관리 보고서 작성 안내</span><span class="d">04/03</span></div>
+          <div class="nitem"><span class="tag">업데이트</span><span class="t">SH Audit Platform 기초정보 기능 오픈</span><span class="d">04/02</span></div>
+          <div class="nitem"><span class="tag">일정</span><span class="t">4월 파트너 월례회의 (15일 14시)</span><span class="d">04/01</span></div>
+          <div class="nitem"><span class="tag">구독</span><span class="t">삼일 TAX Agent 법인 구독 완료</span><span class="d">03/28</span></div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><h2>자주 쓰는 App</h2><button class="more">전체 10개 →</button></div>
+        <div class="alist">
+          <div class="aitem"><span class="code c-aud">AUD</span><span class="nm">SH Audit Platform<small>조서 · 감사보고서 · 진행 12건</small></span><span class="vt">v4.0</span></div>
+          <div class="aitem"><span class="code c-1118">1118</span><span class="nm">K-IFRS 1118호 분석기<small>표시 기준 분석 · 영업이익 재분류</small></span><span class="vt rd">v1.0</span></div>
+          <div class="aitem"><span class="code c-fin">FIN</span><span class="nm">금융기관 조회<small>조회서 · 회신 취합 · 활성 15건</small></span><span class="vt">v2.3</span></div>
+          <div class="aitem"><span class="code c-xbrl">XBRL</span><span class="nm">XBRL Comparator<small>IXD 비교 · 공시 정합성</small></span><span class="vt">v1.0</span></div>
+          <div class="aitem"><span class="code c-ai">AI</span><span class="nm">AI Assistant 칼<small>Claude 기반 · 항상 가동</small></span><span class="vt">상시</span></div>
+          <div class="amore">
+            <span class="m">TAX 삼일 에이전트</span><span class="m">INS 인사이트</span><span class="m">LAW 소송조회 (개발 중)</span><span class="m">ERP (2026 Q3)</span><span class="m">RAG (예정)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

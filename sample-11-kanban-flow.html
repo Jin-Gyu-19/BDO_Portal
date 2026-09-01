@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>샘플 11 · 칸반 플로우 — 감사 단계 보드</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--red:#E81A3B;--slate:#5B6E7F;--blue:#0062B8;--ok:#1F9D61;--amber:#C77414;
+--ink:#212429;--txt:#42464C;--txt2:#787D84;--txt3:#A7ACB3;--line:#E7E8EA;--line2:#F0F1F2;
+--bg:#F4F5F7;--card:#FFFFFF;--col:#ECEEF1}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Pretendard Variable',Pretendard,-apple-system,'Malgun Gothic',sans-serif;background:var(--bg);color:var(--txt);font-size:13px;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.tn{font-variant-numeric:tabular-nums}
+.ic{width:15px;height:15px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* 헤더 */
+.top{background:var(--card);border-bottom:1px solid var(--line);padding:13px 26px;display:flex;align-items:center;gap:18px;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;color:var(--ink)}
+.logo .bdo{background:var(--red);color:#fff;font-weight:900;font-size:10.5px;padding:3px 6px;border-radius:2px;font-family:Arial}
+.menu{display:flex;gap:3px}
+.mi{padding:7px 14px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--txt2)}
+.mi:hover{color:var(--ink);background:var(--bg)}
+.mi.on{background:var(--ink);color:#fff;font-weight:700}
+.top .srch{margin-left:auto;display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:9px;padding:7px 13px;font-size:11.5px;color:var(--txt3);min-width:220px;background:var(--bg)}
+.bell{position:relative;padding:6px;color:var(--txt2)}
+.bell .n{position:absolute;top:0;right:-1px;background:var(--red);color:#fff;font-size:8px;font-weight:800;border-radius:7px;padding:1px 4px}
+.avatar{width:30px;height:30px;border-radius:9px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10.5px}
+
+.wrap{max-width:1280px;margin:0 auto;padding:22px 26px 50px}
+
+/* 헤드라인 + KPI 통합 스트립 */
+.hd{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hd h1{font-size:21px;font-weight:800;color:var(--ink);letter-spacing:-.6px}
+.hd h1 small{display:block;font-size:11.5px;color:var(--txt2);font-weight:500;margin-top:3px;letter-spacing:0}
+.kchips{display:flex;gap:9px;margin-left:auto;flex-wrap:wrap}
+.kc{display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:9px 15px}
+.kc .v{font-size:17px;font-weight:800;color:var(--ink);letter-spacing:-.6px}
+.kc .l{font-size:10px;color:var(--txt2);font-weight:600;line-height:1.3}
+.kc.rd .v{color:var(--red)}
+.kc.gr .v{color:var(--ok)}
+.hd .new{background:var(--red);color:#fff;font-size:12px;font-weight:700;padding:10px 17px;border-radius:10px}
+.hd .new:hover{background:#C6112E}
+
+/* ── 칸반 보드 ── */
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:start;margin-bottom:22px}
+.colm{background:var(--col);border-radius:14px;padding:10px}
+.ch{display:flex;align-items:center;gap:8px;padding:6px 8px 10px;font-size:11.5px;font-weight:800;color:var(--ink)}
+.ch .dot{width:8px;height:8px;border-radius:3px}
+.ch .cnt{margin-left:auto;font-size:10px;font-weight:800;color:var(--txt2);background:var(--card);border-radius:7px;padding:1.5px 8px}
+.pc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-bottom:9px;cursor:grab;transition:transform .14s,box-shadow .14s;position:relative}
+.pc:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(33,36,41,.09)}
+.pc .cb{position:absolute;top:13px;right:13px;width:22px;height:22px;border-radius:6px;background:var(--bg);border:1px solid var(--line);color:var(--ink);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px}
+.pc .nm{font-size:12.5px;font-weight:800;color:var(--ink);letter-spacing:-.2px;padding-right:26px;line-height:1.4}
+.pc .mt{font-size:10px;color:var(--txt3);margin:5px 0 10px}
+.pc .bar{height:4px;background:var(--line2);border-radius:2px;overflow:hidden;margin-bottom:8px}
+.pc .bar i{display:block;height:100%;border-radius:2px}
+.pc .ft{display:flex;align-items:center;font-size:9.5px;color:var(--txt3);font-weight:600}
+.pc .avs{display:flex;margin-left:auto}
+.pc .av{width:20px;height:20px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;border:2px solid var(--card);margin-left:-6px}
+.pc .warn-tag{display:inline-block;font-size:8.5px;font-weight:800;background:#FDECEA;color:var(--red);padding:2px 8px;border-radius:5px;margin-bottom:8px}
+.pc.ghost{border-style:dashed;background:transparent;color:var(--txt3);text-align:center;padding:14px;font-size:11px;font-weight:600;cursor:pointer}
+.pc.ghost:hover{color:var(--ink);border-color:var(--txt3);transform:none;box-shadow:none}
+
+/* 하단 3단 */
+.bottom{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:14px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:17px 19px}
+.panel h2{font-size:12.5px;font-weight:800;color:var(--ink);margin-bottom:12px;display:flex;letter-spacing:-.2px}
+.panel h2 .more{margin-left:auto;font-size:10.5px;color:var(--txt3);font-weight:600;cursor:pointer}
+.panel h2 .more:hover{color:var(--red)}
+
+/* 앱 그리드 컴팩트 */
+.apps{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.app{border:1px solid var(--line);border-radius:11px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:all .14s;text-align:center}
+.app:hover{border-color:var(--ink);transform:translateY(-2px)}
+.app .cd{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:900}
+.app .nm{font-size:9px;font-weight:700;color:var(--ink);line-height:1.25}
+.app.dim{opacity:.5}
+.c1{background:#E9EEF2;color:var(--slate)}.c2{background:#FDECEA;color:var(--red)}.c3{background:#E6F3EC;color:var(--ok)}
+.c4{background:#E8F0FA;color:var(--blue)}.c5{background:#FBF2E6;color:var(--amber)}.c6{background:#E3F2F1;color:#25837B}
+.c7{background:var(--ink);color:#fff}.c8{background:#EFEAF8;color:#7A5BC7}.c9{background:var(--line2);color:var(--txt2)}.c10{background:var(--line2);color:var(--txt3)}
+
+/* AQI 막대 */
+.aqr{display:flex;align-items:center;gap:10px;font-size:11px;margin-bottom:8px}
+.aqr .l{width:76px;font-weight:700;color:var(--ink)}
+.aqr .bar{flex:1;height:6px;background:var(--line2);border-radius:3px;overflow:hidden}
+.aqr .bar i{display:block;height:100%;border-radius:3px;background:var(--slate)}
+.aqr .bar i.top{background:var(--ok)}
+.aqr .bar i.low{background:var(--amber)}
+.aqr .v{width:34px;text-align:right;font-weight:800;color:var(--ink);font-size:10.5px}
+.aqsum{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:11px;border-top:1px solid var(--line2)}
+.aqsum .n{font-size:23px;font-weight:800;color:var(--ink);letter-spacing:-1px}
+.aqsum .n small{font-size:10px;color:var(--txt3);font-weight:600}
+.aqsum .chip{margin-left:auto;font-size:9px;font-weight:800;background:#E6F3EC;color:var(--ok);padding:4px 10px;border-radius:99px}
+
+/* 공지 + 마감 */
+.due{border:1px solid #F6D2D8;background:#FDF3F5;border-radius:11px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:11px}
+.due .dd{font-size:18px;font-weight:800;color:var(--red);letter-spacing:-.5px}
+.due .t{font-size:11px;font-weight:700;color:var(--ink);line-height:1.45}
+.due .t small{display:block;font-size:9.5px;color:var(--txt2);font-weight:500}
+.ntc{display:flex;gap:9px;align-items:baseline;padding:7px 2px;font-size:11.5px;border-bottom:1px solid var(--line2)}
+.ntc:last-child{border-bottom:none}
+.ntc .tag{font-size:8px;font-weight:800;padding:2px 6px;border-radius:4px;background:var(--line2);color:var(--txt2);white-space:nowrap}
+.ntc .tag.hot{background:#FDECEA;color:var(--red)}
+.ntc .t{font-weight:600;color:var(--ink);flex:1;line-height:1.5}
+.ntc .d{font-size:9px;color:var(--txt3)}
+
+@media (max-width:1060px){.board{grid-template-columns:repeat(2,1fr)}.bottom{grid-template-columns:1fr}.menu{display:none}.top .srch{display:none}}
+@media (max-width:640px){.board{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="logo"><span class="bdo">BDO</span>SH Portal</div>
+  <div class="menu">
+    <button class="mi on">보드</button>
+    <button class="mi">내 프로젝트</button>
+    <button class="mi">App</button>
+    <button class="mi">AQI</button>
+    <button class="mi">공지</button>
+    <button class="mi">규정·일정</button>
+  </div>
+  <div class="srch"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>회사명·조서·규정 검색…</div>
+  <button class="bell"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span class="n">3</span></button>
+  <div class="avatar">윤길</div>
+</div>
+
+<div class="wrap">
+  <div class="hd">
+    <h1>감사 진행 보드<small>윤길배 대표이사님 · 2026. 4. 5 (일) · 단계별로 프로젝트가 흐릅니다</small></h1>
+    <div class="kchips">
+      <div class="kc"><span class="v tn">12</span><span class="l">진행 중<br>감사</span></div>
+      <div class="kc"><span class="v tn">47</span><span class="l">리뷰 대기<br>조서</span></div>
+      <div class="kc rd"><span class="v tn">3</span><span class="l">마감 임박<br>D-12 최우선</span></div>
+      <div class="kc gr"><span class="v tn">92.4</span><span class="l">AQI<br>▲ 4.8p</span></div>
+    </div>
+    <button class="new">+ 새 프로젝트</button>
+  </div>
+
+  <!-- 칸반 -->
+  <div class="board">
+    <div class="colm">
+      <div class="ch"><span class="dot" style="background:var(--txt3)"></span>계획 <span class="cnt tn">2</span></div>
+      <div class="pc">
+        <span class="cb">E</span>
+        <div class="nm">㈜이오스전자 제9기</div>
+        <div class="mt">K-IFRS · 인차지 한회계</div>
+        <div class="bar"><i style="width:28%;background:var(--txt3)"></i></div>
+        <div class="ft"><span class="tn">28% · 조서 11/40</span><span class="avs"><span class="av" style="background:var(--red)">윤</span><span class="av" style="background:var(--slate)">박</span><span class="av" style="background:var(--ok)">한</span></span></div>
+      </div>
+      <div class="pc ghost">+ 프로젝트 추가</div>
+    </div>
+
+    <div class="colm">
+      <div class="ch"><span class="dot" style="background:var(--amber)"></span>현장수행 <span class="cnt tn">2</span></div>
+      <div class="pc">
+        <span class="cb">A</span>
+        <div class="nm">㈜알파테크 제25기 외부감사</div>
+        <div class="mt">K-IFRS · 인차지 김회계</div>
+        <div class="bar"><i style="width:72%;background:var(--amber)"></i></div>
+        <div class="ft"><span class="tn">72% · 조서 34/47</span><span class="avs"><span class="av" style="background:var(--red)">윤</span><span class="av" style="background:var(--slate)">박</span><span class="av" style="background:var(--blue)">김</span></span></div>
+      </div>
+      <div class="pc">
+        <span class="cb">C</span>
+        <span class="warn-tag">일정 지연 주의</span>
+        <div class="nm">㈜감마물산 제18기 감사</div>
+        <div class="mt">일반기준 · 인차지 이회계</div>
+        <div class="bar"><i style="width:45%;background:var(--amber)"></i></div>
+        <div class="ft"><span class="tn">45% · 조서 17/38</span><span class="avs"><span class="av" style="background:var(--red)">윤</span><span class="av" style="background:var(--ok)">이</span></span></div>
+      </div>
+    </div>
+
+    <div class="colm">
+      <div class="ch"><span class="dot" style="background:var(--blue)"></span>리뷰 <span class="cnt tn">1</span></div>
+      <div class="pc">
+        <span class="cb">B</span>
+        <div class="nm">㈜베타홀딩스 연결감사</div>
+        <div class="mt">K-IFRS · 인차지 박회계 · EQR 정인훈</div>
+        <div class="bar"><i style="width:91%;background:var(--blue)"></i></div>
+        <div class="ft"><span class="tn">91% · EQR 검토 중</span><span class="avs"><span class="av" style="background:var(--red)">윤</span><span class="av" style="background:#7A5BC7">정</span><span class="av" style="background:var(--slate)">박</span></span></div>
+      </div>
+    </div>
+
+    <div class="colm">
+      <div class="ch"><span class="dot" style="background:var(--ok)"></span>완료 <span class="cnt tn">1</span></div>
+      <div class="pc">
+        <span class="cb">D</span>
+        <div class="nm">㈜델타에너지 기말감사</div>
+        <div class="mt">K-IFRS · 감사보고서 발행 완료</div>
+        <div class="bar"><i style="width:100%;background:var(--ok)"></i></div>
+        <div class="ft"><span class="tn">100% · 3/28 발행</span><span class="avs"><span class="av" style="background:var(--red)">윤</span><span class="av" style="background:var(--ok)">최</span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 하단 3단 -->
+  <div class="bottom">
+    <div class="panel">
+      <h2>App 바로가기 <span class="more">전체 →</span></h2>
+      <div class="apps">
+        <div class="app"><span class="cd c1">AUD</span><span class="nm">Audit<br>Platform</span></div>
+        <div class="app"><span class="cd c2">1118</span><span class="nm">IFRS<br>분석기</span></div>
+        <div class="app"><span class="cd c3">FIN</span><span class="nm">금융기관<br>조회</span></div>
+        <div class="app"><span class="cd c4">XBRL</span><span class="nm">Compa<br>rator</span></div>
+        <div class="app"><span class="cd c7">AI</span><span class="nm">칼<br>어시스턴트</span></div>
+        <div class="app"><span class="cd c5">TAX</span><span class="nm">삼일<br>에이전트</span></div>
+        <div class="app"><span class="cd c6">INS</span><span class="nm">인사<br>이트</span></div>
+        <div class="app dim"><span class="cd c8">LAW</span><span class="nm">소송조회<br>개발 중</span></div>
+        <div class="app dim"><span class="cd c9">ERP</span><span class="nm">운영<br>Q3</span></div>
+        <div class="app dim"><span class="cd c10">RAG</span><span class="nm">지식<br>예정</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>AQI 부문별 <span class="more">상세 →</span></h2>
+      <div class="aqr"><span class="l">독립성</span><span class="bar"><i class="top" style="width:98%"></i></span><span class="v tn">98.5</span></div>
+      <div class="aqr"><span class="l">품질체계</span><span class="bar"><i class="top" style="width:96%"></i></span><span class="v tn">96.8</span></div>
+      <div class="aqr"><span class="l">감사 인력</span><span class="bar"><i style="width:94%"></i></span><span class="v tn">94.2</span></div>
+      <div class="aqr"><span class="l">감사 시간</span><span class="bar"><i style="width:89%"></i></span><span class="v tn">89.6</span></div>
+      <div class="aqr"><span class="l">감사 보수</span><span class="bar"><i style="width:88%"></i></span><span class="v tn">88.1</span></div>
+      <div class="aqr"><span class="l">교육·훈련</span><span class="bar"><i class="low" style="width:87%"></i></span><span class="v tn">87.4</span></div>
+      <div class="aqsum"><span class="n tn">92.4<small> /100</small></span><span class="chip">✓ ISQM1 충족 · ▲4.8p</span></div>
+    </div>
+
+    <div class="panel">
+      <h2>마감 · 공지 <span class="more">전체 →</span></h2>
+      <div class="due"><span class="dd tn">D-12</span><span class="t">ISQM1 품질관리보고서<small>품질관리본부 · 4/17 마감</small></span></div>
+      <div class="ntc"><span class="tag hot">긴급</span><span class="t">ISQM1 품질관리 보고서 작성 안내</span><span class="d">04/03</span></div>
+      <div class="ntc"><span class="tag">업데이트</span><span class="t">Audit Platform 기초정보 기능 오픈</span><span class="d">04/02</span></div>
+      <div class="ntc"><span class="tag">일정</span><span class="t">파트너 월례회의 (15일 14시)</span><span class="d">04/01</span></div>
+      <div class="ntc"><span class="tag">구독</span><span class="t">삼일 TAX Agent 구독 완료</span><span class="d">03/28</span></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

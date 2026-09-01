@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>샘플 5 · AI Assistant 칼 — 코파일럿</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--red:#E81A3B;--slate:#5B6E7F;--blue:#0062B8;--ok:#1F9D61;
+--ink:#1C1E22;--txt:#3E4247;--txt2:#75797F;--txt3:#A4A8AE;--line:#E9EAEC;--bg:#FAFAFB;--card:#FFFFFF}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Pretendard Variable',Pretendard,-apple-system,'Malgun Gothic',sans-serif;background:var(--bg);color:var(--txt);-webkit-font-smoothing:antialiased;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(720px 340px at 50% -8%,rgba(232,26,59,.05),transparent 65%),radial-gradient(600px 300px at 90% 110%,rgba(91,110,127,.07),transparent 60%);pointer-events:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+
+.top{position:relative;display:flex;align-items:center;padding:18px 36px;gap:12px}
+.logo{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:800;color:var(--ink)}
+.logo .dot{width:8px;height:8px;background:var(--red);border-radius:2px}
+.crumb{font-size:11.5px;color:var(--txt3);font-weight:600}
+.crumb b{color:var(--txt2)}
+.top .ses{margin-left:auto;font-size:11px;color:var(--txt2);font-weight:600;padding:7px 14px;border-radius:99px;border:1px solid var(--line);background:#fff}
+
+.stage{position:relative;max-width:760px;margin:0 auto;padding:34px 24px 140px}
+
+/* 인사 */
+.hello{text-align:center;margin-bottom:30px}
+.orb{width:58px;height:58px;border-radius:50%;margin:0 auto 18px;background:conic-gradient(from 210deg,var(--red),#FF7A90,var(--slate),var(--red));position:relative;box-shadow:0 10px 34px rgba(232,26,59,.25)}
+.orb::before{content:'';position:absolute;inset:5px;border-radius:50%;background:var(--card)}
+.orb::after{content:'칼';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:var(--ink)}
+.hello h1{font-size:26px;font-weight:800;color:var(--ink);letter-spacing:-.8px}
+.hello p{font-size:12.5px;color:var(--txt2);margin-top:6px}
+
+/* 제안 카드 */
+.sugs{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-bottom:34px}
+.sug{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:15px 17px;text-align:left;cursor:pointer;transition:border-color .15s,transform .15s,box-shadow .15s}
+.sug:hover{border-color:var(--ink);transform:translateY(-2px);box-shadow:0 10px 30px rgba(28,30,34,.07)}
+.sug .k{font-size:9.5px;font-weight:800;letter-spacing:1.2px;margin-bottom:5px}
+.sug .k.a{color:var(--red)}.sug .k.b{color:var(--slate)}.sug .k.c{color:var(--blue)}.sug .k.d{color:var(--ok)}
+.sug .t{font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:-.2px;line-height:1.5}
+
+/* 대화 */
+.chat{display:flex;flex-direction:column;gap:16px}
+.msg{display:flex;gap:12px;align-items:flex-start}
+.msg .who{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
+.msg.user{flex-direction:row-reverse}
+.msg.user .who{background:var(--ink);color:#fff}
+.msg.ai .who{background:#FDE9EC;color:var(--red)}
+.bubble{max-width:78%;padding:13px 17px;border-radius:16px;font-size:13px;line-height:1.75}
+.msg.user .bubble{background:var(--ink);color:#F2F3F5;border-bottom-right-radius:5px}
+.msg.ai .bubble{background:var(--card);border:1px solid var(--line);color:var(--txt);border-bottom-left-radius:5px}
+.bubble b{color:inherit;font-weight:800}
+.bubble .src{display:flex;gap:6px;margin-top:11px;flex-wrap:wrap}
+.bubble .ref{font-size:10px;font-weight:700;color:var(--slate);background:#EFF2F4;border:1px solid var(--line);padding:3px 9px;border-radius:6px;cursor:pointer}
+.bubble .ref:hover{color:var(--ink);border-color:var(--slate)}
+.bubble .ref.hot{color:var(--red);background:#FDE9EC;border-color:transparent}
+.stream{display:inline-flex;gap:3px;margin-left:2px;vertical-align:1px}
+.stream i{width:4px;height:4px;border-radius:50%;background:var(--txt3);animation:blink 1.2s infinite}
+.stream i:nth-child(2){animation-delay:.2s}.stream i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,70%,100%{opacity:.25}35%{opacity:1}}
+
+/* 입력 바 */
+.dock{position:fixed;left:0;right:0;bottom:0;padding:18px 24px 26px;background:linear-gradient(transparent,var(--bg) 38%)}
+.inbar{max-width:712px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:19px;box-shadow:0 14px 44px rgba(28,30,34,.1);padding:8px 8px 8px 20px;display:flex;align-items:center;gap:12px}
+.inbar input{flex:1;border:none;outline:none;font-size:13.5px;font-family:inherit;color:var(--ink);background:none;padding:10px 0}
+.inbar input::placeholder{color:var(--txt3)}
+.inbar .att{color:var(--txt3);font-size:15px;padding:6px}
+.inbar .send{width:38px;height:38px;border-radius:13px;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;transition:background .15s,transform .15s}
+.inbar .send:hover{background:#C6112E;transform:scale(1.05)}
+.dock .note{max-width:712px;margin:9px auto 0;text-align:center;font-size:10px;color:var(--txt3)}
+.dock .note b{color:var(--txt2)}
+
+@media (max-width:640px){.sugs{grid-template-columns:1fr}.bubble{max-width:88%}.top{padding:14px 20px}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="logo"><span class="dot"></span>SH Portal</div>
+  <span class="crumb">/ <b>AI Assistant 칼</b> · ㈜알파테크 제25기 컨텍스트</span>
+  <button class="ses">+ 새 대화</button>
+</div>
+
+<div class="stage">
+  <div class="hello">
+    <div class="orb"></div>
+    <h1>안녕하세요 대표님, 칼입니다.</h1>
+    <p>알파테크 제25기 감사 컨텍스트가 연결되어 있어요. 무엇을 도와드릴까요?</p>
+  </div>
+
+  <div class="sugs">
+    <button class="sug"><div class="k a">브리핑</div><div class="t">오늘 마감 리스크와 리뷰 대기 조서 요약해줘</div></button>
+    <button class="sug"><div class="k b">조서</div><div class="t">B-1 Lead Schedule 증감분석 초안 작성</div></button>
+    <button class="sug"><div class="k c">리서치</div><div class="t">MMF 분류 관련 K-IFRS 기준서·판례 찾아줘</div></button>
+    <button class="sug"><div class="k d">리뷰</div><div class="t">박선영 매니저 리뷰노트에 대한 답변 초안</div></button>
+  </div>
+
+  <div class="chat">
+    <div class="msg user">
+      <div class="who">윤길</div>
+      <div class="bubble">알파테크 MMF 잔액이 왜 이렇게 늘었지? 관련 조서랑 같이 봐줘.</div>
+    </div>
+    <div class="msg ai">
+      <div class="who">칼</div>
+      <div class="bubble">
+        MMF 잔액은 전기 320,410,200원에서 당기 <b>480,750,300원으로 50.0% 증가</b>했습니다. 원인은 두 가지로 보입니다.<br><br>
+        ① 12/28~12/31 사이 대규모 매출채권 회수(약 5.8억)가 집중되어 단기 여유자금이 MMF로 이동했고,<br>
+        ② 정기예금 만기 재예치 없이 대기성 자금으로 운용된 정황이 있습니다.<br><br>
+        다만 JET 모듈에서 같은 기간 <b>이상거래 후보 2건</b>이 추출되어 있어, Cut-off 검토와 연계 확인을 권합니다.
+        <div class="src">
+          <span class="ref">B-1 Lead Schedule</span>
+          <span class="ref">B-3 Cut-off 검토</span>
+          <span class="ref hot">F-4 JET 이상거래 · 2건</span>
+        </div>
+      </div>
+    </div>
+    <div class="msg ai">
+      <div class="who">칼</div>
+      <div class="bubble">F-4 조서의 이상거래 2건 상세를 정리하고 있어요<span class="stream"><i></i><i></i><i></i></span></div>
+    </div>
+  </div>
+</div>
+
+<div class="dock">
+  <div class="inbar">
+    <input placeholder="칼에게 무엇이든 물어보세요 — 조서·기준서·판례·법인 데이터까지">
+    <button class="att">📎</button>
+    <button class="send">↑</button>
+  </div>
+  <div class="note"><b>연결됨:</b> SH Audit Platform · 금융기관 조회 · 지식 라이브러리 &nbsp;|&nbsp; 답변은 조서 원문과 함께 검증하세요.</div>
+</div>
+</body>
+</html>

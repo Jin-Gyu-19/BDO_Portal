@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>샘플 14 · 젠 미니멀 — 단일 컬럼</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--red:#E81A3B;--slate:#5B6E7F;--blue:#0062B8;--ok:#1F9D61;--amber:#C77414;
+--ink:#1B1D20;--txt:#3E4145;--txt2:#75787D;--txt3:#A5A8AD;--line:#E9EAEB;--line2:#F2F3F4;--bg:#FDFDFC}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Pretendard Variable',Pretendard,-apple-system,'Malgun Gothic',sans-serif;background:var(--bg);color:var(--txt);font-size:13.5px;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.tn{font-variant-numeric:tabular-nums}
+.ic{width:15px;height:15px;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* 상단 미니 바 */
+.top{max-width:660px;margin:0 auto;padding:26px 24px 0;display:flex;align-items:center;gap:14px}
+.logo{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:var(--ink)}
+.logo .dot{width:8px;height:8px;background:var(--red);border-radius:2px}
+.top .r{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:11.5px;color:var(--txt3)}
+.top .r .srch{cursor:pointer;display:flex;align-items:center;gap:6px}
+.top .r .srch:hover{color:var(--ink)}
+.top .r .bell{position:relative;cursor:pointer}
+.top .r .bell:hover{color:var(--ink)}
+.top .r .bell .n{position:absolute;top:-6px;right:-8px;background:var(--red);color:#fff;font-size:7.5px;font-weight:800;border-radius:6px;padding:1px 4px}
+.avatar{width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:9px}
+
+.col{max-width:660px;margin:0 auto;padding:44px 24px 90px}
+
+/* 인사 */
+.greet{margin-bottom:38px}
+.greet .date{font-size:11px;font-weight:700;letter-spacing:2.5px;color:var(--red);margin-bottom:14px}
+.greet h1{font-size:31px;font-weight:800;color:var(--ink);letter-spacing:-1.1px;line-height:1.35;word-break:keep-all}
+.greet p{font-size:14px;color:var(--txt2);margin-top:12px;line-height:1.8;word-break:keep-all}
+.greet p b{color:var(--ink);font-weight:700}
+.greet p .rd{color:var(--red);font-weight:800}
+
+/* 숫자 한 줄 */
+.nums{display:flex;gap:0;border-top:1px solid var(--ink);border-bottom:1px solid var(--line);margin-bottom:44px}
+.nm{flex:1;padding:18px 4px;border-right:1px solid var(--line2)}
+.nm:last-child{border-right:none}
+.nm .v{font-size:26px;font-weight:800;color:var(--ink);letter-spacing:-1.2px}
+.nm .v.rd{color:var(--red)}
+.nm .l{font-size:10.5px;color:var(--txt2);font-weight:600;margin-top:4px}
+.nm .d{font-size:9.5px;color:var(--ok);font-weight:800;margin-top:2px}
+.nm .d.dn{color:var(--red)}
+
+/* 섹션 공통 */
+.sec{margin-bottom:44px}
+.sec-h{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
+.sec-h h2{font-size:12px;font-weight:900;letter-spacing:2.2px;color:var(--ink);text-transform:uppercase}
+.sec-h .cnt{font-size:11px;color:var(--txt3);font-weight:600}
+.sec-h .more{margin-left:auto;font-size:11px;color:var(--txt3);font-weight:600;cursor:pointer}
+.sec-h .more:hover{color:var(--red)}
+
+/* 마감 배너 — 절제된 한 줄 */
+.due{display:flex;align-items:center;gap:14px;padding:15px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:44px}
+.due .dd{font-size:20px;font-weight:800;color:var(--red);letter-spacing:-.6px;white-space:nowrap}
+.due .t{font-size:13px;font-weight:700;color:var(--ink)}
+.due .t small{display:block;font-size:11px;color:var(--txt2);font-weight:500;margin-top:2px}
+.due .go{margin-left:auto;font-size:12px;font-weight:700;color:var(--red);white-space:nowrap}
+.due .go:hover{text-decoration:underline}
+
+/* 프로젝트 — 텍스트 행 */
+.pj{display:flex;align-items:baseline;gap:14px;padding:13px 0;border-bottom:1px solid var(--line2);cursor:pointer}
+.pj:hover .nm2{color:var(--red)}
+.pj .no{font-size:10px;font-weight:800;color:var(--txt3);width:16px}
+.pj .nm2{font-size:14px;font-weight:700;color:var(--ink);flex:1;letter-spacing:-.2px;transition:color .12s}
+.pj .nm2 small{font-size:11px;color:var(--txt3);font-weight:500;margin-left:8px}
+.pj .pct{font-size:12px;font-weight:800;color:var(--ink)}
+.pj .st{font-size:10px;font-weight:700;width:58px;text-align:right}
+.pj .st.f{color:var(--amber)}.pj .st.r{color:var(--blue)}.pj .st.d{color:var(--ok)}
+.pj .line{flex-basis:100%;height:2px;background:var(--line2);margin-top:9px;position:relative}
+.pj .line i{position:absolute;left:0;top:0;bottom:0;background:var(--ink)}
+.pjwrap{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 14px;padding:13px 0;border-bottom:1px solid var(--line2);cursor:pointer}
+.pjwrap:hover .nm2{color:var(--red)}
+
+/* 앱 — 텍스트 링크 클라우드 */
+.appflow{display:flex;flex-wrap:wrap;gap:9px}
+.af{display:inline-flex;align-items:baseline;gap:7px;font-size:13px;font-weight:700;color:var(--ink);border:1px solid var(--line);border-radius:99px;padding:9px 17px;cursor:pointer;transition:all .14s}
+.af:hover{border-color:var(--ink);transform:translateY(-1px)}
+.af .cd{font-size:9px;font-weight:900;letter-spacing:.5px}
+.af.dim{color:var(--txt3);border-style:dashed}
+.af.dim:hover{transform:none;border-color:var(--line)}
+.af .cd.k1{color:var(--slate)}.af .cd.k2{color:var(--red)}.af .cd.k3{color:var(--ok)}.af .cd.k4{color:var(--blue)}
+.af .cd.k5{color:var(--amber)}.af .cd.k6{color:#25837B}.af .cd.k7{color:#7A5BC7}
+
+/* AQI — 문장형 */
+.aqi-line{font-size:15px;line-height:2;color:var(--txt);word-break:keep-all}
+.aqi-line b{color:var(--ink);font-weight:800}
+.aqi-line .big{font-size:34px;font-weight:800;color:var(--ink);letter-spacing:-1.5px;margin-right:2px}
+.aqi-line .up{color:var(--ok);font-weight:800}
+.aqi-line .dn{color:var(--red);font-weight:800}
+.aqi-dims{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:14px;font-size:12px;color:var(--txt2)}
+.aqi-dims span b{color:var(--ink);font-weight:800}
+.aqi-dims .warn b{color:var(--amber)}
+
+/* 공지 — 타임라인 */
+.tl{border-left:1px solid var(--line);padding-left:22px}
+.tli{position:relative;padding-bottom:18px}
+.tli:last-child{padding-bottom:0}
+.tli::before{content:'';position:absolute;left:-25.5px;top:6px;width:7px;height:7px;border-radius:50%;background:var(--txt3)}
+.tli.hot::before{background:var(--red)}
+.tli .t{font-size:13px;font-weight:700;color:var(--ink);line-height:1.5}
+.tli.hot .t{color:var(--red)}
+.tli .d{font-size:10.5px;color:var(--txt3);margin-top:2px}
+
+.foot{max-width:660px;margin:0 auto;padding:0 24px 40px;font-size:10px;color:var(--txt3);display:flex;gap:10px;align-items:center}
+.foot .bdo{background:var(--red);color:#fff;font-weight:900;font-size:8.5px;padding:2px 5px;border-radius:2px;font-family:Arial}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="logo"><span class="dot"></span>SH Portal</div>
+  <div class="r">
+    <span class="srch"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>검색 ⌘K</span>
+    <span class="bell"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span class="n">3</span></span>
+    <span class="avatar">윤길</span>
+  </div>
+</div>
+
+<div class="col">
+  <div class="greet">
+    <div class="date">2026. 4. 5 SUNDAY</div>
+    <h1>대표님, 오늘 성현에서<br>가장 중요한 것만 모았습니다.</h1>
+    <p>진행 중 프로젝트 <b>12건</b> 가운데 <b>베타홀딩스</b>가 리뷰 단계에 들어왔고, 품질관리보고서 마감이 <span class="rd">12일</span> 남았습니다.</p>
+  </div>
+
+  <div class="nums">
+    <div class="nm"><div class="v tn">12</div><div class="l">진행 중 감사</div><div class="d">▲ +2</div></div>
+    <div class="nm"><div class="v tn">47</div><div class="l">리뷰 대기 조서</div><div class="d">▼ -8</div></div>
+    <div class="nm"><div class="v rd tn">3</div><div class="l">마감 임박</div><div class="d dn">주의</div></div>
+    <div class="nm"><div class="v tn">92.4</div><div class="l">AQI 지수</div><div class="d">▲ 4.8</div></div>
+  </div>
+
+  <div class="due">
+    <span class="dd tn">D-12</span>
+    <span class="t">ISQM1 품질관리보고서<small>품질관리본부 · 4월 17일 마감</small></span>
+    <button class="go">작성하기 →</button>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><h2>Projects</h2><span class="cnt tn">12건 진행 중</span><button class="more">전체 →</button></div>
+    <div class="pjwrap"><span class="no tn">01</span><span class="nm2">㈜알파테크 제25기 외부감사<small>K-IFRS · 김회계</small></span><span class="pct tn">72%</span><span class="st f">현장수행</span><span class="line"><i style="width:72%"></i></span></div>
+    <div class="pjwrap"><span class="no tn">02</span><span class="nm2">㈜베타홀딩스 연결감사<small>K-IFRS · 박회계</small></span><span class="pct tn">91%</span><span class="st r">리뷰</span><span class="line"><i style="width:91%"></i></span></div>
+    <div class="pjwrap"><span class="no tn">03</span><span class="nm2">㈜감마물산 제18기 감사<small>일반기준 · 이회계</small></span><span class="pct tn">45%</span><span class="st f">현장수행</span><span class="line"><i style="width:45%"></i></span></div>
+    <div class="pjwrap"><span class="no tn">04</span><span class="nm2">㈜델타에너지 기말감사<small>K-IFRS · 최회계</small></span><span class="pct tn">100%</span><span class="st d">완료</span><span class="line"><i style="width:100%"></i></span></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><h2>Apps</h2><span class="cnt">10개 통합</span><button class="more">관리 →</button></div>
+    <div class="appflow">
+      <span class="af"><span class="cd k1">AUD</span>Audit Platform</span>
+      <span class="af"><span class="cd k2">1118</span>IFRS 분석기</span>
+      <span class="af"><span class="cd k3">FIN</span>금융기관 조회</span>
+      <span class="af"><span class="cd k4">XBRL</span>Comparator</span>
+      <span class="af"><span class="cd k2">AI</span>칼 어시스턴트</span>
+      <span class="af"><span class="cd k5">TAX</span>삼일 에이전트</span>
+      <span class="af"><span class="cd k6">INS</span>인사이트</span>
+      <span class="af dim"><span class="cd k7">LAW</span>소송조회 · 개발 중</span>
+      <span class="af dim">ERP · Q3</span>
+      <span class="af dim">지식 RAG · 예정</span>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><h2>Quality</h2><span class="cnt">2026 Q1 · ISQM1</span><button class="more">리포트 →</button></div>
+    <div class="aqi-line"><span class="big tn">92.4</span>점. 감사품질지수가 전년 동기 대비 <span class="up">4.8p 올랐습니다</span>. 독립성과 품질관리체계가 상승을 이끌었고, 교육·훈련만 <span class="dn">1.8p 내렸습니다</span>.</div>
+    <div class="aqi-dims">
+      <span>독립성 <b class="tn">98.5</b></span>
+      <span>품질체계 <b class="tn">96.8</b></span>
+      <span>인력 <b class="tn">94.2</b></span>
+      <span>시간 <b class="tn">89.6</b></span>
+      <span>보수 <b class="tn">88.1</b></span>
+      <span class="warn">교육 <b class="tn">87.4</b></span>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><h2>Notice</h2><button class="more">전체 →</button></div>
+    <div class="tl">
+      <div class="tli hot"><div class="t">ISQM1 2026년 품질관리 보고서 작성 안내</div><div class="d">품질관리본부 · 4월 3일</div></div>
+      <div class="tli"><div class="t">SH Audit Platform 회사 기초정보 기능 오픈</div><div class="d">AX 추진위 · 4월 2일</div></div>
+      <div class="tli"><div class="t">4월 정기 파트너 월례회의 — 15일 14시</div><div class="d">경영지원실 · 4월 1일</div></div>
+      <div class="tli"><div class="t">삼일 TAX Agent 법인 구독 완료</div><div class="d">AX 추진위 · 3월 28일</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="foot"><span class="bdo">BDO</span>성현회계법인 · SH Portal · People Helping People Achieve Their Dreams</div>
+</body>
+</html>

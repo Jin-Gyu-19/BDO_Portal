@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>샘플 1 · 로그인 게이트 — 타이포 에디토리얼</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--red:#E81A3B;--slate:#5B6E7F;--blue:#0062B8;--ink:#191B1E;--txt:#3E4247;--txt2:#787D84;--txt3:#A6ABB2;--line:#E8E9EB;--bg:#FCFCFC}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Pretendard Variable',Pretendard,-apple-system,'Malgun Gothic',sans-serif;background:var(--bg);color:var(--txt);-webkit-font-smoothing:antialiased;min-height:100vh}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+
+.frame{min-height:100vh;display:flex;flex-direction:column}
+/* 상단 헤어라인 헤더 */
+.head{display:flex;align-items:center;justify-content:space-between;padding:22px 48px;border-bottom:1px solid var(--line)}
+.head .mark{display:flex;align-items:center;gap:12px}
+.head .bdo{background:var(--red);color:#fff;font-weight:900;font-size:14px;padding:5px 9px;border-radius:2px;font-family:Arial;letter-spacing:1px}
+.head .nm{font-size:13px;font-weight:800;color:var(--ink);letter-spacing:-.2px}
+.head .nm small{display:block;font-size:9.5px;color:var(--txt3);font-weight:500;letter-spacing:1.5px;margin-top:1px}
+.head .lang{font-size:11px;color:var(--txt2);font-weight:600;letter-spacing:.5px}
+.head .lang b{color:var(--ink)}
+
+.stage{flex:1;display:grid;grid-template-columns:1.35fr 1fr;gap:0;max-width:1240px;width:100%;margin:0 auto;padding:0 48px}
+
+/* 좌: 타이포 히어로 */
+.hero{display:flex;flex-direction:column;justify-content:center;padding:64px 64px 64px 0;position:relative}
+.hero::after{content:'';position:absolute;right:0;top:15%;bottom:15%;width:1px;background:var(--line)}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:4px;color:var(--red);margin-bottom:28px}
+.hero h1{font-size:clamp(48px,6.2vw,76px);font-weight:800;line-height:1.14;letter-spacing:-2.5px;color:var(--ink);word-break:keep-all;margin-bottom:8px}
+.hero h1 .rd{color:var(--red)}
+.hero h1 .thin{font-weight:300;letter-spacing:-1.5px}
+/* 원장 이중 괘선 시그니처 */
+.dbl{width:120px;height:7px;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);margin:34px 0 30px}
+.hero p{font-size:14.5px;color:var(--txt2);line-height:1.85;max-width:430px;word-break:keep-all}
+.stats{display:flex;gap:52px;margin-top:52px}
+.stat .v{font-size:26px;font-weight:800;color:var(--ink);letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.stat .v small{font-size:12px;color:var(--txt3);font-weight:600;margin-left:2px}
+.stat .l{font-size:10.5px;color:var(--txt3);font-weight:600;margin-top:3px;letter-spacing:.4px}
+
+/* 우: 로그인 컬럼 */
+.gate{display:flex;flex-direction:column;justify-content:center;padding:64px 0 64px 64px}
+.gate h2{font-size:19px;font-weight:800;color:var(--ink);letter-spacing:-.4px;margin-bottom:6px}
+.gate .sub{font-size:12px;color:var(--txt2);margin-bottom:30px;line-height:1.6}
+.sso{width:100%;padding:14px 18px;border-radius:12px;border:1px solid var(--line);background:#fff;display:flex;align-items:center;gap:13px;font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:10px;transition:border-color .15s,transform .15s,box-shadow .15s}
+.sso:hover{border-color:var(--ink);transform:translateY(-1px);box-shadow:0 8px 24px rgba(25,27,30,.07)}
+.sso .sic{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:11px}
+.sso .g{background:#4285F4}.sso .m{background:#00A4EF}.sso .id{background:var(--slate)}
+.sso .arr{margin-left:auto;color:var(--txt3);transition:transform .15s}
+.sso:hover .arr{transform:translateX(3px);color:var(--red)}
+.divi{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--txt3);font-size:10px;font-weight:700;letter-spacing:2px}
+.divi::before,.divi::after{content:'';flex:1;height:1px;background:var(--line)}
+.gfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:10.5px;color:var(--txt3)}
+.gfoot .sec{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--slate)}
+.gfoot .sec::before{content:'';width:6px;height:6px;border-radius:50%;background:#1F9D61}
+.gfoot a{color:var(--txt2);font-weight:600;cursor:pointer}
+
+/* 하단 티커 */
+.ticker{border-top:1px solid var(--line);padding:14px 48px;display:flex;gap:40px;font-size:10.5px;color:var(--txt3);overflow:hidden;white-space:nowrap}
+.ticker b{color:var(--txt2);font-weight:700}
+.ticker .rd{color:var(--red);font-weight:800}
+
+@media (max-width:900px){
+  .stage{grid-template-columns:1fr;padding:0 24px}
+  .hero{padding:48px 0 24px}.hero::after{display:none}
+  .gate{padding:12px 0 48px}
+  .head,.ticker{padding-left:24px;padding-right:24px}
+}
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="head">
+    <div class="mark">
+      <div class="bdo">BDO</div>
+      <div class="nm">성현회계법인<small>SEONGHYUN CPAs · MEMBER FIRM</small></div>
+    </div>
+    <div class="lang"><b>KO</b> · EN</div>
+  </div>
+
+  <div class="stage">
+    <div class="hero">
+      <div class="eyebrow">SH PORTAL — DIGITAL OPERATING SYSTEM</div>
+      <h1>숫자 뒤의 <span class="thin">모든 일이,</span><br>하나의 포털로<span class="rd">.</span></h1>
+      <div class="dbl"></div>
+      <p>감사·세무·자문 업무가 한 곳에서 흐르고, 개인의 경험이 법인의 데이터로 축적되며, AI가 언제나 동료로 곁에 있습니다.</p>
+      <div class="stats">
+        <div class="stat"><div class="v">12<small>건</small></div><div class="l">진행 중 프로젝트</div></div>
+        <div class="stat"><div class="v">92.4</div><div class="l">AQI 감사품질지수</div></div>
+        <div class="stat"><div class="v">10<small>+</small></div><div class="l">통합 업무 App</div></div>
+      </div>
+    </div>
+
+    <div class="gate">
+      <h2>로그인</h2>
+      <div class="sub">성현 계정으로 로그인하세요.<br>최초 로그인 시 관리자 승인이 필요할 수 있습니다.</div>
+      <button class="sso"><span class="sic g">G</span>Google Workspace로 계속<span class="arr">→</span></button>
+      <button class="sso"><span class="sic m">⊞</span>Microsoft 365로 계속<span class="arr">→</span></button>
+      <div class="divi">OR</div>
+      <button class="sso"><span class="sic id">ID</span>사원번호로 계속<span class="arr">→</span></button>
+      <div class="gfoot">
+        <span class="sec">2FA 보호 중</span>
+        <span><a>관리자 문의</a> · <a>비밀번호 재설정</a></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ticker">
+    <span><b>공지</b> ISQM1 2026년 품질관리 보고서 작성 안내</span>
+    <span><b>업데이트</b> SH Audit Platform v4.0 — 회사 기초정보 기능 오픈</span>
+    <span><span class="rd">D-12</span> 품질관리보고서 마감</span>
+  </div>
+</div>
+</body>
+</html>

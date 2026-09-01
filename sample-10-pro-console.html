@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>샘플 10 · 프로 콘솔 — 고밀도 라이트</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--red:#E81A3B;--slate:#5B6E7F;--blue:#0062B8;--ok:#188A55;--amber:#B96A0F;
+--ink:#191B1E;--txt:#3C3F44;--txt2:#70747A;--txt3:#9EA2A8;--line:#E2E4E6;--line2:#EDEEF0;
+--bg:#F8F9FA;--card:#FFFFFF;--head:#F1F3F4}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Pretendard Variable',Pretendard,-apple-system,'Malgun Gothic',sans-serif;background:var(--bg);color:var(--txt);font-size:12px;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.mono{font-family:'JetBrains Mono',ui-monospace,'Cascadia Code',Consolas,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.2px}
+.ic{width:14px;height:14px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── 커맨드 바 ── */
+.cmd{background:var(--ink);color:#fff;display:flex;align-items:center;gap:14px;padding:9px 18px;font-size:11.5px;position:sticky;top:0;z-index:100}
+.cmd .bdo{background:var(--red);color:#fff;font-weight:900;font-size:9.5px;padding:2.5px 5px;border-radius:2px;font-family:Arial}
+.cmd .nm{font-weight:800;letter-spacing:-.2px}
+.cmd .env{font-size:9px;font-weight:800;letter-spacing:1px;color:#8B949E;border:1px solid #3A4048;border-radius:4px;padding:2px 7px}
+.cmd .q{flex:1;max-width:440px;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);border-radius:7px;padding:5.5px 11px;color:#9BA3AB;font-size:11px;cursor:text}
+.cmd .q .k{margin-left:auto;font-size:8.5px;border:1px solid rgba(255,255,255,.2);border-radius:3px;padding:1px 5px}
+.cmd .r{margin-left:auto;display:flex;align-items:center;gap:13px}
+.cmd .live{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:#5EE2A3}
+.cmd .live::before{content:'';width:6px;height:6px;border-radius:50%;background:#5EE2A3;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.cmd .bell{position:relative;color:#9BA3AB}
+.cmd .bell .n{position:absolute;top:-5px;right:-7px;background:var(--red);color:#fff;font-size:7.5px;font-weight:800;border-radius:7px;padding:1px 4px}
+.cmd .usr{display:flex;align-items:center;gap:7px;font-weight:700}
+.cmd .usr .av{width:22px;height:22px;border-radius:6px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:800}
+
+/* ── 탭 스트립 ── */
+.tabs{background:var(--card);border-bottom:1px solid var(--line);display:flex;padding:0 18px;gap:2px}
+.tab{padding:9px 15px;font-size:11.5px;font-weight:600;color:var(--txt2);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab:hover{color:var(--ink)}
+.tab.on{color:var(--ink);font-weight:800;border-bottom-color:var(--red)}
+.tab .n{font-size:9px;font-weight:800;color:var(--txt3);background:var(--line2);border-radius:6px;padding:1px 5px;margin-left:5px}
+
+.wrap{max-width:1240px;margin:0 auto;padding:16px 18px 40px}
+
+/* 상태 라인 */
+.status{display:flex;gap:20px;align-items:center;padding:8px 2px 14px;font-size:11px;color:var(--txt2);flex-wrap:wrap}
+.status b{color:var(--ink);font-weight:800}
+.status .rd{color:var(--red);font-weight:800}
+.status .gr{color:var(--ok);font-weight:800}
+.status .sep{color:var(--line)}
+.status .new{margin-left:auto;background:var(--ink);color:#fff;font-size:11px;font-weight:700;padding:7px 14px;border-radius:7px}
+.status .new:hover{background:#000}
+
+/* ── 밀도 그리드 ── */
+.cols{display:grid;grid-template-columns:1.7fr 1fr;gap:14px;align-items:start}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.ph{background:var(--head);border-bottom:1px solid var(--line);padding:8px 14px;font-size:10px;font-weight:800;letter-spacing:1.2px;color:var(--txt2);text-transform:uppercase;display:flex;align-items:center}
+.ph .r{margin-left:auto;font-weight:700;letter-spacing:0;text-transform:none;color:var(--txt3);cursor:pointer}
+.ph .r:hover{color:var(--red)}
+
+/* 프로젝트 테이블 */
+table{width:100%;border-collapse:collapse}
+th{background:var(--card);padding:7px 14px;text-align:left;font-size:9px;font-weight:800;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--line)}
+td{padding:9px 14px;border-bottom:1px solid var(--line2);font-size:11.5px;color:var(--txt);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg)}
+td .cb{display:inline-flex;width:20px;height:20px;border-radius:5px;background:var(--ink);color:#fff;align-items:center;justify-content:center;font-size:9.5px;font-weight:800;margin-right:8px}
+td b{color:var(--ink);font-weight:700}
+td .sub{color:var(--txt3);font-size:10px}
+.bar{width:88px;height:4px;background:var(--line2);border-radius:2px;overflow:hidden;display:inline-block;vertical-align:middle}
+.bar i{display:block;height:100%;background:var(--slate)}
+.pct{font-weight:700;color:var(--txt2);font-size:10.5px}
+.stx{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700}
+.stx::before{content:'';width:6px;height:6px;border-radius:50%}
+.stx.f{color:var(--amber)}.stx.f::before{background:var(--amber)}
+.stx.r{color:var(--blue)}.stx.r::before{background:var(--blue)}
+.stx.d{color:var(--ok)}.stx.d::before{background:var(--ok)}
+td.num{text-align:right}
+
+/* 조서 큐 */
+.queue .qi{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--line2);font-size:11.5px}
+.queue .qi:last-child{border-bottom:none}
+.queue .ref{font-weight:700;color:var(--blue);cursor:pointer;white-space:nowrap}
+.queue .ref:hover{text-decoration:underline}
+.queue .t{flex:1;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.queue .who{font-size:10px;color:var(--txt3);white-space:nowrap}
+.queue .pr{font-size:8.5px;font-weight:800;padding:2px 7px;border-radius:4px;background:#FDECEA;color:var(--red)}
+.queue .pr.m{background:#FBF2E6;color:var(--amber)}
+
+/* AQI 미니 테이블 */
+.aqit td{padding:6.5px 14px}
+.aqit .lbl{font-weight:600;color:var(--txt)}
+.aqit .no{color:var(--txt3);font-size:9.5px;margin-right:7px}
+.aqit .sc{font-weight:800;color:var(--ink)}
+.aqit .tr.up{color:var(--ok);font-weight:800;font-size:10px}
+.aqit .tr.dn{color:var(--red);font-weight:800;font-size:10px}
+.aqit tr.sum td{border-top:3px double var(--ink);background:var(--head);font-weight:800;color:var(--ink)}
+
+/* 앱 콘솔 목록 */
+.al{padding:5px 0}
+.ai2{display:flex;align-items:center;gap:10px;padding:6.5px 14px;font-size:11.5px;cursor:pointer}
+.ai2:hover{background:var(--bg)}
+.ai2 .cd{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:900}
+.ai2 .nm{font-weight:700;color:var(--ink);flex:1}
+.ai2 .stat{font-size:9px;font-weight:800;letter-spacing:.5px}
+.ai2 .stat.on{color:var(--ok)}
+.ai2 .stat.off{color:var(--txt3)}
+.ai2 .stat.dev{color:var(--amber)}
+.a1{background:#E9EEF2;color:var(--slate)}.a2{background:#FDECEA;color:var(--red)}.a3{background:#E6F3EC;color:var(--ok)}
+.a4{background:#E8F0FA;color:var(--blue)}.a5{background:#FBF2E6;color:var(--amber)}.a6{background:#E3F2F1;color:#25837B}
+.a7{background:var(--ink);color:#fff}.a8{background:#EFEAF8;color:#7A5BC7}.a9{background:var(--line2);color:var(--txt2)}
+
+/* 공지 로그 */
+.log .li{display:flex;gap:10px;padding:7px 14px;border-bottom:1px solid var(--line2);font-size:11px;align-items:baseline}
+.log .li:last-child{border-bottom:none}
+.log .ts{color:var(--txt3);font-size:9.5px;white-space:nowrap}
+.log .lv{font-size:8px;font-weight:900;letter-spacing:.5px;padding:1.5px 6px;border-radius:3px;white-space:nowrap}
+.log .lv.urgent{background:#FDECEA;color:var(--red)}
+.log .lv.info{background:var(--line2);color:var(--txt2)}
+.log .t{color:var(--txt);flex:1;line-height:1.5}
+.log .t b{color:var(--ink)}
+
+.footer{max-width:1240px;margin:0 auto;padding:0 18px 26px;font-size:9.5px;color:var(--txt3);display:flex;gap:14px}
+.footer b{color:var(--red)}
+
+@media (max-width:960px){.cols{grid-template-columns:1fr}.cmd .q{display:none}.tabs{overflow-x:auto}}
+</style>
+</head>
+<body>
+
+<div class="cmd">
+  <span class="bdo">BDO</span>
+  <span class="nm">SH Console</span>
+  <span class="env">PORTAL v5</span>
+  <div class="q"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>명령 또는 검색 — 회사명·조서·규정·판례<span class="k">⌘K</span></div>
+  <div class="r">
+    <span class="live">시스템 정상</span>
+    <span class="bell"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span class="n">3</span></span>
+    <span class="usr"><span class="av">윤</span>윤길배 · Partner</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab on">대시보드</button>
+  <button class="tab">프로젝트<span class="n">12</span></button>
+  <button class="tab">리뷰 큐<span class="n">47</span></button>
+  <button class="tab">App</button>
+  <button class="tab">AQI</button>
+  <button class="tab">공지<span class="n">4</span></button>
+  <button class="tab">규정·지침</button>
+</div>
+
+<div class="wrap">
+  <div class="status">
+    <span>2026-04-05 (일) · 2026 Q2</span><span class="sep">|</span>
+    <span>진행 <b class="mono">12</b>건</span><span class="sep">|</span>
+    <span>리뷰 대기 <b class="mono">47</b>건</span><span class="sep">|</span>
+    <span>마감 임박 <span class="rd mono">3</span>건 · 품질관리보고서 <span class="rd">D-12</span></span><span class="sep">|</span>
+    <span>AQI <span class="gr mono">92.4</span> ▲4.8</span>
+    <button class="new">+ 새 프로젝트</button>
+  </div>
+
+  <div class="cols">
+    <div>
+      <!-- 프로젝트 테이블 -->
+      <div class="panel">
+        <div class="ph">진행 중 프로젝트 <span class="r">전체 12건 →</span></div>
+        <table>
+          <thead><tr><th>회사 / 기수</th><th>기준</th><th>인차지</th><th>진행률</th><th style="text-align:right">조서</th><th>상태</th><th>최근 수정</th></tr></thead>
+          <tbody>
+            <tr><td><span class="cb">A</span><b>㈜알파테크</b> 제25기</td><td>K-IFRS</td><td>김회계</td><td><span class="bar"><i style="width:72%"></i></span> <span class="pct mono">72%</span></td><td class="num mono">34/47</td><td><span class="stx f">현장수행</span></td><td class="mono sub">04-05 10:23</td></tr>
+            <tr><td><span class="cb">B</span><b>㈜베타홀딩스</b> 제12기 연결</td><td>K-IFRS</td><td>박회계</td><td><span class="bar"><i style="width:91%"></i></span> <span class="pct mono">91%</span></td><td class="num mono">41/45</td><td><span class="stx r">리뷰</span></td><td class="mono sub">04-04 18:47</td></tr>
+            <tr><td><span class="cb">C</span><b>㈜감마물산</b> 제18기</td><td>일반기준</td><td>이회계</td><td><span class="bar"><i style="width:45%"></i></span> <span class="pct mono">45%</span></td><td class="num mono">17/38</td><td><span class="stx f">현장수행</span></td><td class="mono sub">04-04 15:12</td></tr>
+            <tr><td><span class="cb">D</span><b>㈜델타에너지</b> 제31기</td><td>K-IFRS</td><td>최회계</td><td><span class="bar"><i style="width:100%"></i></span> <span class="pct mono">100%</span></td><td class="num mono">42/42</td><td><span class="stx d">완료</span></td><td class="mono sub">03-28 16:50</td></tr>
+            <tr><td><span class="cb">E</span><b>㈜이오스전자</b> 제9기</td><td>K-IFRS</td><td>한회계</td><td><span class="bar"><i style="width:28%"></i></span> <span class="pct mono">28%</span></td><td class="num mono">11/40</td><td><span class="stx f">현장수행</span></td><td class="mono sub">04-05 09:10</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 리뷰 큐 -->
+      <div class="panel queue">
+        <div class="ph">내 리뷰 큐 — 우선순위 순 <span class="r">47건 전체 →</span></div>
+        <div class="qi"><span class="ref mono">A-B1</span><span class="t">알파테크 · Lead Schedule 현금및현금성자산 — MMF 증가 사유 보완</span><span class="who">김회계 → 나</span><span class="pr">긴급</span></div>
+        <div class="qi"><span class="ref mono">A-F4</span><span class="t">알파테크 · JET 이상거래 2건 검토 — Cut-off 연계 확인</span><span class="who">시스템 추출</span><span class="pr">긴급</span></div>
+        <div class="qi"><span class="ref mono">B-EQR</span><span class="t">베타홀딩스 · EQR 최종 검토 의견 회신</span><span class="who">정인훈 → 나</span><span class="pr m">이번 주</span></div>
+        <div class="qi"><span class="ref mono">C-D2</span><span class="t">감마물산 · 재고 실사 입회 조서 리뷰</span><span class="who">이회계 → 나</span><span class="pr m">이번 주</span></div>
+      </div>
+
+      <!-- 공지 로그 -->
+      <div class="panel log">
+        <div class="ph">법인 공지 로그 <span class="r">전체 →</span></div>
+        <div class="li"><span class="ts mono">04-03</span><span class="lv urgent">긴급</span><span class="t"><b>ISQM1 2026년 품질관리 보고서 작성 안내</b> — 품질관리본부, 4/17 마감</span></div>
+        <div class="li"><span class="ts mono">04-02</span><span class="lv info">업데이트</span><span class="t">SH Audit Platform 회사 기초정보 기능 오픈 — AX 추진위</span></div>
+        <div class="li"><span class="ts mono">04-01</span><span class="lv info">일정</span><span class="t">4월 정기 파트너 월례회의 (15일 14시) — 경영지원실</span></div>
+        <div class="li"><span class="ts mono">03-28</span><span class="lv info">구독</span><span class="t">삼일 TAX Agent 법인 구독 완료 — AX 추진위</span></div>
+      </div>
+    </div>
+
+    <div>
+      <!-- AQI 원장 테이블 -->
+      <div class="panel aqit">
+        <div class="ph">AQI 감사품질지표 · 2026 Q1 <span class="r">상세 →</span></div>
+        <table>
+          <tbody>
+            <tr><td class="lbl"><span class="no mono">01</span>독립성</td><td class="num sc mono">98.5</td><td class="num tr up">▲0.3</td></tr>
+            <tr><td class="lbl"><span class="no mono">02</span>품질관리체계</td><td class="num sc mono">96.8</td><td class="num tr up">▲5.2</td></tr>
+            <tr><td class="lbl"><span class="no mono">03</span>감사 인력</td><td class="num sc mono">94.2</td><td class="num tr up">▲2.1</td></tr>
+            <tr><td class="lbl"><span class="no mono">04</span>감사 시간</td><td class="num sc mono">89.6</td><td class="num tr up">▲1.4</td></tr>
+            <tr><td class="lbl"><span class="no mono">05</span>감사 보수</td><td class="num sc mono">88.1</td><td class="num tr up">▲3.0</td></tr>
+            <tr><td class="lbl"><span class="no mono">06</span>교육·훈련</td><td class="num sc mono">87.4</td><td class="num tr dn">▼1.8</td></tr>
+            <tr class="sum"><td>종합 — ISQM1 충족</td><td class="num mono">92.4</td><td class="num tr up">▲4.8</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 앱 상태 콘솔 -->
+      <div class="panel">
+        <div class="ph">App 상태 <span class="r">관리 →</span></div>
+        <div class="al">
+          <div class="ai2"><span class="cd a1">AUD</span><span class="nm">SH Audit Platform <span class="sub mono">v4.0</span></span><span class="stat on">● RUNNING</span></div>
+          <div class="ai2"><span class="cd a2">1118</span><span class="nm">K-IFRS 1118호 분석기 <span class="sub mono">v1.0</span></span><span class="stat on">● RUNNING</span></div>
+          <div class="ai2"><span class="cd a3">FIN</span><span class="nm">금융기관 조회 <span class="sub mono">v2.3</span></span><span class="stat on">● RUNNING</span></div>
+          <div class="ai2"><span class="cd a4">XBRL</span><span class="nm">XBRL Comparator <span class="sub mono">v1.0</span></span><span class="stat on">● RUNNING</span></div>
+          <div class="ai2"><span class="cd a7">AI</span><span class="nm">AI Assistant 칼</span><span class="stat on">● 상시 가동</span></div>
+          <div class="ai2"><span class="cd a5">TAX</span><span class="nm">삼일 TAX Agent</span><span class="stat off">SSO 연결</span></div>
+          <div class="ai2"><span class="cd a6">INS</span><span class="nm">Accounting Insight</span><span class="stat off">SSO 연결</span></div>
+          <div class="ai2"><span class="cd a8">LAW</span><span class="nm">채권채무·소송 조회</span><span class="stat dev">개발 중 · P2</span></div>
+          <div class="ai2"><span class="cd a9">ERP</span><span class="nm">ERP · 지식 RAG</span><span class="stat off">도입 예정</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>© 성현회계법인 · SH Portal Pro Console</span>
+  <span><b>BDO</b> Member Firm</span>
+  <span>데이터 기준: 2026-04-05 10:23 KST</span>
+</div>
+</body>
+</html>

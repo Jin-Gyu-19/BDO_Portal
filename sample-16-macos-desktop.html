@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>샘플 16 · macOS 데스크톱 — 메뉴바 + 윈도우 + Dock</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--red:#E81A3B;--slate:#5B6E7F;--blue:#0062B8;--ok:#1F9D61;--amber:#C77414;
+--ink:#1D1D1F;--txt:#3C3C43;--txt2:#6E6E73;--txt3:#A1A1A6;--line:#E3E3E5;--line2:#EFEFF1;
+--card:#FFFFFF;--side:rgba(246,246,248,.72);--r:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'SF Pro Text','Malgun Gothic',sans-serif;
+font-size:13px;color:var(--txt);-webkit-font-smoothing:antialiased;overflow:hidden;
+background:#2A3442}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.tn{font-variant-numeric:tabular-nums}
+.ic{width:15px;height:15px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+
+/* ── 데스크톱 배경 (Sonoma 그라디언트) ── */
+.desk{position:fixed;inset:0;overflow:hidden;
+background:linear-gradient(165deg,#1B2430 0%,#33414F 38%,#5B6E7F 68%,#8FA0AC 100%)}
+.desk::before,.desk::after{content:'';position:absolute;border-radius:50%;filter:blur(90px)}
+.desk::before{width:820px;height:620px;left:-160px;top:-180px;background:rgba(232,26,59,.34)}
+.desk::after{width:900px;height:700px;right:-220px;bottom:-260px;background:rgba(0,98,184,.34)}
+.glow{position:absolute;width:640px;height:520px;left:44%;top:34%;border-radius:50%;filter:blur(110px);background:rgba(255,255,255,.16)}
+
+/* ── 메뉴바 ── */
+.menubar{position:fixed;top:0;left:0;right:0;height:28px;z-index:60;display:flex;align-items:center;
+gap:20px;padding:0 14px;color:#fff;font-size:12.5px;
+background:rgba(28,32,38,.42);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%)}
+.menubar .logo{font-size:14px;font-weight:600;opacity:.95;letter-spacing:-.5px}
+.menubar .app{font-weight:800}
+.menubar .m{opacity:.86;cursor:default}
+.menubar .m:hover{opacity:1}
+.menubar .right{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12px}
+.menubar .aqi{display:flex;align-items:center;gap:5px;font-weight:700}
+.menubar .aqi i{width:6px;height:6px;border-radius:50%;background:#5AD07A;display:block}
+.menubar .ic{width:14px;height:14px;opacity:.9}
+.bat{width:22px;height:11px;border:1.4px solid rgba(255,255,255,.85);border-radius:3.5px;position:relative}
+.bat::after{content:'';position:absolute;left:1.5px;top:1.5px;bottom:1.5px;width:13px;background:#fff;border-radius:1.5px}
+.bat::before{content:'';position:absolute;right:-3.5px;top:3px;width:2px;height:4px;background:rgba(255,255,255,.85);border-radius:0 1px 1px 0}
+
+/* ── 데스크톱 위젯 (우측) ── */
+.widgets{position:fixed;right:22px;top:44px;width:172px;display:flex;flex-direction:column;gap:12px;z-index:20}
+.wg{border-radius:18px;padding:14px 15px;color:#fff;
+background:rgba(20,24,30,.4);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);
+border:1px solid rgba(255,255,255,.16);box-shadow:0 8px 26px rgba(0,0,0,.24)}
+.wg .lab{font-size:9.5px;font-weight:800;letter-spacing:1.2px;opacity:.65;text-transform:uppercase}
+.wg .big{font-size:30px;font-weight:800;letter-spacing:-1.4px;margin-top:6px;line-height:1}
+.wg .big small{font-size:12px;opacity:.6;font-weight:700;margin-left:2px}
+.wg .sub{font-size:10.5px;opacity:.7;margin-top:5px;line-height:1.5}
+.wg.dday .big{color:#FF8194}
+.wg .rows{margin-top:9px;display:flex;flex-direction:column;gap:7px}
+.wg .row{display:flex;align-items:center;gap:7px;font-size:10.5px;opacity:.9}
+.wg .row i{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.wg .row b{margin-left:auto;font-weight:700;opacity:.75}
+
+/* ── 윈도우 ── */
+.win{position:fixed;left:50%;top:52%;transform:translate(-50%,-50%);width:min(1180px,calc(100vw - 250px));
+height:min(760px,calc(100vh - 132px));border-radius:14px;overflow:hidden;z-index:30;
+background:var(--card);box-shadow:0 40px 90px rgba(0,0,0,.44),0 0 0 .5px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.12);
+display:grid;grid-template-columns:214px 1fr}
+
+/* 사이드바 */
+.side{background:var(--side);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);
+border-right:.5px solid rgba(0,0,0,.12);display:flex;flex-direction:column;padding:0 10px 10px}
+.lights{display:flex;gap:8px;padding:15px 6px 14px}
+.lights i{width:12px;height:12px;border-radius:50%;display:block}
+.lights .r{background:#FF5F57}.lights .y{background:#FEBC2E}.lights .g{background:#28C840}
+.who{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:8px;margin-bottom:10px}
+.who:hover{background:rgba(0,0,0,.05)}
+.who .av{width:28px;height:28px;border-radius:50%;background:linear-gradient(145deg,#FF4A66,var(--red));color:#fff;
+display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10.5px;box-shadow:0 1px 3px rgba(232,26,59,.4)}
+.who .nm{font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:-.2px}
+.who .nm small{display:block;font-size:10px;color:var(--txt3);font-weight:500;margin-top:1px}
+.grp{padding:11px 8px 5px;font-size:10.5px;font-weight:700;color:var(--txt3);letter-spacing:-.1px}
+.mi{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:7px;font-size:12.5px;color:var(--txt);
+font-weight:500;cursor:default;letter-spacing:-.2px}
+.mi:hover{background:rgba(0,0,0,.05)}
+.mi.on{background:var(--red);color:#fff;font-weight:600;box-shadow:0 1px 2px rgba(232,26,59,.3)}
+.mi .ic{width:14px;height:14px;opacity:.75}
+.mi.on .ic{opacity:1}
+.mi .n{margin-left:auto;font-size:10.5px;font-weight:600;color:var(--txt3)}
+.mi.on .n{color:rgba(255,255,255,.85)}
+.side .ft{margin-top:auto;display:flex;align-items:center;gap:7px;padding:8px;font-size:10px;color:var(--txt3)}
+.side .ft .bdo{background:var(--red);color:#fff;font-weight:900;font-size:9px;padding:2px 5px;border-radius:2px;font-family:Arial}
+
+/* 본문 */
+.body{display:flex;flex-direction:column;min-width:0;background:var(--card)}
+.tbar{height:52px;display:flex;align-items:center;gap:12px;padding:0 18px;flex-shrink:0;
+background:rgba(252,252,253,.82);backdrop-filter:blur(20px);border-bottom:.5px solid var(--line)}
+.tbar .nav{display:flex;gap:2px;color:var(--txt3)}
+.tbar .nav button{padding:4px 6px;border-radius:6px}
+.tbar .nav button:hover{background:rgba(0,0,0,.05);color:var(--txt)}
+.tbar h2{font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.tbar .date{font-size:11px;color:var(--txt3);font-weight:600}
+.seg{margin-left:auto;display:flex;background:rgba(0,0,0,.055);border-radius:8px;padding:2px}
+.seg button{padding:4px 13px;border-radius:6px;font-size:11.5px;font-weight:600;color:var(--txt2)}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2.5px rgba(0,0,0,.14)}
+.srch{display:flex;align-items:center;gap:6px;width:180px;padding:5px 9px;border-radius:7px;
+background:rgba(0,0,0,.05);color:var(--txt3);font-size:11.5px}
+.tbar .cta{background:var(--red);color:#fff;font-size:11.5px;font-weight:600;padding:6px 13px;border-radius:7px;
+box-shadow:0 1px 2px rgba(232,26,59,.35)}
+
+.scroll{overflow-y:auto;padding:24px 26px 30px}
+.scroll::-webkit-scrollbar{width:8px}
+.scroll::-webkit-scrollbar-thumb{background:rgba(0,0,0,.18);border-radius:9px;border:2px solid #fff}
+.hello{font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-.7px}
+.hello span{color:var(--red)}
+.hsub{font-size:12px;color:var(--txt2);margin:5px 0 20px}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:24px}
+.kpi{background:#fff;border:.5px solid var(--line);border-radius:11px;padding:14px 15px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.kpi .l{font-size:10.5px;color:var(--txt2);font-weight:600;display:flex;align-items:center;gap:6px}
+.kpi .l i{width:6px;height:6px;border-radius:50%}
+.kpi .v{font-size:25px;font-weight:800;color:var(--ink);letter-spacing:-1.1px;margin-top:7px;line-height:1}
+.kpi .v small{font-size:11.5px;color:var(--txt3);font-weight:600;margin-left:2px;letter-spacing:0}
+.kpi .d{font-size:10px;color:var(--txt3);margin-top:5px}
+.kpi.warn .v{color:var(--red)}
+
+.cols{display:grid;grid-template-columns:1.35fr 1fr;gap:18px}
+.sh{display:flex;align-items:center;margin-bottom:10px}
+.sh h3{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.sh a{margin-left:auto;font-size:11px;color:var(--blue);font-weight:600;text-decoration:none}
+.list{background:#fff;border:.5px solid var(--line);border-radius:11px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.it{display:grid;grid-template-columns:30px 1fr auto;gap:11px;align-items:center;padding:11px 14px;border-bottom:.5px solid var(--line2)}
+.it:last-child{border-bottom:none}
+.it:hover{background:#FAFAFB}
+.it .av{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+font-weight:800;font-size:11px;color:#fff}
+.it .t{font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:-.2px}
+.it .m{font-size:10.5px;color:var(--txt3);margin-top:2px}
+.it .rt{text-align:right;min-width:96px}
+.it .pc{font-size:12px;font-weight:800;color:var(--ink)}
+.bar{height:4px;border-radius:3px;background:var(--line2);margin-top:5px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:3px;background:var(--red)}
+.it .st{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:99px;display:inline-block;margin-top:4px}
+.st.f{background:#FDECEF;color:var(--red)}.st.r{background:#EAF3FB;color:var(--blue)}.st.o{background:#E9F6EF;color:var(--ok)}
+
+.notice{display:flex;gap:10px;align-items:flex-start;padding:11px 14px;border-bottom:.5px solid var(--line2)}
+.notice:last-child{border-bottom:none}
+.notice .tg{font-size:9px;font-weight:800;padding:2.5px 7px;border-radius:5px;flex-shrink:0;margin-top:1px}
+.tg.u{background:var(--red);color:#fff}.tg.n{background:#EEF0F2;color:var(--slate)}
+.notice .tt{font-size:12px;font-weight:600;color:var(--txt);line-height:1.45}
+.notice .dt{margin-left:auto;font-size:10px;color:var(--txt3);flex-shrink:0}
+.dband{background:linear-gradient(120deg,#FFF2F4,#FDF7F8);border:.5px solid #F7D9DF;border-radius:11px;
+padding:13px 15px;display:flex;align-items:center;gap:13px;margin-bottom:12px}
+.dband .dd{font-size:20px;font-weight:800;color:var(--red);letter-spacing:-1px}
+.dband .tt{font-size:12.5px;font-weight:700;color:var(--ink)}
+.dband .mm{font-size:10.5px;color:var(--txt2);margin-top:2px}
+.dband button{margin-left:auto;background:var(--red);color:#fff;font-size:11px;font-weight:600;padding:6px 12px;border-radius:7px}
+
+/* ── Dock ── */
+.dock{position:fixed;left:50%;bottom:9px;transform:translateX(-50%);z-index:50;display:flex;align-items:flex-end;gap:7px;
+padding:7px 9px;border-radius:22px;background:rgba(255,255,255,.24);
+backdrop-filter:blur(34px) saturate(180%);-webkit-backdrop-filter:blur(34px) saturate(180%);
+border:1px solid rgba(255,255,255,.32);box-shadow:0 12px 34px rgba(0,0,0,.34)}
+.dk{width:48px;height:48px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+color:#fff;font-weight:800;font-size:11px;letter-spacing:-.3px;position:relative;cursor:pointer;
+transition:transform .17s cubic-bezier(.3,1.4,.5,1);box-shadow:0 3px 8px rgba(0,0,0,.26);transform-origin:bottom}
+.dk:hover{transform:scale(1.32) translateY(-7px)}
+.dk small{font-size:7.5px;font-weight:700;opacity:.85;margin-top:1px}
+.dk::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:4px;height:4px;
+border-radius:50%;background:rgba(255,255,255,.9);opacity:0}
+.dk.run::after{opacity:1}
+.dk .tip{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:10.5px;
+font-weight:600;color:#1D1D1F;background:rgba(255,255,255,.94);padding:4px 10px;border-radius:7px;
+box-shadow:0 4px 14px rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:opacity .15s}
+.dk:hover .tip{opacity:1}
+.dsep{width:1px;height:40px;background:rgba(255,255,255,.34);margin:0 4px;align-self:center}
+.dk.aud{background:linear-gradient(150deg,#FF5A72,#E81A3B)}
+.dk.k18{background:linear-gradient(150deg,#4E97E0,#0062B8)}
+.dk.fin{background:linear-gradient(150deg,#7C8FA0,#5B6E7F)}
+.dk.xb{background:linear-gradient(150deg,#38C77E,#1F9D61)}
+.dk.ai{background:linear-gradient(150deg,#2C3542,#12161C)}
+.dk.tax{background:linear-gradient(150deg,#F0A03A,#C77414)}
+.dk.ins{background:linear-gradient(150deg,#9B7BE0,#6E4CC4)}
+.dk.law{background:linear-gradient(150deg,#B9BEC6,#8A9099)}
+.dk.erp{background:linear-gradient(150deg,#B9BEC6,#8A9099)}
+.dk.set{background:linear-gradient(150deg,#8E939B,#5E636B)}
+.dk.trash{background:linear-gradient(150deg,rgba(255,255,255,.5),rgba(255,255,255,.22));border:1px solid rgba(255,255,255,.4)}
+@media (max-width:1180px){.widgets{display:none}.win{width:calc(100vw - 44px)}}
+</style>
+</head>
+<body>
+<div class="desk"><div class="glow"></div></div>
+
+<!-- 메뉴바 -->
+<div class="menubar">
+  <div class="logo">&#63743;</div>
+  <div class="app">SH Portal</div>
+  <div class="m">파일</div><div class="m">편집</div><div class="m">보기</div><div class="m">이동</div><div class="m">창</div><div class="m">도움말</div>
+  <div class="right">
+    <div class="aqi"><i></i>AQI 92.4</div>
+    <svg class="ic" viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5.5 5.5 0 0 1 7 0"/><circle cx="12" cy="19.5" r=".8" fill="currentColor"/></svg>
+    <svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.3-4.3"/></svg>
+    <div class="bat"></div>
+    <div class="tn">4월 5일 (일) 오전 9:41</div>
+  </div>
+</div>
+
+<!-- 데스크톱 위젯 -->
+<div class="widgets">
+  <div class="wg dday">
+    <div class="lab">다가오는 마감</div>
+    <div class="big">D-12</div>
+    <div class="sub">ISQM1 품질관리보고서<br>4월 17일 (금)</div>
+  </div>
+  <div class="wg">
+    <div class="lab">AQI 지수</div>
+    <div class="big">92.4<small>/100</small></div>
+    <div class="sub">전분기 대비 +1.8 · 상위 12%</div>
+  </div>
+  <div class="wg">
+    <div class="lab">오늘의 리뷰</div>
+    <div class="rows">
+      <div class="row"><i style="background:#FF8194"></i>알파테크 조서<b>14</b></div>
+      <div class="row"><i style="background:#5AD07A"></i>베타홀딩스<b>9</b></div>
+      <div class="row"><i style="background:#7FB2E5"></i>감마물산<b>24</b></div>
+    </div>
+  </div>
+</div>
+
+<!-- 윈도우 -->
+<div class="win">
+  <div class="side">
+    <div class="lights"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+    <div class="who">
+      <div class="av">윤길</div>
+      <div class="nm">윤길배 CPA<small>성현회계법인 · 대표이사</small></div>
+    </div>
+    <div class="grp">즐겨찾기</div>
+    <div class="mi on"><svg class="ic" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>대시보드</div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>알림 <span class="n">3</span></div>
+    <div class="grp">업무</div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>내 프로젝트 <span class="n">12</span></div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>리뷰함 <span class="n">47</span></div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>일정 · ERP</div>
+    <div class="grp">App</div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>전체 App <span class="n">10</span></div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>AI Assistant 칼</div>
+    <div class="grp">법인</div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg>AQI 지표</div>
+    <div class="mi"><svg class="ic" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h10"/></svg>공지 · 규정</div>
+    <div class="ft"><span class="bdo">BDO</span> Member Firm · SH Portal</div>
+  </div>
+
+  <div class="body">
+    <div class="tbar">
+      <div class="nav">
+        <button><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button><svg class="ic" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+      <h2>대시보드</h2>
+      <div class="date tn">2026. 4. 5 (일) · Q2</div>
+      <div class="seg"><button class="on">오늘</button><button>주간</button><button>분기</button></div>
+      <div class="srch"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.3-4.3"/></svg>검색</div>
+      <button class="cta">새 프로젝트</button>
+    </div>
+
+    <div class="scroll">
+      <div class="hello">윤길배 대표이사님, 좋은 아침입니다<span>.</span></div>
+      <div class="hsub">오늘 성현은 12건의 프로젝트가 진행 중이며, 리뷰 대기 조서는 47건입니다.</div>
+
+      <div class="kpis">
+        <div class="kpi"><div class="l"><i style="background:var(--blue)"></i>진행 중 감사</div><div class="v tn">12<small>건</small></div><div class="d">전주 대비 +2</div></div>
+        <div class="kpi"><div class="l"><i style="background:var(--slate)"></i>리뷰 대기 조서</div><div class="v tn">47<small>건</small></div><div class="d">평균 대기 1.8일</div></div>
+        <div class="kpi warn"><div class="l"><i style="background:var(--red)"></i>마감 임박 (7일)</div><div class="v tn">3<small>건</small></div><div class="d">최단 D-12</div></div>
+        <div class="kpi"><div class="l"><i style="background:var(--ok)"></i>AQI 지수</div><div class="v tn">92.4<small>/100</small></div><div class="d">전분기 대비 +1.8</div></div>
+      </div>
+
+      <div class="cols">
+        <div>
+          <div class="sh"><h3>진행 중 프로젝트</h3><a href="#">전체 보기</a></div>
+          <div class="list">
+            <div class="it"><div class="av" style="background:linear-gradient(145deg,#FF5A72,#E81A3B)">A</div>
+              <div><div class="t">㈜알파테크 제25기 외부감사</div><div class="m">K-IFRS · 12월 결산 · 인차지 김회계</div></div>
+              <div class="rt"><div class="pc tn">72%</div><div class="bar"><i style="width:72%"></i></div><span class="st f">현장수행</span></div></div>
+            <div class="it"><div class="av" style="background:linear-gradient(145deg,#4E97E0,#0062B8)">B</div>
+              <div><div class="t">㈜베타홀딩스 연결감사</div><div class="m">K-IFRS · 12월 결산 · 인차지 박회계</div></div>
+              <div class="rt"><div class="pc tn">91%</div><div class="bar"><i style="width:91%;background:var(--blue)"></i></div><span class="st r">리뷰</span></div></div>
+            <div class="it"><div class="av" style="background:linear-gradient(145deg,#7C8FA0,#5B6E7F)">C</div>
+              <div><div class="t">㈜감마물산 제18기 감사</div><div class="m">일반기준 · 12월 결산 · 인차지 이회계</div></div>
+              <div class="rt"><div class="pc tn">45%</div><div class="bar"><i style="width:45%;background:var(--slate)"></i></div><span class="st f">현장수행</span></div></div>
+            <div class="it"><div class="av" style="background:linear-gradient(145deg,#38C77E,#1F9D61)">D</div>
+              <div><div class="t">㈜델타에너지 기말감사</div><div class="m">K-IFRS · 12월 결산 · 인차지 최회계</div></div>
+              <div class="rt"><div class="pc tn">100%</div><div class="bar"><i style="width:100%;background:var(--ok)"></i></div><span class="st o">완료</span></div></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="sh"><h3>공지 · 마감</h3><a href="#">공지사항</a></div>
+          <div class="dband">
+            <div class="dd tn">D-12</div>
+            <div><div class="tt">ISQM1 품질관리보고서</div><div class="mm">품질관리본부 · 4/17 마감</div></div>
+            <button>작성하기</button>
+          </div>
+          <div class="list">
+            <div class="notice"><span class="tg u">긴급</span><span class="tt">ISQM1 2026년 품질관리 보고서 작성 안내</span><span class="dt tn">04/03</span></div>
+            <div class="notice"><span class="tg n">업데이트</span><span class="tt">SH Audit Platform 기초정보 기능 오픈</span><span class="dt tn">04/02</span></div>
+            <div class="notice"><span class="tg n">일정</span><span class="tt">4월 파트너 월례회의 (15일 14시)</span><span class="dt tn">04/01</span></div>
+            <div class="notice"><span class="tg n">구독</span><span class="tt">삼일 TAX Agent 법인 구독 완료</span><span class="dt tn">03/28</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Dock -->
+<div class="dock">
+  <div class="dk aud run">AUD<span class="tip">SH Audit Platform</span></div>
+  <div class="dk k18 run">1118<span class="tip">K-IFRS 1118호 분석기</span></div>
+  <div class="dk fin run">FIN<span class="tip">금융기관 조회</span></div>
+  <div class="dk xb">XBRL<span class="tip">XBRL Comparator</span></div>
+  <div class="dk ai run">AI<small>칼</small><span class="tip">AI Assistant 칼</span></div>
+  <div class="dk tax">TAX<span class="tip">삼일 TAX 에이전트</span></div>
+  <div class="dk ins">INS<span class="tip">인사이트</span></div>
+  <div class="dk law">LAW<span class="tip">소송조회 (개발 중)</span></div>
+  <div class="dk erp">ERP<span class="tip">ERP (2026 Q3)</span></div>
+  <div class="dsep"></div>
+  <div class="dk set">설정<span class="tip">시스템 설정</span></div>
+  <div class="dk trash">
+    <svg class="ic" style="width:22px;height:22px;stroke:#fff" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>
+    <span class="tip">휴지통</span>
+  </div>
+</div>
+</body>
+</html>

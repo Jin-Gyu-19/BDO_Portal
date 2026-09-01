@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SH Portal 디자인 샘플 갤러리</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--red:#E81A3B;--slate:#5B6E7F;--ink:#17191C;--txt2:#8B949E;--line:rgba(255,255,255,.09)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Pretendard Variable',Pretendard,-apple-system,'Malgun Gothic',sans-serif;background:#0E1116;color:#C3CAD2;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{text-decoration:none;color:inherit}
+.wrap{max-width:900px;margin:0 auto;padding:60px 28px 80px}
+.head{margin-bottom:44px}
+.head .bdo{display:inline-block;background:var(--red);color:#fff;font-weight:900;font-size:13px;padding:4px 8px;border-radius:2px;font-family:Arial;letter-spacing:1px;margin-bottom:18px}
+.head h1{font-size:34px;font-weight:800;color:#fff;letter-spacing:-1.2px;line-height:1.25}
+.head h1 span{color:var(--red)}
+.head p{font-size:13px;color:var(--txt2);margin-top:10px;line-height:1.7}
+.grid{display:flex;flex-direction:column;gap:12px}
+.card{display:grid;grid-template-columns:64px 1fr auto;gap:20px;align-items:center;background:#151A21;border:1px solid var(--line);border-radius:16px;padding:22px 26px;transition:border-color .18s,transform .18s}
+.card:hover{border-color:rgba(255,255,255,.25);transform:translateX(4px)}
+.card .no{font-size:24px;font-weight:800;color:#3A424C;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.card:hover .no{color:var(--red)}
+.card .t{font-size:16px;font-weight:800;color:#fff;letter-spacing:-.3px}
+.card .d{font-size:11.5px;color:var(--txt2);margin-top:4px;line-height:1.6}
+.card .tags{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.card .tag{font-size:9px;font-weight:800;letter-spacing:.6px;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.06);color:#8B949E;border:1px solid var(--line)}
+.card .tag.rd{background:rgba(232,26,59,.13);color:#FF5C74;border-color:transparent}
+.card .go{font-size:13px;color:#3A424C;font-weight:800;transition:color .15s,transform .15s}
+.card:hover .go{color:#fff;transform:translateX(3px)}
+.sep{margin:34px 0 14px;font-size:10px;font-weight:800;letter-spacing:2.5px;color:#4A525C;text-transform:uppercase}
+.foot{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);font-size:10.5px;color:#4A525C;line-height:1.7}
+@media (max-width:640px){.card{grid-template-columns:1fr;gap:8px}.card .go{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="bdo">BDO</div>
+    <h1>SH Portal 디자인 샘플 갤러리<span>.</span></h1>
+    <p>디자인 샘플 20종 + 테마 비교 1종. 모두 bdo.kr 공식 팔레트(레드 #E81A3B · 슬레이트 #5B6E7F) 기반이며, 각 샘플은 서로 다른 방향을 실험합니다. 16–20은 macOS · iPadOS 인터페이스 문법을 포털에 적용한 안이고, 11–15와 06–10은 기존 포털의 전체 정보(KPI·프로젝트·공지·App 10개·AQI·마감)를 모두 담은 실전 레이아웃입니다.</p>
+  </div>
+
+  <div class="sep">Apple — macOS · iPadOS 스타일 5종 (16–20)</div>
+  <div class="grid">
+    <a class="card" href="sample-16-macos-desktop.html">
+      <div class="no">16</div>
+      <div>
+        <div class="t">macOS 데스크톱 — 메뉴바 + 윈도우 + Dock</div>
+        <div class="d">Sonoma풍 배경 위에 포털이 하나의 앱 창으로 뜨는 안. 상단 메뉴바, 데스크톱 위젯(D-12·AQI·오늘의 리뷰), 하단 Dock에 App 10개가 상주합니다.</div>
+        <div class="tags"><span class="tag rd">macOS</span><span class="tag">데스크톱 + Dock</span><span class="tag">풀 레이아웃</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+    <a class="card" href="sample-17-macos-3column.html">
+      <div class="no">17</div>
+      <div>
+        <div class="t">macOS 3컬럼 — Finder / Mail 스타일</div>
+        <div class="d">사이드바 · 프로젝트 리스트 · 상세 패널의 3단 구조. 트래픽 라이트와 세그먼트 컨트롤, 프로젝트 하나를 끝까지 파고드는 실무형 레이아웃.</div>
+        <div class="tags"><span class="tag rd">macOS</span><span class="tag">3컬럼</span><span class="tag">풀 레이아웃</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+    <a class="card" href="sample-18-ipad-home.html">
+      <div class="no">18</div>
+      <div>
+        <div class="t">iPadOS 홈 화면 — 위젯 + 앱 그리드</div>
+        <div class="d">포털을 'iPad 홈 화면'으로. 왼쪽은 위젯(마감·AQI 링·프로젝트·공지), 오른쪽은 스퀘어클 앱 아이콘 15개와 배지. 하단 Dock과 페이지 도트까지.</div>
+        <div class="tags"><span class="tag rd">iPadOS</span><span class="tag">홈 화면</span><span class="tag">앱 런처</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+    <a class="card" href="sample-19-ipad-stage-manager.html">
+      <div class="no">19</div>
+      <div>
+        <div class="t">iPadOS 스테이지 매니저 — 멀티 윈도우</div>
+        <div class="d">대시보드 창과 리뷰함 창이 겹쳐 뜨고, 오른쪽 슬라이드 오버에 AI 칼 대화가 상주. 여러 업무를 동시에 굴리는 감각을 그대로 옮긴 안.</div>
+        <div class="tags"><span class="tag rd">iPadOS</span><span class="tag">멀티 윈도우</span><span class="tag">AI 칼</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+    <a class="card" href="sample-20-ipad-settings-light.html">
+      <div class="no">20</div>
+      <div>
+        <div class="t">iPadOS 인셋 그룹 — 설정 앱 스타일</div>
+        <div class="d">iOS 설정 앱의 인셋 그룹 리스트를 그대로. 컬러 아이콘 사이드바, 라지 타이틀, 둥근 카드 행, 우측 상단 컨트롤 센터 패널. 정보 구조가 가장 또렷한 안.</div>
+        <div class="tags"><span class="tag rd">iPadOS</span><span class="tag">라이트</span><span class="tag">그룹 리스트</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+  </div>
+
+  <div class="sep">포털 레이아웃 5종 (11–15)</div>
+  <div class="grid">
+    <a class="card" href="sample-11-kanban-flow.html">
+      <div class="no">11</div>
+      <div>
+        <div class="t">칸반 플로우 — 감사 단계 보드</div>
+        <div class="d">계획 → 현장수행 → 리뷰 → 완료. 프로젝트가 단계별 컬럼으로 흐르는 보드형. 진행 상황이 한눈에 보임.</div>
+        <div class="tags"><span class="tag rd">라이트</span><span class="tag">칸반</span><span class="tag">풀 레이아웃</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+    <a class="card" href="sample-12-red-maximal.html">
+      <div class="no">12</div>
+      <div>
+        <div class="t">레드 브랜드 맥시멀</div>
+        <div class="d">BDO 레드를 대면적 히어로 밴드로. 배경에 거대한 BDO 워터마크, 브랜드 존재감이 가장 강한 안.</div>
+        <div class="tags"><span class="tag rd">레드 맥시멀</span><span class="tag">브랜딩</span><span class="tag">풀 레이아웃</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+    <a class="card" href="sample-13-midnight-navy.html">
+      <div class="no">13</div>
+      <div>
+        <div class="t">미드나잇 네이비 — 금융 신뢰</div>
+        <div class="d">BDO 블루 계열 딥 네이비 다크. KPI는 금융 시세판 스타일, 사이드바에 AI 칼 위젯 상주.</div>
+        <div class="tags"><span class="tag rd">다크 네이비</span><span class="tag">금융</span><span class="tag">풀 레이아웃</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+    <a class="card" href="sample-14-zen-minimal.html">
+      <div class="no">14</div>
+      <div>
+        <div class="t">젠 미니멀 — 단일 컬럼</div>
+        <div class="d">660px 단일 컬럼, 카드 없이 괘선과 타이포만. AQI도 문장으로 읽힘. 정보 밀도를 극단적으로 덜어낸 안.</div>
+        <div class="tags"><span class="tag rd">미니멀</span><span class="tag">단일 컬럼</span><span class="tag">풀 레이아웃</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+    <a class="card" href="sample-15-sh-daily.html">
+      <div class="no">15</div>
+      <div>
+        <div class="t">SH 데일리 — 모닝 브리프</div>
+        <div class="d">신문 1면 스타일. 마감이 헤드라인 기사가 되고, 프로젝트는 시장 동향 테이블, AI 칼은 칼럼으로 등장.</div>
+        <div class="tags"><span class="tag rd">신문형</span><span class="tag">브리프</span><span class="tag">풀 레이아웃</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+  </div>
+
+  <div class="sep">포털 풀 레이아웃 5종 (06–10)</div>
+  <div class="grid">
+    <a class="card" href="sample-6-workspace-light.html">
+      <div class="no">06</div>
+      <div>
+        <div class="t">워크스페이스 라이트 — 노션형</div>
+        <div class="d">밝은 사이드바에 홈/업무/App/법인 카테고리 정리. 인라인 KPI 스트립과 행 리스트, 실무에 가장 편안한 톤.</div>
+        <div class="tags"><span class="tag rd">라이트</span><span class="tag">사이드바</span><span class="tag">풀 레이아웃</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+    <a class="card" href="sample-7-topnav-headline.html">
+      <div class="no">07</div>
+      <div>
+        <div class="t">탑내브 헤드라인 — 슬레이트 밴드</div>
+        <div class="d">사이드바 없이 상단 탭 내비. 슬레이트 헤더 밴드 위로 KPI 카드가 겹쳐 뜨는 구조, 링 게이지 진행률.</div>
+        <div class="tags"><span class="tag rd">라이트+슬레이트</span><span class="tag">탑내브</span><span class="tag">풀 레이아웃</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+    <a class="card" href="sample-8-split-panel.html">
+      <div class="no">08</div>
+      <div>
+        <div class="t">스플릿 패널 — 오늘 + 워크스페이스</div>
+        <div class="d">좌측 '오늘' 패널(날짜·D-day·할 일·공지) + 우측 작업 영역(프로젝트 카드·앱·AQI 차트). 개인 비서 느낌.</div>
+        <div class="tags"><span class="tag rd">라이트</span><span class="tag">2패널</span><span class="tag">풀 레이아웃</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+    <a class="card" href="sample-9-soft-glass.html">
+      <div class="no">09</div>
+      <div>
+        <div class="t">소프트 글래스 — 플로팅 독</div>
+        <div class="d">파스텔 그라디언트 배경 + 글래스 카드, 하단에 macOS식 플로팅 앱 독(호버 시 확대·툴팁). 부드럽고 미래적.</div>
+        <div class="tags"><span class="tag rd">글래스</span><span class="tag">앱 독</span><span class="tag">풀 레이아웃</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+    <a class="card" href="sample-10-pro-console.html">
+      <div class="no">10</div>
+      <div>
+        <div class="t">프로 콘솔 — 고밀도 라이트</div>
+        <div class="d">커맨드 바 + 탭 + 고밀도 테이블. 모노스페이스 숫자, 리뷰 큐, 앱 상태(RUNNING), AQI 원장 테이블. 프로용 단말기 느낌.</div>
+        <div class="tags"><span class="tag rd">고밀도</span><span class="tag">콘솔</span><span class="tag">풀 레이아웃</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+  </div>
+
+  <div class="sep">페이지 컨셉 5종</div>
+  <div class="grid">
+    <a class="card" href="sample-1-login-editorial.html">
+      <div class="no">01</div>
+      <div>
+        <div class="t">로그인 게이트 — 타이포 에디토리얼</div>
+        <div class="d">초대형 한글 디스플레이 타이포와 원장 이중 괘선. 화이트 캔버스에 여백으로 승부하는 첫인상.</div>
+        <div class="tags"><span class="tag rd">라이트</span><span class="tag">타이포그래피</span><span class="tag">로그인</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+    <a class="card" href="sample-2-dashboard-bento-dark.html">
+      <div class="no">02</div>
+      <div>
+        <div class="t">대시보드 — 벤토 다크</div>
+        <div class="d">요즘 유행하는 벤토 그리드. AQI 게이지·마감 D-day·퀵 런처·AI 브리핑이 타일로 배치된 커맨드 센터.</div>
+        <div class="tags"><span class="tag rd">다크</span><span class="tag">벤토 그리드</span><span class="tag">대시보드</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+    <a class="card" href="sample-3-app-launcher-tiles.html">
+      <div class="no">03</div>
+      <div>
+        <div class="t">App 런처 — 듀오톤 타일</div>
+        <div class="d">"무엇을 하시겠어요?" 중앙 검색 + 파스텔 듀오톤 타일. 부드럽고 친근한 앱 진입 화면.</div>
+        <div class="tags"><span class="tag rd">라이트</span><span class="tag">타일</span><span class="tag">런처</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+    <a class="card" href="sample-4-aqi-report-editorial.html">
+      <div class="no">04</div>
+      <div>
+        <div class="t">AQI 리포트 — 데이터 에디토리얼</div>
+        <div class="d">매거진 매스트헤드와 초대형 스코어, 원장식 지표 테이블(합계 이중 괘선), 풀쿼트가 있는 분기 리포트.</div>
+        <div class="tags"><span class="tag rd">라이트</span><span class="tag">에디토리얼</span><span class="tag">리포트</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+    <a class="card" href="sample-5-ai-assistant.html">
+      <div class="no">05</div>
+      <div>
+        <div class="t">AI Assistant 칼 — 코파일럿</div>
+        <div class="d">그라디언트 오브, 제안 카드, 조서 참조 칩이 달린 대화형 화면. AI 프로덕트 스타일.</div>
+        <div class="tags"><span class="tag rd">라이트</span><span class="tag">AI</span><span class="tag">대화형</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+  </div>
+
+  <div class="sep">이전 — 테마 비교</div>
+  <div class="grid">
+    <a class="card" href="design-samples.html">
+      <div class="no">A–D</div>
+      <div>
+        <div class="t">포털 테마 시안 4종 비교</div>
+        <div class="d">같은 대시보드를 BDO 슬레이트 / 코퍼레이트 라이트 / 잉크 앤 레드 / 다크 프리미엄으로 전환하며 비교.</div>
+        <div class="tags"><span class="tag">테마 스위처</span></div>
+      </div>
+      <div class="go">→</div>
+    </a>
+  </div>
+
+  <div class="foot">성현회계법인 SH Portal · 디자인 탐색용 목업 — 실데이터 아님 · 팔레트 출처: www.bdo.kr 공식 CSS</div>
+</div>
+</body>
+</html>

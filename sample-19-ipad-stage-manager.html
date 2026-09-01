@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>샘플 19 · iPadOS 스테이지 매니저 — 멀티 윈도우 + 슬라이드 오버</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--red:#E81A3B;--slate:#5B6E7F;--blue:#0062B8;--ok:#1F9D61;--amber:#C77414;
+--ink:#1D1D1F;--txt:#3C3C43;--txt2:#6E6E73;--txt3:#A1A1A6;--line:#E4E4E7;--line2:#F0F0F2}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'SF Pro Text','Malgun Gothic',sans-serif;
+font-size:13px;color:var(--txt);-webkit-font-smoothing:antialiased;overflow:hidden;background:#131A22}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.tn{font-variant-numeric:tabular-nums}
+.ic{width:15px;height:15px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+
+.wall{position:fixed;inset:0;overflow:hidden;background:radial-gradient(1100px 800px at 22% 10%,#33404F,#1A222C 55%,#101720)}
+.wall span{position:absolute;border-radius:50%;filter:blur(110px)}
+.b1{width:700px;height:560px;left:-120px;bottom:-160px;background:rgba(232,26,59,.34)}
+.b2{width:760px;height:600px;right:-160px;top:-120px;background:rgba(0,98,184,.34)}
+
+.status{position:fixed;top:0;left:0;right:0;height:28px;display:flex;align-items:center;padding:0 22px;
+color:#fff;font-size:12px;font-weight:700;z-index:60;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+.status .r{margin-left:auto;display:flex;align-items:center;gap:9px}
+.bat{width:22px;height:11px;border:1.4px solid rgba(255,255,255,.9);border-radius:3.5px;position:relative}
+.bat::after{content:'';position:absolute;left:1.5px;top:1.5px;bottom:1.5px;width:14px;background:#fff;border-radius:1.5px}
+
+/* ── 좌측 최근 앱 스트립 (스테이지 매니저) ── */
+.stage{position:fixed;left:14px;top:44px;width:96px;display:flex;flex-direction:column;gap:12px;z-index:30}
+.st{border-radius:11px;overflow:hidden;background:rgba(255,255,255,.9);height:70px;position:relative;
+box-shadow:0 8px 22px rgba(0,0,0,.34);cursor:pointer;transition:transform .18s}
+.st:hover{transform:translateX(4px)}
+.st .cap{position:absolute;left:0;right:0;bottom:0;background:rgba(20,24,30,.72);color:#fff;font-size:8.5px;
+font-weight:700;padding:3px 6px;letter-spacing:-.2px;backdrop-filter:blur(8px)}
+.st .mini{padding:7px 8px;display:flex;flex-direction:column;gap:4px}
+.st .mini .l{height:5px;border-radius:2px;background:#E1E3E6}
+.st .mini .l.a{width:70%;background:var(--red);opacity:.75}
+.st .mini .l.b{width:88%}
+.st .mini .l.c{width:56%}
+.st .mini .g{display:flex;gap:3px;margin-top:2px}
+.st .mini .g i{flex:1;height:14px;border-radius:3px;background:#EDEEF0}
+.stage .lbl{color:rgba(255,255,255,.55);font-size:9px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;
+margin-bottom:-4px;padding-left:3px}
+
+/* ── 창 공통 ── */
+.win{position:fixed;border-radius:16px;overflow:hidden;background:#fff;
+box-shadow:0 34px 80px rgba(0,0,0,.46),0 0 0 .5px rgba(0,0,0,.35)}
+.win.back{left:128px;top:70px;width:min(760px,52vw);height:min(600px,calc(100vh - 190px));
+transform:scale(.97);filter:brightness(.93)}
+.win.front{right:calc(min(330px,26vw) + 34px);top:56px;width:min(700px,46vw);height:min(660px,calc(100vh - 128px));z-index:20}
+.grab{position:absolute;left:50%;transform:translateX(-50%);bottom:5px;width:74px;height:4.5px;border-radius:3px;
+background:rgba(0,0,0,.2)}
+.wtb{height:46px;display:flex;align-items:center;gap:10px;padding:0 14px;border-bottom:.5px solid var(--line);
+background:rgba(250,250,251,.94);backdrop-filter:blur(18px)}
+.wtb .dots{display:flex;flex-direction:column;gap:2.5px;padding:5px;border-radius:6px}
+.wtb .dots i{width:14px;height:2.5px;border-radius:2px;background:#C7C7CC;display:block}
+.wtb .ttl{font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.wtb .badge{font-size:9.5px;font-weight:800;color:var(--red);background:#FDECEF;padding:2.5px 8px;border-radius:99px}
+.wtb .rt{margin-left:auto;display:flex;align-items:center;gap:6px;color:var(--txt3)}
+.wtb .rt button{padding:5px;border-radius:6px}
+.wtb .rt button:hover{background:rgba(0,0,0,.06);color:var(--txt)}
+.wbody{height:calc(100% - 46px);overflow-y:auto}
+
+/* 앞 창: 대시보드 */
+.wsplit{display:grid;grid-template-columns:64px 1fr;height:100%}
+.rail{background:#F6F6F8;border-right:.5px solid var(--line);display:flex;flex-direction:column;align-items:center;
+gap:8px;padding:12px 0}
+.rail .ri{width:38px;height:38px;border-radius:11px;display:flex;flex-direction:column;align-items:center;
+justify-content:center;color:var(--txt2);font-size:8.5px;font-weight:800;gap:2px;cursor:pointer}
+.rail .ri:hover{background:rgba(0,0,0,.05)}
+.rail .ri.on{background:var(--red);color:#fff}
+.rail .av{margin-top:auto;width:32px;height:32px;border-radius:50%;background:linear-gradient(145deg,#FF5A72,var(--red));
+color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
+.wmain{overflow-y:auto;padding:20px 22px 26px}
+.h1{font-size:19px;font-weight:800;color:var(--ink);letter-spacing:-.8px}
+.h1 span{color:var(--red)}
+.hsub{font-size:11.5px;color:var(--txt2);margin:5px 0 16px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:18px}
+.kpi{border:.5px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff}
+.kpi .l{font-size:10px;color:var(--txt2);font-weight:600;display:flex;align-items:center;gap:5px}
+.kpi .l i{width:6px;height:6px;border-radius:50%}
+.kpi .v{font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-1px;margin-top:6px;line-height:1}
+.kpi .v small{font-size:10.5px;color:var(--txt3);font-weight:600;margin-left:2px;letter-spacing:0}
+.kpi.w .v{color:var(--red)}
+.sh{display:flex;align-items:center;margin-bottom:9px}
+.sh h3{font-size:12px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.sh a{margin-left:auto;font-size:10.5px;color:var(--blue);font-weight:600;text-decoration:none}
+.plist{border:.5px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:18px}
+.pit{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:10px 13px;
+border-bottom:.5px solid var(--line2)}
+.pit:last-child{border-bottom:none}
+.pit .av{width:28px;height:28px;border-radius:9px;color:#fff;font-size:10.5px;font-weight:800;
+display:flex;align-items:center;justify-content:center}
+.pit .t{font-size:12px;font-weight:700;color:var(--ink);letter-spacing:-.2px}
+.pit .m{font-size:10px;color:var(--txt3);margin-top:2px}
+.pit .rt{text-align:right;min-width:82px}
+.pit .pc{font-size:11.5px;font-weight:800;color:var(--ink)}
+.bar{height:4px;border-radius:3px;background:var(--line2);margin-top:4px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:3px;background:var(--red)}
+.dband{background:linear-gradient(120deg,#FFF2F4,#FDF8F9);border:.5px solid #F7D9DF;border-radius:12px;
+padding:12px 14px;display:flex;align-items:center;gap:12px}
+.dband .dd{font-size:19px;font-weight:800;color:var(--red);letter-spacing:-1px}
+.dband .tt{font-size:12px;font-weight:700;color:var(--ink)}
+.dband .mm{font-size:10px;color:var(--txt2);margin-top:2px}
+.dband button{margin-left:auto;background:var(--red);color:#fff;font-size:10.5px;font-weight:600;padding:6px 11px;border-radius:8px}
+
+/* 뒤 창: 조서 리뷰함 */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;font-size:9.5px;font-weight:800;letter-spacing:.8px;color:var(--txt3);
+padding:9px 14px;border-bottom:.5px solid var(--line);text-transform:uppercase;background:#FBFBFC}
+.tbl td{padding:10px 14px;font-size:11.5px;border-bottom:.5px solid var(--line2);color:var(--txt)}
+.tbl td b{color:var(--ink);font-weight:700}
+.tbl .st{font-size:9px;font-weight:800;padding:2px 7px;border-radius:99px}
+.st.w{background:#FDECEF;color:var(--red)}.st.r{background:#EAF3FB;color:var(--blue)}.st.o{background:#E9F6EF;color:var(--ok)}
+
+/* ── 슬라이드 오버: AI 칼 ── */
+.over{position:fixed;right:16px;top:64px;width:min(330px,26vw);height:min(640px,calc(100vh - 132px));
+border-radius:18px;overflow:hidden;z-index:40;display:flex;flex-direction:column;
+background:rgba(20,24,30,.62);backdrop-filter:blur(34px) saturate(180%);-webkit-backdrop-filter:blur(34px) saturate(180%);
+border:1px solid rgba(255,255,255,.16);box-shadow:0 30px 70px rgba(0,0,0,.5)}
+.over .hd{padding:14px 16px 12px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:9px;color:#fff}
+.over .hd .av{width:30px;height:30px;border-radius:10px;background:linear-gradient(150deg,#39424F,#0E1319);
+border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
+.over .hd .t{font-size:12.5px;font-weight:800;letter-spacing:-.2px}
+.over .hd .s{font-size:9.5px;opacity:.6;margin-top:1px}
+.over .hd .live{margin-left:auto;font-size:9px;font-weight:800;color:#5AD07A;display:flex;align-items:center;gap:5px}
+.over .hd .live i{width:6px;height:6px;border-radius:50%;background:#5AD07A;display:block}
+.chat{flex:1;overflow-y:auto;padding:14px 15px;display:flex;flex-direction:column;gap:11px}
+.msg{max-width:88%;font-size:11.5px;line-height:1.6;padding:9px 12px;border-radius:15px}
+.msg.me{align-self:flex-end;background:var(--red);color:#fff;border-bottom-right-radius:5px}
+.msg.ai{align-self:flex-start;background:rgba(255,255,255,.13);color:rgba(255,255,255,.94);
+border-bottom-left-radius:5px;border:1px solid rgba(255,255,255,.09)}
+.msg.ai b{color:#fff}
+.chips{display:flex;gap:6px;flex-wrap:wrap;padding:0 15px 10px}
+.chips span{font-size:10px;font-weight:600;color:rgba(255,255,255,.8);padding:5px 10px;border-radius:99px;
+background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12)}
+.inp{padding:11px 13px 13px;border-top:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:9px}
+.inp .f{flex:1;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);border-radius:99px;
+padding:8px 14px;font-size:11.5px;color:rgba(255,255,255,.5)}
+.inp .go{width:31px;height:31px;border-radius:50%;background:var(--red);color:#fff;display:flex;
+align-items:center;justify-content:center;flex-shrink:0}
+.over .grabber{width:64px;height:4px;border-radius:3px;background:rgba(255,255,255,.3);margin:0 auto 8px}
+
+/* ── Dock ── */
+.dock{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:13px;
+padding:9px 15px;border-radius:23px;background:rgba(255,255,255,.16);
+backdrop-filter:blur(32px) saturate(180%);-webkit-backdrop-filter:blur(32px) saturate(180%);
+border:1px solid rgba(255,255,255,.22);box-shadow:0 12px 32px rgba(0,0,0,.32)}
+.dk{width:46px;height:46px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+color:#fff;font-size:11px;font-weight:800;letter-spacing:-.3px;position:relative;cursor:pointer;
+box-shadow:0 4px 12px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.24);transition:transform .18s cubic-bezier(.3,1.4,.5,1)}
+.dk:hover{transform:translateY(-6px) scale(1.08)}
+.dk small{font-size:7.5px;font-weight:700;opacity:.85;margin-top:1px}
+.dk::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:4px;height:4px;
+border-radius:50%;background:rgba(255,255,255,.85);opacity:0}
+.dk.run::after{opacity:1}
+.dsep{width:1px;height:34px;background:rgba(255,255,255,.26)}
+.homebar{position:fixed;bottom:4px;left:50%;transform:translateX(-50%);width:126px;height:4.5px;border-radius:3px;
+background:rgba(255,255,255,.5);z-index:55}
+@media (max-width:1240px){.win.back,.stage{display:none}.win.front{left:24px;right:auto;width:calc(100vw - min(330px,26vw) - 74px)}}
+</style>
+</head>
+<body>
+<div class="wall"><span class="b1"></span><span class="b2"></span></div>
+
+<div class="status">
+  <div class="tn">오전 9:41</div>
+  <div class="r"><span style="font-size:10.5px;opacity:.85;font-weight:800">SH-Office</span>
+    <svg class="ic" viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5.5 5.5 0 0 1 7 0"/><circle cx="12" cy="19.5" r=".9" fill="currentColor"/></svg>
+    <div class="bat"></div></div>
+</div>
+
+<!-- 스테이지 매니저 최근 앱 -->
+<div class="stage">
+  <div class="lbl">최근</div>
+  <div class="st"><div class="mini"><div class="l a"></div><div class="l b"></div><div class="g"><i></i><i></i><i></i></div></div><div class="cap">1118호 분석기</div></div>
+  <div class="st"><div class="mini"><div class="l b"></div><div class="l c"></div><div class="l b"></div><div class="l c"></div></div><div class="cap">금융기관 조회</div></div>
+  <div class="st"><div class="mini"><div class="g"><i></i><i></i></div><div class="l b"></div><div class="l a"></div></div><div class="cap">AQI 지표</div></div>
+  <div class="st"><div class="mini"><div class="l c"></div><div class="l b"></div><div class="l b"></div></div><div class="cap">공지사항</div></div>
+</div>
+
+<!-- 뒤 창: 리뷰함 -->
+<div class="win back">
+  <div class="wtb">
+    <div class="dots"><i></i><i></i><i></i></div>
+    <div class="ttl">리뷰함</div><div class="badge tn">47건 대기</div>
+    <div class="rt"><button><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.3-4.3"/></svg></button></div>
+  </div>
+  <div class="wbody">
+    <table class="tbl">
+      <tr><th>조서</th><th>프로젝트</th><th>작성자</th><th>상태</th></tr>
+      <tr><td><b>3200-02 매출 실증절차</b></td><td>알파테크</td><td>김회계</td><td><span class="st w">리뷰 요청</span></td></tr>
+      <tr><td><b>4100 재고실사 입회</b></td><td>알파테크</td><td>이수현</td><td><span class="st w">리뷰 요청</span></td></tr>
+      <tr><td><b>5300 연결정산표 검토</b></td><td>베타홀딩스</td><td>박회계</td><td><span class="st r">인차지 검토</span></td></tr>
+      <tr><td><b>2100 현금·예금 조회</b></td><td>감마물산</td><td>정하늘</td><td><span class="st o">승인</span></td></tr>
+      <tr><td><b>6200 우발부채 검토</b></td><td>베타홀딩스</td><td>박지훈</td><td><span class="st r">인차지 검토</span></td></tr>
+      <tr><td><b>1100 감사계획 요약</b></td><td>엡실론소재</td><td>정회계</td><td><span class="st o">승인</span></td></tr>
+      <tr><td><b>7400 후속사건 검토</b></td><td>델타에너지</td><td>최회계</td><td><span class="st o">승인</span></td></tr>
+    </table>
+  </div>
+  <div class="grab"></div>
+</div>
+
+<!-- 앞 창: 대시보드 -->
+<div class="win front">
+  <div class="wtb">
+    <div class="dots"><i></i><i></i><i></i></div>
+    <div class="ttl">SH Portal — 대시보드</div>
+    <div class="rt">
+      <span class="tn" style="font-size:10.5px;font-weight:600">2026. 4. 5 (일)</span>
+      <button><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button>
+      <button><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+    </div>
+  </div>
+  <div class="wbody">
+    <div class="wsplit">
+      <div class="rail">
+        <div class="ri on">홈</div>
+        <div class="ri">업무</div>
+        <div class="ri">App</div>
+        <div class="ri">법인</div>
+        <div class="av">윤길</div>
+      </div>
+      <div class="wmain">
+        <div class="h1">오늘의 성현<span>.</span></div>
+        <div class="hsub">진행 중 12건 · 리뷰 대기 47건 · 마감 임박 3건</div>
+        <div class="kpis">
+          <div class="kpi"><div class="l"><i style="background:var(--blue)"></i>진행 중 감사</div><div class="v tn">12<small>건</small></div></div>
+          <div class="kpi"><div class="l"><i style="background:var(--slate)"></i>리뷰 대기 조서</div><div class="v tn">47<small>건</small></div></div>
+          <div class="kpi w"><div class="l"><i style="background:var(--red)"></i>마감 임박 (7일)</div><div class="v tn">3<small>건</small></div></div>
+          <div class="kpi"><div class="l"><i style="background:var(--ok)"></i>AQI 지수</div><div class="v tn">92.4<small>/100</small></div></div>
+        </div>
+        <div class="sh"><h3>진행 중 프로젝트</h3><a href="#">전체 보기</a></div>
+        <div class="plist">
+          <div class="pit"><div class="av" style="background:linear-gradient(145deg,#FF5A72,#E81A3B)">A</div>
+            <div><div class="t">㈜알파테크 제25기 외부감사</div><div class="m">현장수행 · 김회계</div></div>
+            <div class="rt"><div class="pc tn">72%</div><div class="bar"><i style="width:72%"></i></div></div></div>
+          <div class="pit"><div class="av" style="background:linear-gradient(145deg,#4E97E0,#0062B8)">B</div>
+            <div><div class="t">㈜베타홀딩스 연결감사</div><div class="m">리뷰 · 박회계</div></div>
+            <div class="rt"><div class="pc tn">91%</div><div class="bar"><i style="width:91%;background:var(--blue)"></i></div></div></div>
+          <div class="pit"><div class="av" style="background:linear-gradient(145deg,#7C8FA0,#5B6E7F)">C</div>
+            <div><div class="t">㈜감마물산 제18기 감사</div><div class="m">현장수행 · 이회계</div></div>
+            <div class="rt"><div class="pc tn">45%</div><div class="bar"><i style="width:45%;background:var(--slate)"></i></div></div></div>
+          <div class="pit"><div class="av" style="background:linear-gradient(145deg,#38C77E,#1F9D61)">D</div>
+            <div><div class="t">㈜델타에너지 기말감사</div><div class="m">완료 · 최회계</div></div>
+            <div class="rt"><div class="pc tn">100%</div><div class="bar"><i style="width:100%;background:var(--ok)"></i></div></div></div>
+        </div>
+        <div class="dband">
+          <div class="dd tn">D-12</div>
+          <div><div class="tt">ISQM1 품질관리보고서</div><div class="mm">품질관리본부 · 4/17 마감</div></div>
+          <button>작성하기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="grab"></div>
+</div>
+
+<!-- 슬라이드 오버: AI 칼 -->
+<div class="over">
+  <div class="hd">
+    <div class="av">AI</div>
+    <div><div class="t">AI Assistant 칼</div><div class="s">Claude 기반 · 감사 문맥 연결됨</div></div>
+    <div class="live"><i></i>온라인</div>
+  </div>
+  <div class="chat">
+    <div class="msg ai">안녕하세요, 대표이사님. 오늘 <b>알파테크</b> 현장수행이 72%까지 올라왔고 리뷰 대기 조서가 14건 쌓였습니다.</div>
+    <div class="msg me">알파테크 매출 절사 이슈 요약해줘</div>
+    <div class="msg ai">표본 12건 중 <b>3건</b>이 12/28~12/31 거래에 집중되어 있습니다.<br>· 인도조건 확인 필요 2건<br>· 검수확인서 미비 1건<br><b>권고:</b> K-IFRS 1115호 통제이전 시점 기준으로 절사 절차를 기말 ±5영업일까지 확대.</div>
+    <div class="msg me">관련 조서 열어줘</div>
+    <div class="msg ai">SH Audit Platform에서 <b>3200-02 매출 실증절차</b>를 왼쪽 창에 열었습니다.</div>
+  </div>
+  <div class="chips"><span>ISQM1 초안 작성</span><span>AQI 하락 요인</span><span>1118호 재분류</span></div>
+  <div class="inp">
+    <div class="f">칼에게 물어보기…</div>
+    <div class="go"><svg class="ic" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
+  </div>
+</div>
+
+<!-- Dock -->
+<div class="dock">
+  <div class="dk run" style="background:linear-gradient(155deg,#FF5A72,#D0102F)">AUD</div>
+  <div class="dk" style="background:linear-gradient(155deg,#4E97E0,#00509B)">1118</div>
+  <div class="dk" style="background:linear-gradient(155deg,#8296A7,#4A5C6B)">FIN</div>
+  <div class="dk" style="background:linear-gradient(155deg,#38C77E,#118A50)">XBRL</div>
+  <div class="dk run" style="background:linear-gradient(155deg,#39424F,#0E1319)">AI<small>칼</small></div>
+  <div class="dsep"></div>
+  <div class="dk" style="background:linear-gradient(155deg,#F5AE4A,#B8680E)">TAX</div>
+  <div class="dk" style="background:linear-gradient(155deg,#A98BEA,#5F3EB8)">INS</div>
+  <div class="dk run" style="background:#fff;color:#1D1D1F"><span style="font-size:7px;color:var(--red);font-weight:800">4월</span><span class="tn" style="font-size:16px;line-height:1">5</span></div>
+</div>
+<div class="homebar"></div>
+</body>
+</html>
