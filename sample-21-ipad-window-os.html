@@ -69,14 +69,8 @@ padding:0 18px 0 26px;font-size:12.5px;font-weight:700;z-index:900;color:var(--f
 text-shadow:var(--tshadow);pointer-events:none}
 .status .r{margin-left:auto;display:flex;align-items:center;gap:9px;pointer-events:auto}
 
-/* 상태 표시줄 인디케이터 (휴대폰 형식) */
+/* 상태 표시줄 (조직명 + 프로필만) */
 .status .sys{font-size:11px;font-weight:700;opacity:.88}
-.status .ic{width:14px;height:14px;opacity:.9}
-.bat{width:22px;height:11px;border:1.4px solid currentColor;border-radius:3.5px;position:relative;opacity:.9}
-.bat::after{content:'';position:absolute;left:1.5px;top:1.5px;bottom:1.5px;width:14px;
-background:currentColor;border-radius:1.5px}
-.bat::before{content:'';position:absolute;right:-3.5px;top:3px;width:2px;height:4.5px;
-background:currentColor;border-radius:0 1px 1px 0}
 
 /* 사용자 프로필 — 상태 표시줄에 얹히는 형태 (드롭다운 장식 없음) */
 .prof{display:flex;align-items:center;gap:6px;padding:2px 7px 2px 2px;margin-left:3px;border-radius:99px;
@@ -435,9 +429,6 @@ background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
   <div class="tn">오전 9:41 · 4월 5일 (일)</div>
   <div class="r">
     <span class="sys">SH-Office</span>
-    <svg class="ic" viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5.5 5.5 0 0 1 7 0"/><circle cx="12" cy="19.5" r=".9" fill="currentColor"/></svg>
-    <span class="sys tn">86%</span>
-    <div class="bat"></div>
     <button class="prof" id="profBtn" aria-haspopup="true" aria-expanded="false" aria-label="윤길배 계정 메뉴">
       <span class="av">윤길</span><span class="nm">윤길배</span>
     </button>
