@@ -132,26 +132,21 @@ box-shadow:0 10px 30px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:o
 .toast.on{opacity:1;transform:translateX(-50%)}
 
 /* ══ 홈 화면 ══ */
-.home{position:fixed;inset:var(--statusH) 0 var(--dockH);display:grid;grid-template-columns:1.15fr 1fr;gap:34px;
-padding:16px 46px 0;z-index:10;transition:transform .38s cubic-bezier(.32,.72,0,1),opacity .3s,filter .38s}
+.home{position:fixed;inset:var(--statusH) 0 var(--dockH);display:flex;flex-direction:column;gap:14px;
+padding:14px 46px 0;z-index:10;transition:transform .38s cubic-bezier(.32,.72,0,1),opacity .3s,filter .38s}
 .home.pushed{transform:scale(.968);opacity:.62;filter:blur(1.2px)}
-.pane{display:flex;flex-direction:column;gap:20px;min-height:0;overflow-y:auto;scrollbar-width:none}
-.pane::-webkit-scrollbar{display:none}
-.greet h1{font-size:26px;font-weight:800;letter-spacing:-1.1px;text-shadow:var(--tshadow)}
-.greet p{font-size:12.5px;opacity:.72;margin-top:5px}
+.greet{flex-shrink:0}
+.greet h1{font-size:25px;font-weight:800;letter-spacing:-1.1px;text-shadow:var(--tshadow)}
+.greet p{font-size:12.5px;opacity:.72;margin-top:4px}
 
-/* 위젯 그리드 — 3열 기준, 크기는 행 × 열 (1×1 ~ 2×3) */
-.wgrid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:190px;gap:16px;align-content:start}
+/* 홈 격자 — 아이콘과 위젯이 같은 칸을 쓴다 (경계 없음, 빈 칸은 빈 칸으로) */
+.hgrid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(var(--cols),1fr);
+grid-template-rows:repeat(var(--rows),1fr);gap:16px}
 .wg{border-radius:32px;corner-shape:squircle;padding:17px 19px;position:relative;overflow:hidden;cursor:pointer;color:var(--wgFg);
 background:var(--wgBg);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);
 border:1px solid var(--wgBorder);box-shadow:var(--wgShadow);transition:transform .18s,background .3s,border-color .3s}
 .wg:hover{transform:translateY(-2px)}
-.wg[data-c="1"],.wgrid .slot[data-c="1"]{grid-column:span 1}
-.wg[data-c="2"],.wgrid .slot[data-c="2"]{grid-column:span 2}
-.wg[data-c="3"],.wgrid .slot[data-c="3"]{grid-column:span 3}
-.wg[data-r="1"],.wgrid .slot[data-r="1"]{grid-row:span 1}
-.wg[data-r="2"],.wgrid .slot[data-r="2"]{grid-row:span 2}
-.wgrid .slot{border-radius:32px;corner-shape:squircle}
+.wg{min-width:0;min-height:0}
 
 /* 줄인 만큼 내용도 같이 줄어들도록 — 폭 비율에 맞춰 본문 전체를 축소 */
 .wgc{width:calc(100% / var(--s,1));height:calc(100% / var(--s,1));
@@ -159,20 +154,18 @@ transform:scale(var(--s,1));transform-origin:top left;transition:transform .16s}
 /* 폭이 줄어도 행 높이가 늘지 않도록 한 줄로 자른다 */
 .pitem .t,.pitem .s{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* 크기별 표시량 — 2행이면 상세를 덧붙인다 */
-.wg .more{display:none;margin-top:12px;padding-top:11px;border-top:1px solid var(--wgTrack)}
-.wg[data-r="2"] .more{display:block}
-.wg.deadline[data-r="1"][data-c="2"] .more,
-.wg.deadline[data-r="1"][data-c="3"] .more{display:block;margin-top:10px;padding-top:9px}
-.wg.deadline[data-r="1"] .more .drow:nth-child(n+2){display:none}
+/* 표시량은 높이(행 수)로만 — 폭이 줄면 감추지 않고 축소해서 보여준다 */
+.wg .more{display:none;margin-top:11px;padding-top:10px;border-top:1px solid var(--wgTrack)}
+.wg[data-r="2"] .more,.wg[data-r="3"] .more{display:block}
 .wg[data-r="1"] .plist{gap:6px;margin-top:7px}
 .wg[data-r="1"] .pitem{grid-template-columns:24px 1fr 38px}
 .wg[data-r="1"] .pitem .av{width:24px;height:24px}
-/* 행 수만으로 결정 — 폭이 줄면 감추는 게 아니라 축소해서 보여준다 */
-.wg[data-r="1"] .plist .pitem:nth-child(n+4){display:none}
-.wg[data-r="2"] .plist .pitem:nth-child(n+6){display:none}
-.wg[data-r="1"] .nlist .nrow:nth-child(n+5){display:none}
+.wg[data-r="1"] .plist .pitem:nth-child(n+3){display:none}
+.wg[data-r="2"] .plist .pitem:nth-child(n+5){display:none}
+.wg[data-r="1"] .nlist .nrow:nth-child(n+4){display:none}
 .wg[data-r="2"] .nlist .nrow:nth-child(n+6){display:none}
+.wg[data-r="1"] .ring{margin-top:8px}
+.wg[data-r="1"] .ring svg{width:60px;height:60px}
 /* 1열 폭에서는 링과 수치를 세로로 쌓고 링을 줄인다 */
 .wg[data-c="1"] .ring{flex-direction:column;align-items:flex-start;gap:9px;margin-top:10px}
 .wg[data-c="1"] .ring svg{width:58px;height:58px}
@@ -227,10 +220,9 @@ border-color:rgba(255,255,255,.13);box-shadow:0 10px 28px rgba(16,24,32,.24)}
 .nrow .t{opacity:.9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nrow .d{margin-left:auto;opacity:.55;font-size:9.5px;flex-shrink:0}
 
-/* 앱 아이콘 */
-.apps{display:grid;grid-template-columns:repeat(5,1fr);gap:22px 12px;align-content:start;padding-top:4px}
-.ap{display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;
-transition:transform .16s cubic-bezier(.3,1.4,.5,1);background:none}
+/* 앱 아이콘 — 격자 한 칸 */
+.ap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;cursor:pointer;
+transition:transform .16s cubic-bezier(.3,1.4,.5,1);background:none;min-width:0}
 .ap:hover{transform:scale(1.07)}
 .ap:active{transform:scale(.94)}
 .ap:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:14px}
@@ -248,9 +240,11 @@ border:1.5px solid rgba(255,255,255,.4);z-index:2}
 text-shadow:var(--tshadow);max-width:80px}
 .ap.soon .icon{opacity:.42}.ap.soon .nm{opacity:.5}
 
-/* 아이콘 재배치 (드래그) */
-.slot{border-radius:19px;corner-shape:squircle;border:2px dashed var(--slotB);background:var(--slotBg)}
-.apps .slot{width:60px;height:60px;justify-self:center;align-self:start}
+/* 재배치 (드래그) */
+.slot{border-radius:26px;corner-shape:squircle;border:2px dashed var(--slotB);background:var(--slotBg)}
+.hgrid .slot.icon-slot{border-radius:19px;width:66px;height:66px;justify-self:center;align-self:center}
+.hgrid .slot.bad{border-color:rgba(232,26,59,.6);background:rgba(232,26,59,.08)}
+.swaptarget{outline:2px dashed var(--slotB);outline-offset:3px;border-radius:26px}
 .dock .slot{width:50px;height:50px;border-radius:16px;flex-shrink:0;
 border-color:var(--dockSlotB);background:var(--dockSlotBg)}
 .ghost{position:fixed;z-index:2000;pointer-events:none;transform:scale(1.14);transform-origin:center;
@@ -500,14 +494,11 @@ background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 </div>
 
 <div class="home" id="home">
-  <div class="pane">
-    <div class="greet">
+  <div class="greet">
       <h1>윤길배 대표이사님, 좋은 아침입니다</h1>
-      <p>성현회계법인 · 진행 중 12건 · 리뷰 대기 47건 — 아이콘·위젯은 끌어서 옮기고, 창은 화면 모서리로 끌면 4분할됩니다</p>
-    </div>
-    <div class="wgrid" id="wgrid"></div>
+      <p>성현회계법인 · 진행 중 12건 · 리뷰 대기 47건 — 아이콘과 위젯을 같은 격자에서 옮기고, 위젯 모서리로 크기를 바꿉니다</p>
   </div>
-  <div class="apps" id="apps"></div>
+  <div class="hgrid" id="hgrid"></div>
 </div>
 
 <div class="dots"><i class="on"></i><i></i><i></i></div>
@@ -838,43 +829,37 @@ const WIDGETS={
       ].map(n=>`<div class="nrow"><span class="tg ${n[1]}">${n[0]}</span><span class="t">${n[2]}</span>
         <span class="d tn">${n[3]}</span></div>`).join('')}</div>`}
 };
-/* 위젯 크기는 '행 x 열' (행 1~2, 열 1~3) */
-const WG_DEFAULT=['dday','aqi','notice','proj'];
-const WG_SIZE_DEFAULT={dday:'1x2',aqi:'1x1',notice:'1x3',proj:'1x3'};
-const WG_COLS=3, WG_ROWS=2, WG_ROWH=190, WG_GAP=16;
-const validSize=v=>/^[1-2]x[1-3]$/.test(v);
-/* 기본 크기보다 좁아진 만큼 본문을 축소한다 (읽을 수 있는 하한 유지) */
-function contentScale(id,cols){
-  const dc=Number((WG_SIZE_DEFAULT[id]||'1x1').split('x')[1]);
-  return Math.min(1, Math.round((0.62+0.38*(cols/dc))*1000)/1000);
-}
-const sizeOf=id=>validSize(wgSize[id])?wgSize[id]:'1x1';
-const sizeLabel=v=>v.replace('x',' × ');
 
-const HOME_DEFAULT=['aud','k1118','fin','xbrl','ai','tax','ins','law','erp','rag','cal','rev','aqi','notice','settings'];
+/* ══════════ 홈 격자 (아이콘 + 위젯이 같은 칸을 쓴다) ══════════ */
+const COLS=10, ROWS=5, GAP=16;
+const hgrid=document.getElementById('hgrid'), dock=document.getElementById('dock');
+hgrid.style.setProperty('--cols',COLS);
+hgrid.style.setProperty('--rows',ROWS);
+
+/* k: 'w' 위젯 · 'a' 앱 / r,c: 시작 칸 / rs,cs: 차지하는 칸 수 */
+const LAYOUT_DEFAULT=[
+  {k:'w',id:'dday',  r:1,c:1, rs:2,cs:3},
+  {k:'w',id:'aqi',   r:1,c:4, rs:2,cs:2},
+  {k:'w',id:'notice',r:1,c:6, rs:2,cs:5},
+  {k:'w',id:'proj',  r:3,c:1, rs:2,cs:5},
+  ...['aud','k1118','fin','xbrl','ai'].map((id,i)=>({k:'a',id,r:3,c:6+i,rs:1,cs:1})),
+  ...['tax','ins','law','erp','rag'].map((id,i)=>({k:'a',id,r:4,c:6+i,rs:1,cs:1})),
+  ...['cal','rev','aqi','notice','settings'].map((id,i)=>({k:'a',id,r:5,c:1+i,rs:1,cs:1}))
+];
 const DOCK_DEFAULT=['aud','k1118','fin','xbrl','ai','rev','cal','aqi'];
 const DOCK_MAX=10;
+const WG_DEF_COLS={dday:3,aqi:2,notice:5,proj:5};   /* 축소 비율 기준 */
 
-/* ══════════ 홈 · Dock 렌더 ══════════ */
-const apps=document.getElementById('apps'), dock=document.getElementById('dock'),
-      wgrid=document.getElementById('wgrid');
-let homeOrder=[...HOME_DEFAULT], dockOrder=[...DOCK_DEFAULT];
-let wgOrder=[...WG_DEFAULT], wgSize={...WG_SIZE_DEFAULT};
+let layout=LAYOUT_DEFAULT.map(o=>({...o}));
+let dockOrder=[...DOCK_DEFAULT];
 
-function renderWidgets(){
-  wgrid.querySelectorAll('[data-id]').forEach(n=>n.remove());
-  wgOrder.forEach(id=>{
-    const w=WIDGETS[id]; if(!w) return;
-    const el=document.createElement('div');
-    el.className='wg'+(w.cls?' '+w.cls:'');
-    const [r,c]=sizeOf(id).split('x');
-    el.dataset.id=id; el.dataset.open=w.open; el.dataset.r=r; el.dataset.c=c;
-    el.innerHTML=`<div class="wgc" style="--s:${contentScale(id,+c)}">${w.body()}</div>`+
-      `<span class="szl tn">${sizeLabel(sizeOf(id))}</span>
-       <button class="rsz" title="크기 조정" aria-label="크기 조정">
-         <svg viewBox="0 0 12 12"><path d="M10 4v6H4M10 10L3 3"/></svg></button>`;
-    wgrid.appendChild(el);
-  });
+const uid=o=>o.k+':'+o.id;
+const fits=o=>o.r>=1 && o.c>=1 && o.r+o.rs-1<=ROWS && o.c+o.cs-1<=COLS;
+const hitsBox=(a,b)=>!(a.c+a.cs<=b.c || b.c+b.cs<=a.c || a.r+a.rs<=b.r || b.r+b.rs<=a.r);
+const collide=(box,skip)=>layout.filter(o=>o!==skip && hitsBox(box,o));
+function contentScale(id,cols){
+  const dc=WG_DEF_COLS[id]||2;
+  return Math.min(1, Math.round((0.62+0.38*(cols/dc))*1000)/1000);
 }
 
 const iconFace = id => id==='cal'
@@ -884,23 +869,51 @@ const dockFace = id => id==='cal'
   ? '<span style="font-size:7px;font-weight:800;color:#E81A3B">4월</span><span class="tn" style="font-size:16px;line-height:1">5</span>'
   : APPS[id].short+(id==='ai'?'<small>칼</small>':'');
 
-function renderHome(){
-  apps.querySelectorAll('[data-id]').forEach(n=>n.remove());
-  homeOrder.forEach(id=>{
-    const a=APPS[id];
-    const el=document.createElement('button');
-    el.className='ap'+(a.soon?' soon':''); el.dataset.open=id; el.dataset.id=id;
-    el.setAttribute('aria-label',a.name);
+function makeItem(o){
+  const el=document.createElement(o.k==='w'?'div':'button');
+  el.dataset.uid=uid(o); el.dataset.k=o.k; el.dataset.id=o.id;
+  el.style.gridArea=`${o.r} / ${o.c} / span ${o.rs} / span ${o.cs}`;
+  if(o.k==='w'){
+    const w=WIDGETS[o.id]; if(!w) return null;
+    el.className='wg'+(w.cls?' '+w.cls:'');
+    el.dataset.open=w.open; el.dataset.r=o.rs; el.dataset.c=o.cs;
+    el.innerHTML=`<div class="wgc" style="--s:${contentScale(o.id,o.cs)}">${w.body()}</div>`+
+      `<span class="szl tn">${o.rs} × ${o.cs}</span>`+
+      `<button class="rsz" title="크기 조정" aria-label="크기 조정">
+         <svg viewBox="0 0 12 12"><path d="M10 4v6H4M10 10L3 3"/></svg></button>`;
+  }else{
+    const a=APPS[o.id]; if(!a) return null;
+    el.className='ap'+(a.soon?' soon':'');
+    el.dataset.open=o.id; el.setAttribute('aria-label',a.name);
     el.innerHTML=`<div class="ish"><div class="icon" style="--g:${a.bg};${a.fg?`color:${a.fg}`:''}">
-      ${iconFace(id)}</div>${a.badge?`<span class="bd tn">${a.badge}</span>`:''}</div>
+      ${iconFace(o.id)}</div>${a.badge?`<span class="bd tn">${a.badge}</span>`:''}</div>
       <div class="nm">${a.name}${a.soon?'<br>('+a.sub+')':''}</div>`;
-    apps.appendChild(el);
+  }
+  return el;
+}
+function renderGrid(){
+  hgrid.querySelectorAll('[data-uid]').forEach(n=>n.remove());
+  layout.forEach(o=>{ const el=makeItem(o); if(el) hgrid.appendChild(el); });
+  fitWidgets();
+}
+/* 칸 높이가 줄어든 화면에서도 내용이 잘리지 않도록 축소 비율을 한 번 더 보정 */
+function fitWidgets(){
+  hgrid.querySelectorAll('.wg').forEach(el=>{
+    const c=el.querySelector('.wgc'); if(!c) return;
+    let s=contentScale(el.dataset.id, +el.dataset.c);
+    c.style.setProperty('--s',s);
+    for(let i=0;i<2;i++){
+      const over=c.scrollHeight-c.clientHeight;
+      if(over<=1) break;
+      s=Math.max(0.5, Math.round(((c.clientHeight-2)*s)/c.scrollHeight*1000)/1000);
+      c.style.setProperty('--s',s);
+    }
   });
 }
 function renderDock(){
   dock.querySelectorAll('[data-id]').forEach(n=>n.remove());
   dockOrder.forEach(id=>{
-    const a=APPS[id];
+    const a=APPS[id]; if(!a) return;
     const el=document.createElement('button');
     el.className='dk'; el.dataset.dock=id; el.dataset.id=id;
     el.style.setProperty('--g',a.bg);
@@ -917,38 +930,52 @@ function renderDock(){
 const resetBtn=document.getElementById('resetLayout');
 const tile4Btn=document.getElementById('tile4');
 tile4Btn.addEventListener('click',tileQuarters);
-const isDefault=()=>homeOrder.join()===HOME_DEFAULT.join() && dockOrder.join()===DOCK_DEFAULT.join()
-  && wgOrder.join()===WG_DEFAULT.join() && WG_DEFAULT.every(id=>wgSize[id]===WG_SIZE_DEFAULT[id]);
+const sameLayout=()=>JSON.stringify(layout)===JSON.stringify(LAYOUT_DEFAULT);
+const isDefault=()=>sameLayout() && dockOrder.join()===DOCK_DEFAULT.join();
 function saveLayout(){
   resetBtn.classList.toggle('show',!isDefault());
   try{ localStorage.setItem(LKEY,JSON.stringify(
-    {user:USER.mail,home:homeOrder,dock:dockOrder,wg:wgOrder,wgSize,theme})); }catch(e){}
+    {user:USER.mail,layout,dock:dockOrder,theme})); }catch(e){}
 }
 function loadLayout(){
   try{
     const raw=localStorage.getItem(LKEY); if(!raw) return;
     const o=JSON.parse(raw);
-    const ok=(v,M)=>Array.isArray(v)&&v.length&&v.every(id=>M[id]);
-    if(ok(o.home,APPS)&&ok(o.dock,APPS)){ homeOrder=[...new Set(o.home)]; dockOrder=[...new Set(o.dock)].slice(0,DOCK_MAX); }
-    if(ok(o.wg,WIDGETS)) wgOrder=[...new Set(o.wg)];
-    if(o.wgSize) wgOrder.forEach(id=>{ if(validSize(o.wgSize[id])) wgSize[id]=o.wgSize[id]; });
+    if(Array.isArray(o.layout) && o.layout.length){
+      const seen=new Set();
+      const ok=o.layout.filter(it=>it && (it.k==='w'?WIDGETS[it.id]:APPS[it.id])
+        && [it.r,it.c,it.rs,it.cs].every(n=>Number.isInteger(n)&&n>=1)
+        && !seen.has(it.k+':'+it.id) && seen.add(it.k+':'+it.id)
+        && it.r+it.rs-1<=ROWS && it.c+it.cs-1<=COLS);
+      if(ok.length) layout=ok.map(it=>({k:it.k,id:it.id,r:it.r,c:it.c,rs:it.rs,cs:it.cs}));
+    }
+    if(Array.isArray(o.dock)&&o.dock.every(id=>APPS[id])) dockOrder=[...new Set(o.dock)].slice(0,DOCK_MAX);
     if(THEMES[o.theme]) theme=o.theme;
   }catch(e){}
 }
 function resetLayout(){
-  homeOrder=[...HOME_DEFAULT]; dockOrder=[...DOCK_DEFAULT];
-  wgOrder=[...WG_DEFAULT]; wgSize={...WG_SIZE_DEFAULT};
-  renderHome(); renderDock(); renderWidgets(); saveLayout();
+  layout=LAYOUT_DEFAULT.map(o=>({...o})); dockOrder=[...DOCK_DEFAULT];
+  renderGrid(); renderDock(); saveLayout();
   toast('홈 화면 배치를 기본값으로 되돌렸습니다');
 }
 resetBtn.addEventListener('click',resetLayout);
 
-/* ══════════ 아이콘 · 위젯 드래그 재배치 ══════════ */
+/* ══════════ 드래그 재배치 ══════════ */
 let drag=null, justDragged=false;
-const listOf = c => c===dock ? dockOrder : c===wgrid ? wgOrder : homeOrder;
-const renderOf = c => c===dock ? renderDock() : c===wgrid ? renderWidgets() : renderHome();
-
-/* 포인터 위치가 들어갈 자리 (읽기 순서 기준) */
+function cellMetrics(){
+  const r=hgrid.getBoundingClientRect();
+  return {left:r.left, top:r.top,
+          w:(r.width-GAP*(COLS-1))/COLS, h:(r.height-GAP*(ROWS-1))/ROWS};
+}
+function cellAt(x,y){
+  const m=cellMetrics();
+  return {c:Math.min(COLS,Math.max(1,Math.floor((x-m.left)/(m.w+GAP))+1)),
+          r:Math.min(ROWS,Math.max(1,Math.floor((y-m.top)/(m.h+GAP))+1))};
+}
+function hit(el,x,y,pad){
+  const r=el.getBoundingClientRect();
+  return x>=r.left-pad && x<=r.right+pad && y>=r.top-pad && y<=r.bottom+pad;
+}
 function indexAt(c,x,y){
   const items=[...c.querySelectorAll('[data-id]')];
   for(let i=0;i<items.length;i++){
@@ -957,102 +984,118 @@ function indexAt(c,x,y){
   }
   return items.length;
 }
-function hit(el,x,y,pad){
-  const r=el.getBoundingClientRect();
-  return x>=r.left-pad && x<=r.right+pad && y>=r.top-pad && y<=r.bottom+pad;
-}
-function placeSlot(c,idx){
-  const kids=[...c.querySelectorAll('[data-id]')];
-  c.insertBefore(drag.slot, kids[idx]||null);
-  drag.target=c;
-}
-function beginDrag(e,item){
-  const id=item.dataset.id;
-  const kind=item.classList.contains('wg')?'widget':'app';
-  const from=kind==='widget'?wgrid:(item.closest('.dock')?dock:apps);
-  /* 고스트로 띄울 대상: 위젯/Dock은 요소 자체, 홈 아이콘은 아이콘 사각형만 */
-  const face=(kind==='widget'||from===dock)?item:item.querySelector('.ish');
+function clearSwapHint(){ hgrid.querySelectorAll('.swaptarget').forEach(n=>n.classList.remove('swaptarget')); }
+
+function beginDrag(e,el){
+  const k=el.dataset.k, id=el.dataset.id;
+  const fromDock=!!el.closest('.dock');
+  const item = fromDock ? {k:'a',id,r:0,c:0,rs:1,cs:1}
+                        : layout.find(o=>uid(o)===el.dataset.uid);
+  const face=(k==='w')?el:(fromDock?el:el.querySelector('.ish'));
   const r=face.getBoundingClientRect();
 
   const ghost=document.createElement('div');
-  /* 홈 아이콘은 .ap 안에서만 스타일이 잡히므로 고스트에도 같은 문맥을 준다 */
-  ghost.className=kind==='widget'?'ghost wgg':(from===dock?'ghost':'ghost ap');
+  ghost.className = k==='w' ? 'ghost wgg' : (fromDock?'ghost':'ghost ap');
   ghost.style.cssText=`left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`;
   const clone=face.cloneNode(true);
   clone.style.width=r.width+'px'; clone.style.height=r.height+'px'; clone.style.margin='0';
   ghost.appendChild(clone);
   document.body.appendChild(ghost);
 
-  const slot=document.createElement('div'); slot.className='slot';
-  if(kind==='widget'){ const [r,c]=sizeOf(id).split('x'); slot.dataset.r=r; slot.dataset.c=c; }
-  const idx=listOf(from).indexOf(id);
-  drag={id,kind,from,ghost,slot,target:from,
-        offX:e.clientX-r.left, offY:e.clientY-r.top, homeIdx:idx};
+  const slot=document.createElement('div');
+  slot.className='slot'+(item.rs===1&&item.cs===1&&item.k==='a'?' icon-slot':'');
 
-  listOf(from).splice(idx,1);
-  renderOf(from);
-  placeSlot(from,idx);
+  drag={item:{...item}, origin:item, fromDock, ghost, slot, target:null, swap:null,
+        dockIdx:fromDock?dockOrder.indexOf(id):-1,
+        offX:e.clientX-r.left, offY:e.clientY-r.top};
+
+  if(fromDock){ dockOrder.splice(drag.dockIdx,1); renderDock(); }
+  else { layout=layout.filter(o=>o!==item); renderGrid(); }
   document.body.classList.add('editing');
 }
 function moveDrag(e){
-  const {ghost}=drag;
+  const {ghost,item,slot}=drag;
   ghost.style.left=(e.clientX-drag.offX)+'px';
   ghost.style.top =(e.clientY-drag.offY)+'px';
+  clearSwapHint();
 
-  if(drag.kind==='widget'){
-    if(hit(wgrid,e.clientX,e.clientY,26)) placeSlot(wgrid,indexAt(wgrid,e.clientX,e.clientY));
-    else { drag.slot.remove(); drag.target=null; }
-    return;
+  /* 앱 아이콘은 Dock에도 놓을 수 있다 */
+  if(item.k==='a' && hit(dock,e.clientX,e.clientY,18) && dockOrder.length<DOCK_MAX){
+    const kids=[...dock.querySelectorAll('[data-id]')];
+    dock.insertBefore(slot, kids[indexAt(dock,e.clientX,e.clientY)]||null);
+    slot.classList.remove('bad');
+    drag.target='dock'; drag.swap=null; return;
   }
-  if(hit(dock,e.clientX,e.clientY,18) && dockOrder.length<DOCK_MAX){
-    placeSlot(dock,indexAt(dock,e.clientX,e.clientY));
-  }else if(hit(apps,e.clientX,e.clientY,24)){
-    placeSlot(apps,indexAt(apps,e.clientX,e.clientY));
-  }else{
-    drag.slot.remove(); drag.target=null;
+  if(hit(hgrid,e.clientX,e.clientY,20)){
+    const cell=cellAt(e.clientX,e.clientY);
+    const box={...item, r:Math.min(cell.r,ROWS-item.rs+1), c:Math.min(cell.c,COLS-item.cs+1)};
+    const bump=collide(box);
+    const swappable = bump.length===1 && bump[0].rs===item.rs && bump[0].cs===item.cs;
+    if(bump.length===0 || swappable){
+      slot.classList.remove('bad');
+      slot.style.gridArea=`${box.r} / ${box.c} / span ${box.rs} / span ${box.cs}`;
+      hgrid.appendChild(slot);
+      drag.target=box; drag.swap=swappable?bump[0]:null;
+      if(swappable) hgrid.querySelector(`[data-uid="${uid(bump[0])}"]`)?.classList.add('swaptarget');
+      return;
+    }
   }
+  slot.remove(); drag.target=null; drag.swap=null;
 }
 function endDrag(){
-  const {id,from,slot,ghost}=drag;
-  let c=drag.target, idx;
-  if(c && slot.parentNode===c){
-    idx=[...c.children].filter(n=>n.dataset.id||n===slot).indexOf(slot);
-  }else{ c=from; idx=drag.homeIdx; }          /* 밖에 놓으면 원래 자리로 */
-  const list=listOf(c);
-  const dup=list.indexOf(id);                 /* 다른 쪽에 이미 있던 앱이면 '이동'으로 처리 */
-  if(dup>-1){ list.splice(dup,1); if(dup<idx) idx--; }
-  list.splice(idx,0,id);
-  slot.remove(); ghost.remove();
+  const {item,origin,fromDock,slot,ghost,target,swap}=drag;
+  if(target==='dock'){
+    const idx=[...dock.children].filter(n=>n.dataset.id||n===slot).indexOf(slot);
+    dockOrder.splice(Math.max(0,idx),0,item.id);
+  }else if(target){
+    if(swap){ swap.r=fromDock?swap.r:origin.r; swap.c=fromDock?swap.c:origin.c; }
+    layout.push({...item, r:target.r, c:target.c});
+  }else{                                   /* 유효한 자리가 없으면 원위치 */
+    if(fromDock) dockOrder.splice(Math.max(0,drag.dockIdx),0,item.id);
+    else layout.push({...origin});
+  }
+  slot.remove(); ghost.remove(); clearSwapHint();
   document.body.classList.remove('editing');
   drag=null;
-  renderHome(); renderDock(); renderWidgets(); saveLayout();
+  renderGrid(); renderDock(); saveLayout();
   justDragged=true; setTimeout(()=>justDragged=false,0);
 }
-/* ── 위젯 크기 조정 (모서리 핸들을 끌면 1×1 · 2×1 · 1×2 · 2×2로 스냅) ── */
+
+/* ── 위젯 크기 조정 — 격자 칸 단위, 다른 위젯과 겹치면 더 커지지 않는다 ── */
 function startResize(e,handle){
-  const el=handle.closest('.wg'), id=el.dataset.id;
-  const g=wgrid.getBoundingClientRect(), r=el.getBoundingClientRect();
-  const GAP=WG_GAP, ROW=WG_ROWH, COL=(g.width-GAP*(WG_COLS-1))/WG_COLS;
-  const x0=r.left, y0=r.top, before=sizeOf(id);
+  const el=handle.closest('.wg'), u=el.dataset.uid;
+  const item=layout.find(o=>uid(o)===u); if(!item) return;
+  const m=cellMetrics(), before=item.rs+'x'+item.cs;
+  const x0=m.left+(item.c-1)*(m.w+GAP), y0=m.top+(item.r-1)*(m.h+GAP);
   el.classList.add('rz');
   handle.setPointerCapture(e.pointerId);
+  const apply=(rs,cs)=>{
+    item.rs=rs; item.cs=cs;
+    el.style.gridArea=`${item.r} / ${item.c} / span ${rs} / span ${cs}`;
+    el.dataset.r=rs; el.dataset.c=cs;
+    el.querySelector('.szl').textContent=rs+' × '+cs;
+    fitWidgets();
+  };
   const move=ev=>{
     ev.preventDefault();
-    const cols=Math.min(WG_COLS,Math.max(1,Math.ceil((ev.clientX-x0+GAP/2)/(COL+GAP))));
-    const rows=Math.min(WG_ROWS,Math.max(1,Math.ceil((ev.clientY-y0+GAP/2)/(ROW+GAP))));
-    const size=rows+'x'+cols;
-    if(size!==wgSize[id]){
-      wgSize[id]=size; el.dataset.r=rows; el.dataset.c=cols;
-      el.querySelector('.szl').textContent=sizeLabel(size);
-      el.querySelector('.wgc').style.setProperty('--s',contentScale(id,cols));
+    const csT=Math.max(2,Math.min(COLS-item.c+1,Math.ceil((ev.clientX-x0+GAP/2)/(m.w+GAP))));
+    const rsT=Math.max(1,Math.min(ROWS-item.r+1,Math.ceil((ev.clientY-y0+GAP/2)/(m.h+GAP))));
+    /* 커서가 가리킨 크기에 가장 가까우면서 다른 항목과 겹치지 않는 크기를 고른다 */
+    let best=null;
+    for(let R=rsT;R>=1;R--) for(let C=csT;C>=2;C--){
+      if(collide({...item,rs:R,cs:C},item).length) continue;
+      const d=(rsT-R)+(csT-C);
+      if(!best||d<best.d||(d===best.d&&R*C>best.rs*best.cs)) best={rs:R,cs:C,d};
     }
+    if(!best) return;
+    if(best.rs!==item.rs||best.cs!==item.cs) apply(best.rs,best.cs);
   };
   const up=()=>{
     handle.removeEventListener('pointermove',move);
     handle.removeEventListener('pointerup',up);
     handle.removeEventListener('pointercancel',up);
     el.classList.remove('rz');
-    if(sizeOf(id)!==before) saveLayout();
+    if(item.rs+'x'+item.cs!==before) saveLayout();
     justDragged=true; setTimeout(()=>justDragged=false,0);
   };
   handle.addEventListener('pointermove',move);
@@ -1063,14 +1106,14 @@ function startResize(e,handle){
 document.addEventListener('pointerdown',e=>{
   const rsz=e.target.closest('.rsz');
   if(rsz){ e.preventDefault(); e.stopPropagation(); startResize(e,rsz); return; }
-  const item=e.target.closest('.ap[data-id],.dk[data-id],.wg[data-id]');
-  if(!item||e.button) return;
+  const el=e.target.closest('.hgrid [data-uid],.dk[data-id]');
+  if(!el||e.button) return;
   const sx=e.clientX, sy=e.clientY;
   let started=false;
   const move=ev=>{
     if(!started){
       if(Math.abs(ev.clientX-sx)+Math.abs(ev.clientY-sy)<6) return;
-      started=true; beginDrag(ev,item);
+      started=true; beginDrag(ev,el);
     }
     ev.preventDefault(); moveDrag(ev);
   };
@@ -1361,6 +1404,7 @@ document.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&e.key==='m'){ e.preventDefault(); minApp(act[0]); }
 });
 addEventListener('resize',()=>{
+  fitWidgets();
   const ar=area();
   wins.forEach((w,id)=>{
     if(w.state==='max'){ Object.assign(w.el.style,{left:ar.x+'px',top:ar.y+'px',width:ar.w+'px',height:ar.h+'px'}); return; }
@@ -1372,7 +1416,7 @@ addEventListener('resize',()=>{
 });
 /* 초기 배치 렌더 후 대시보드 한 창 띄워두기 */
 loadLayout(); applyTheme(theme,false);
-renderHome(); renderDock(); renderWidgets(); saveLayout();
+renderGrid(); renderDock(); saveLayout();
 openApp('aud');
 </script>
 </body>
