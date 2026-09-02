@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>샘플 21 · iPad 홈 + 창 시스템 (이동 · 크기조정)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--red:#E81A3B;--slate:#5B6E7F;--blue:#0062B8;--ok:#1F9D61;--amber:#C77414;
+--ink:#1C1C1E;--txt:#3A3A3C;--txt2:#6C6C70;--txt3:#AEAEB2;--line:#E4E4E9;--line2:#F0F0F3;
+--dockH:96px;--statusH:30px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'SF Pro Text','Malgun Gothic',sans-serif;
+font-size:13px;color:#fff;-webkit-font-smoothing:antialiased;overflow:hidden;background:#0F1620;touch-action:none}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.tn{font-variant-numeric:tabular-nums}
+.ic{width:16px;height:16px;stroke:currentColor;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+
+/* ══ 배경 ══ */
+.wall{position:fixed;inset:0;overflow:hidden;background:radial-gradient(1200px 900px at 18% 8%,#3B4A5A,#232E3A 45%,#141C25)}
+.wall span{position:absolute;border-radius:50%;filter:blur(100px)}
+.b1{width:760px;height:600px;left:-140px;top:-120px;background:rgba(232,26,59,.42)}
+.b2{width:820px;height:640px;right:-180px;top:12%;background:rgba(0,98,184,.38)}
+.b3{width:700px;height:520px;left:26%;bottom:-220px;background:rgba(91,110,127,.55)}
+
+/* ══ 상태 표시줄 ══ */
+.status{position:fixed;top:0;left:0;right:0;height:var(--statusH);display:flex;align-items:center;
+padding:0 26px;font-size:12.5px;font-weight:700;z-index:900;text-shadow:0 1px 3px rgba(0,0,0,.35);pointer-events:none}
+.status .r{margin-left:auto;display:flex;align-items:center;gap:9px}
+.bat{width:23px;height:11.5px;border:1.5px solid rgba(255,255,255,.9);border-radius:3.5px;position:relative}
+.bat::after{content:'';position:absolute;left:1.5px;top:1.5px;bottom:1.5px;width:15px;background:#fff;border-radius:1.5px}
+.bat::before{content:'';position:absolute;right:-3.5px;top:3px;width:2px;height:4.5px;background:rgba(255,255,255,.9);border-radius:0 1px 1px 0}
+
+/* ══ 홈 화면 ══ */
+.home{position:fixed;inset:var(--statusH) 0 var(--dockH);display:grid;grid-template-columns:1.15fr 1fr;gap:34px;
+padding:16px 46px 0;z-index:10;transition:transform .38s cubic-bezier(.32,.72,0,1),opacity .3s,filter .38s}
+.home.pushed{transform:scale(.968);opacity:.62;filter:blur(1.2px)}
+.pane{display:flex;flex-direction:column;gap:20px;min-height:0}
+.greet h1{font-size:26px;font-weight:800;letter-spacing:-1.1px;text-shadow:0 2px 10px rgba(0,0,0,.3)}
+.greet p{font-size:12.5px;opacity:.72;margin-top:5px}
+.wgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.wg{border-radius:22px;padding:17px 19px;position:relative;overflow:hidden;cursor:pointer;
+background:rgba(18,23,30,.42);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);
+border:1px solid rgba(255,255,255,.15);box-shadow:0 10px 30px rgba(0,0,0,.28);transition:transform .18s}
+.wg:hover{transform:translateY(-2px)}
+.wg .hd{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:800;letter-spacing:1.1px;opacity:.62;text-transform:uppercase}
+.wg .hd .sq{width:15px;height:15px;border-radius:4.5px;display:flex;align-items:center;justify-content:center;font-size:6.5px;font-weight:900}
+.wg.wide{grid-column:span 2}
+.wg.red{background:linear-gradient(150deg,rgba(232,26,59,.9),rgba(176,15,44,.86));border-color:rgba(255,255,255,.2)}
+.wg .big{font-size:36px;font-weight:800;letter-spacing:-2px;line-height:1;margin-top:10px}
+.wg .big small{font-size:13px;font-weight:700;opacity:.6;margin-left:3px;letter-spacing:0}
+.wg .cap{font-size:11.5px;opacity:.8;margin-top:7px;line-height:1.5}
+.wg .cap b{font-weight:800;opacity:1}
+.plist{margin-top:12px;display:flex;flex-direction:column;gap:11px}
+.pitem{display:grid;grid-template-columns:26px 1fr 38px;gap:10px;align-items:center}
+.pitem .av{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
+.pitem .t{font-size:11.5px;font-weight:700;letter-spacing:-.2px}
+.pitem .s{font-size:9.5px;opacity:.6;margin-top:2px}
+.pitem .pc{font-size:11px;font-weight:800;text-align:right}
+.pbar{grid-column:2/4;height:3.5px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden;margin-top:-4px}
+.pbar i{display:block;height:100%;border-radius:3px;background:#fff}
+.ring{display:flex;align-items:center;gap:16px;margin-top:12px}
+.ring svg{width:74px;height:74px;transform:rotate(-90deg)}
+.ring .val{font-size:25px;font-weight:800;letter-spacing:-1.2px}
+.ring .lab{font-size:10.5px;opacity:.7;margin-top:3px;line-height:1.5}
+.nlist{margin-top:11px;display:flex;flex-direction:column;gap:9px}
+.nrow{display:flex;align-items:center;gap:8px;font-size:11px}
+.nrow .tg{font-size:8.5px;font-weight:800;padding:2px 6px;border-radius:5px;flex-shrink:0;background:rgba(255,255,255,.2)}
+.nrow .tg.u{background:#fff;color:var(--red)}
+.nrow .t{opacity:.9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nrow .d{margin-left:auto;opacity:.55;font-size:9.5px;flex-shrink:0}
+
+/* 앱 아이콘 */
+.apps{display:grid;grid-template-columns:repeat(5,1fr);gap:22px 12px;align-content:start;padding-top:4px}
+.ap{display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;
+transition:transform .16s cubic-bezier(.3,1.4,.5,1);background:none}
+.ap:hover{transform:scale(1.07)}
+.ap:active{transform:scale(.94)}
+.ap:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:14px}
+.ap .icon{width:60px;height:60px;border-radius:15px;display:flex;flex-direction:column;align-items:center;
+justify-content:center;font-weight:800;font-size:13.5px;letter-spacing:-.5px;position:relative;color:#fff;
+box-shadow:0 6px 16px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.28)}
+.ap .icon small{font-size:8px;font-weight:700;opacity:.85;margin-top:2px}
+.ap .icon .bd{position:absolute;top:-5px;right:-5px;min-width:21px;height:21px;border-radius:11px;background:var(--red);
+font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 6px;
+box-shadow:0 2px 5px rgba(0,0,0,.35);border:1.5px solid rgba(255,255,255,.35)}
+.ap .nm{font-size:10.5px;font-weight:600;text-align:center;line-height:1.3;text-shadow:0 1px 3px rgba(0,0,0,.45);max-width:80px}
+.ap.soon .icon{opacity:.42}.ap.soon .nm{opacity:.5}
+
+/* 페이지 도트 */
+.dots{position:fixed;bottom:98px;left:0;right:0;display:flex;justify-content:center;gap:7px;z-index:15;pointer-events:none}
+.dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.35);display:block}
+.dots i.on{background:#fff}
+
+/* ══ Dock ══ */
+.dock{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:800;display:flex;align-items:center;gap:14px;
+padding:10px 16px;border-radius:26px;background:rgba(255,255,255,.18);
+backdrop-filter:blur(34px) saturate(180%);-webkit-backdrop-filter:blur(34px) saturate(180%);
+border:1px solid rgba(255,255,255,.24);box-shadow:0 12px 34px rgba(0,0,0,.3)}
+.dk{width:50px;height:50px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+color:#fff;font-size:11.5px;font-weight:800;letter-spacing:-.3px;position:relative;cursor:pointer;
+box-shadow:0 4px 12px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.24);
+transition:transform .17s cubic-bezier(.3,1.4,.5,1)}
+.dk:hover{transform:translateY(-8px) scale(1.1)}
+.dk:active{transform:translateY(-2px) scale(.96)}
+.dk small{font-size:7.5px;font-weight:700;opacity:.85;margin-top:1px}
+.dk .run{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;
+background:rgba(255,255,255,.92);opacity:0;transition:opacity .2s}
+.dk.on .run{opacity:1}
+.dk .tip{position:absolute;bottom:64px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:10.5px;
+font-weight:600;color:#1D1D1F;background:rgba(255,255,255,.95);padding:4px 10px;border-radius:7px;
+box-shadow:0 4px 14px rgba(0,0,0,.22);opacity:0;pointer-events:none;transition:opacity .15s}
+.dk:hover .tip{opacity:1}
+.dsep{width:1px;height:38px;background:rgba(255,255,255,.28)}
+.homebar{position:fixed;bottom:5px;left:50%;transform:translateX(-50%);width:132px;height:4.5px;border-radius:3px;
+background:rgba(255,255,255,.5);z-index:850;pointer-events:none}
+
+/* ══ 창 시스템 ══ */
+.snap{position:fixed;z-index:400;border-radius:16px;border:2px solid rgba(255,255,255,.6);
+background:rgba(255,255,255,.16);backdrop-filter:blur(6px);pointer-events:none;opacity:0;
+transition:opacity .14s,left .12s,top .12s,width .12s,height .12s}
+.snap.show{opacity:1}
+
+.win{position:fixed;border-radius:14px;overflow:hidden;background:#fff;color:var(--txt);display:flex;flex-direction:column;
+box-shadow:0 26px 70px rgba(0,0,0,.42),0 0 0 .5px rgba(0,0,0,.3);
+animation:winIn .26s cubic-bezier(.2,.9,.3,1.1)}
+@keyframes winIn{from{opacity:0;transform:scale(.9) translateY(14px)}to{opacity:1;transform:none}}
+.win.closing{animation:winOut .18s ease forwards}
+@keyframes winOut{to{opacity:0;transform:scale(.92)}}
+.win.min{animation:winMin .22s ease forwards}
+@keyframes winMin{to{opacity:0;transform:scale(.35) translateY(200px)}}
+.win.snapping{transition:left .18s cubic-bezier(.2,.8,.3,1),top .18s,width .18s,height .18s}
+.win.active{box-shadow:0 34px 84px rgba(0,0,0,.5),0 0 0 .5px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.1)}
+
+.wtb{height:42px;flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 12px;cursor:grab;
+background:#F5F5F7;border-bottom:.5px solid var(--line);user-select:none}
+.win.active .wtb{background:#EDEDF0}
+.wtb:active{cursor:grabbing}
+.lights{display:flex;gap:8px;flex-shrink:0}
+.lights button{width:12px;height:12px;border-radius:50%;background:#D4D4D8;display:flex;align-items:center;
+justify-content:center;padding:0}
+.win.active .lights .c{background:#FF5F57}
+.win.active .lights .m{background:#FEBC2E}
+.win.active .lights .z{background:#28C840}
+.lights svg{width:7px;height:7px;stroke:rgba(0,0,0,.55);stroke-width:2.2;fill:none;stroke-linecap:round;opacity:0}
+.lights:hover svg{opacity:1}
+.wtb .tt{display:flex;align-items:center;gap:8px;margin:0 auto;transform:translateX(-22px);pointer-events:none;
+max-width:calc(100% - 120px);overflow:hidden;white-space:nowrap}
+.wtb .tt .mk{width:17px;height:17px;border-radius:5px;display:flex;align-items:center;justify-content:center;
+font-size:6.5px;font-weight:900;color:#fff}
+.wtb .tt .n{font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.wtb .tt .s{font-size:10.5px;color:var(--txt3);font-weight:600}
+.wbody{flex:1;overflow:auto;background:#fff;min-height:0}
+.wbody::-webkit-scrollbar{width:9px;height:9px}
+.wbody::-webkit-scrollbar-thumb{background:rgba(0,0,0,.2);border-radius:9px;border:2.5px solid #fff}
+.rs{position:absolute;z-index:5}
+.rs.n{top:0;left:8px;right:8px;height:6px;cursor:ns-resize}
+.rs.s{bottom:0;left:8px;right:8px;height:6px;cursor:ns-resize}
+.rs.w{left:0;top:8px;bottom:8px;width:6px;cursor:ew-resize}
+.rs.e{right:0;top:8px;bottom:8px;width:6px;cursor:ew-resize}
+.rs.nw{left:0;top:0;width:14px;height:14px;cursor:nwse-resize}
+.rs.ne{right:0;top:0;width:14px;height:14px;cursor:nesw-resize}
+.rs.sw{left:0;bottom:0;width:14px;height:14px;cursor:nesw-resize}
+.rs.se{right:0;bottom:0;width:14px;height:14px;cursor:nwse-resize}
+
+/* ══ 창 내부 공용 UI ══ */
+.pad{padding:20px 22px 26px}
+.h1{font-size:19px;font-weight:800;color:var(--ink);letter-spacing:-.8px}
+.h1 span{color:var(--red)}
+.hsub{font-size:11.5px;color:var(--txt2);margin:5px 0 16px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin-bottom:18px}
+.kpi{border:.5px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff}
+.kpi .l{font-size:10px;color:var(--txt2);font-weight:600;display:flex;align-items:center;gap:5px}
+.kpi .l i{width:6px;height:6px;border-radius:50%}
+.kpi .v{font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-1px;margin-top:6px;line-height:1}
+.kpi .v small{font-size:10.5px;color:var(--txt3);font-weight:600;margin-left:2px;letter-spacing:0}
+.kpi.w .v{color:var(--red)}
+.sh{display:flex;align-items:center;margin-bottom:9px}
+.sh h3{font-size:12px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.sh a{margin-left:auto;font-size:10.5px;color:var(--blue);font-weight:600;text-decoration:none}
+.rows{border:.5px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.r{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:10px 13px;
+border-bottom:.5px solid var(--line2)}
+.r:last-child{border-bottom:none}
+.r:hover{background:#FAFAFC}
+.r .av{width:28px;height:28px;border-radius:9px;color:#fff;font-size:10.5px;font-weight:800;
+display:flex;align-items:center;justify-content:center}
+.r .t{font-size:12px;font-weight:700;color:var(--ink);letter-spacing:-.2px}
+.r .m{font-size:10px;color:var(--txt3);margin-top:2px}
+.r .rt{text-align:right;min-width:86px}
+.r .pc{font-size:11.5px;font-weight:800;color:var(--ink)}
+.bar{height:4px;border-radius:3px;background:var(--line2);margin-top:4px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:3px;background:var(--red)}
+.tagp{font-size:10px;font-weight:700;padding:2.5px 8px;border-radius:99px;white-space:nowrap}
+.tagp.f{background:#FDECEF;color:var(--red)}.tagp.r{background:#EAF3FB;color:var(--blue)}
+.tagp.o{background:#E9F6EF;color:var(--ok)}.tagp.a{background:#FDF3E6;color:var(--amber)}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;font-size:9.5px;font-weight:800;letter-spacing:.8px;color:var(--txt3);padding:9px 14px;
+border-bottom:.5px solid var(--line);text-transform:uppercase;background:#FAFAFB;position:sticky;top:0}
+.tbl td{padding:10px 14px;font-size:11.5px;border-bottom:.5px solid var(--line2);color:var(--txt)}
+.tbl td b{color:var(--ink);font-weight:700}
+.tbl tr:hover td{background:#FAFAFC}
+.dband{background:linear-gradient(120deg,#FFF2F4,#FDF8F9);border:.5px solid #F7D9DF;border-radius:12px;
+padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.dband .dd{font-size:19px;font-weight:800;color:var(--red);letter-spacing:-1px}
+.dband .tt2{font-size:12px;font-weight:700;color:var(--ink)}
+.dband .mm{font-size:10px;color:var(--txt2);margin-top:2px}
+.dband button{margin-left:auto;background:var(--red);color:#fff;font-size:10.5px;font-weight:600;padding:6px 11px;border-radius:8px}
+.empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+color:var(--txt3);padding:40px}
+.empty .bigicon{width:64px;height:64px;border-radius:17px;display:flex;align-items:center;justify-content:center;
+font-size:15px;font-weight:800;color:#fff;opacity:.6}
+.empty .t{font-size:14px;font-weight:700;color:var(--txt2)}
+.empty .d{font-size:11.5px;text-align:center;line-height:1.6;max-width:280px}
+/* 채팅 */
+.chatwrap{display:flex;flex-direction:column;height:100%}
+.chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:#FAFAFB}
+.msg{max-width:78%;font-size:12px;line-height:1.65;padding:9px 13px;border-radius:16px}
+.msg.me{align-self:flex-end;background:var(--red);color:#fff;border-bottom-right-radius:5px}
+.msg.ai{align-self:flex-start;background:#fff;border:.5px solid var(--line);border-bottom-left-radius:5px}
+.msg.ai b{color:var(--ink)}
+.inp{flex-shrink:0;padding:11px 13px;border-top:.5px solid var(--line);display:flex;gap:9px;align-items:center;background:#fff}
+.inp .f{flex:1;background:#F2F2F5;border-radius:99px;padding:9px 14px;font-size:11.5px;color:var(--txt3)}
+.inp .go{width:32px;height:32px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center}
+/* AQI */
+.aqihero{display:flex;align-items:center;gap:24px;padding:6px 0 20px}
+.aqihero svg{width:112px;height:112px;transform:rotate(-90deg)}
+.aqihero .val{font-size:38px;font-weight:800;color:var(--ink);letter-spacing:-2px;line-height:1}
+.aqihero .val small{font-size:14px;color:var(--txt3);font-weight:700;letter-spacing:0}
+.aqihero .d{font-size:11.5px;color:var(--txt2);margin-top:7px;line-height:1.6}
+.metric{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:.5px solid var(--line2)}
+.metric:last-child{border-bottom:none}
+.metric .n{font-size:11.5px;font-weight:600;color:var(--ink);width:130px;flex-shrink:0}
+.metric .tr{flex:1;height:6px;border-radius:4px;background:var(--line2);overflow:hidden}
+.metric .tr i{display:block;height:100%;border-radius:4px}
+.metric .v{font-size:11.5px;font-weight:800;color:var(--ink);width:42px;text-align:right}
+/* 캘린더 */
+.cal{border:.5px solid var(--line);border-radius:12px;overflow:hidden}
+.cal .hd{display:grid;grid-template-columns:repeat(7,1fr);background:#FAFAFB;border-bottom:.5px solid var(--line)}
+.cal .hd div{padding:8px 0;text-align:center;font-size:10px;font-weight:800;color:var(--txt3)}
+.cal .bd{display:grid;grid-template-columns:repeat(7,1fr)}
+.cal .d{min-height:56px;padding:6px 7px;border-right:.5px solid var(--line2);border-bottom:.5px solid var(--line2);font-size:11px}
+.cal .d .n{font-weight:700;color:var(--ink);font-size:11px}
+.cal .d.off .n{color:var(--txt3)}
+.cal .d.today{background:#FDECEF}
+.cal .d.today .n{color:var(--red);font-weight:800}
+.cal .ev{margin-top:4px;font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;line-height:1.4}
+@media (max-width:1080px){.home{grid-template-columns:1fr;overflow-y:auto}.apps{grid-template-columns:repeat(6,1fr)}}
+</style>
+</head>
+<body>
+<div class="wall"><span class="b1"></span><span class="b2"></span><span class="b3"></span></div>
+
+<div class="status">
+  <div class="tn">오전 9:41 · 4월 5일 (일)</div>
+  <div class="r">
+    <span style="font-size:11px;font-weight:800;opacity:.85">SH-Office</span>
+    <svg class="ic" viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5.5 5.5 0 0 1 7 0"/><circle cx="12" cy="19.5" r=".9" fill="currentColor"/></svg>
+    <span class="tn" style="font-size:11px;font-weight:700">86%</span>
+    <div class="bat"></div>
+  </div>
+</div>
+
+<div class="home" id="home">
+  <div class="pane">
+    <div class="greet">
+      <h1>윤길배 대표이사님, 좋은 아침입니다</h1>
+      <p>성현회계법인 · 진행 중 12건 · 리뷰 대기 47건 — 아이콘을 누르면 창으로 열립니다</p>
+    </div>
+    <div class="wgrid">
+      <div class="wg red" data-open="cal">
+        <div class="hd"><span class="sq" style="background:rgba(255,255,255,.25)">!</span>다가오는 마감</div>
+        <div class="big tn">D-12</div>
+        <div class="cap"><b>ISQM1 품질관리보고서</b><br>품질관리본부 · 4월 17일 (금) 마감</div>
+      </div>
+      <div class="wg" data-open="aqi">
+        <div class="hd"><span class="sq" style="background:var(--ok)">A</span>AQI 지수</div>
+        <div class="ring">
+          <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke-width="9" stroke="rgba(255,255,255,.18)"/>
+          <circle cx="50" cy="50" r="42" fill="none" stroke-width="9" stroke="#5AD07A" stroke-linecap="round" stroke-dasharray="263.9" stroke-dashoffset="20.1"/></svg>
+          <div><div class="val tn">92.4</div><div class="lab">전분기 대비 +1.8<br>업계 상위 12%</div></div>
+        </div>
+      </div>
+      <div class="wg wide" data-open="aud">
+        <div class="hd"><span class="sq" style="background:var(--red)">P</span>진행 중 프로젝트 · 12건</div>
+        <div class="plist">
+          <div class="pitem"><div class="av" style="background:linear-gradient(145deg,#FF5A72,#E81A3B)">A</div>
+            <div><div class="t">㈜알파테크 제25기 외부감사</div><div class="s">현장수행 · 김회계 · D-12</div></div>
+            <div class="pc tn">72%</div><div class="pbar"><i style="width:72%"></i></div></div>
+          <div class="pitem"><div class="av" style="background:linear-gradient(145deg,#4E97E0,#0062B8)">B</div>
+            <div><div class="t">㈜베타홀딩스 연결감사</div><div class="s">리뷰 · 박회계 · D-19</div></div>
+            <div class="pc tn">91%</div><div class="pbar"><i style="width:91%"></i></div></div>
+          <div class="pitem"><div class="av" style="background:linear-gradient(145deg,#7C8FA0,#5B6E7F)">C</div>
+            <div><div class="t">㈜감마물산 제18기 감사</div><div class="s">현장수행 · 이회계 · D-24</div></div>
+            <div class="pc tn">45%</div><div class="pbar"><i style="width:45%"></i></div></div>
+        </div>
+      </div>
+      <div class="wg wide" data-open="notice">
+        <div class="hd"><span class="sq" style="background:var(--slate)">N</span>공지사항</div>
+        <div class="nlist">
+          <div class="nrow"><span class="tg u">긴급</span><span class="t">ISQM1 2026년 품질관리 보고서 작성 안내</span><span class="d tn">04/03</span></div>
+          <div class="nrow"><span class="tg">업데이트</span><span class="t">SH Audit Platform 기초정보 기능 오픈</span><span class="d tn">04/02</span></div>
+          <div class="nrow"><span class="tg">일정</span><span class="t">4월 파트너 월례회의 (15일 14시)</span><span class="d tn">04/01</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="apps" id="apps"></div>
+</div>
+
+<div class="dots"><i class="on"></i><i></i><i></i></div>
+<div class="snap" id="snap"></div>
+<div class="dock" id="dock"></div>
+<div class="homebar"></div>
+
+<script>
+/* ══════════ 앱 정의 ══════════ */
+const G = {
+  aud:'linear-gradient(155deg,#FF5A72,#D0102F)', k1118:'linear-gradient(155deg,#4E97E0,#00509B)',
+  fin:'linear-gradient(155deg,#8296A7,#4A5C6B)', xbrl:'linear-gradient(155deg,#38C77E,#118A50)',
+  ai:'linear-gradient(155deg,#39424F,#0E1319)',  tax:'linear-gradient(155deg,#F5AE4A,#B8680E)',
+  ins:'linear-gradient(155deg,#A98BEA,#5F3EB8)', gray:'linear-gradient(155deg,#9AA3AC,#6B747D)',
+  rev:'linear-gradient(155deg,#FFE07A,#E8A21A)', aqi:'linear-gradient(155deg,#5FA9F0,#0062B8)',
+  cal:'#ffffff', notice:'linear-gradient(155deg,#7C8FA0,#46545F)'
+};
+const PROJ = [
+  ['A','㈜알파테크 제25기 외부감사','K-IFRS · 12월 결산 · 인차지 김회계',72,'현장수행','f','#E81A3B','linear-gradient(145deg,#FF5A72,#E81A3B)'],
+  ['B','㈜베타홀딩스 연결감사','K-IFRS · 12월 결산 · 인차지 박회계',91,'리뷰','r','#0062B8','linear-gradient(145deg,#4E97E0,#0062B8)'],
+  ['C','㈜감마물산 제18기 감사','일반기준 · 12월 결산 · 인차지 이회계',45,'현장수행','f','#5B6E7F','linear-gradient(145deg,#7C8FA0,#5B6E7F)'],
+  ['D','㈜델타에너지 기말감사','K-IFRS · 12월 결산 · 인차지 최회계',100,'완료','o','#1F9D61','linear-gradient(145deg,#38C77E,#1F9D61)']
+];
+const projRows = () => PROJ.map(p=>`
+  <div class="r"><div class="av" style="background:${p[7]}">${p[0]}</div>
+    <div><div class="t">${p[1]}</div><div class="m">${p[2]}</div></div>
+    <div class="rt"><div class="pc tn">${p[3]}%</div><div class="bar"><i style="width:${p[3]}%;background:${p[6]}"></i></div>
+    <span class="tagp ${p[5]}" style="margin-top:4px;display:inline-block">${p[4]}</span></div></div>`).join('');
+
+const APPS = {
+  aud:{name:'SH Audit Platform', sub:'v4.0', short:'AUD', bg:G.aud, badge:12, w:840, h:600, body:()=>`
+    <div class="pad">
+      <div class="h1">감사 대시보드<span>.</span></div>
+      <div class="hsub">2026. 4. 5 (일) · 진행 중 12건 · 리뷰 대기 47건 · 마감 임박 3건</div>
+      <div class="kpis">
+        <div class="kpi"><div class="l"><i style="background:#0062B8"></i>진행 중 감사</div><div class="v tn">12<small>건</small></div></div>
+        <div class="kpi"><div class="l"><i style="background:#5B6E7F"></i>리뷰 대기 조서</div><div class="v tn">47<small>건</small></div></div>
+        <div class="kpi w"><div class="l"><i style="background:#E81A3B"></i>마감 임박 (7일)</div><div class="v tn">3<small>건</small></div></div>
+        <div class="kpi"><div class="l"><i style="background:#1F9D61"></i>AQI 지수</div><div class="v tn">92.4<small>/100</small></div></div>
+      </div>
+      <div class="dband"><div class="dd tn">D-12</div>
+        <div><div class="tt2">ISQM1 품질관리보고서</div><div class="mm">품질관리본부 · 4/17 마감</div></div>
+        <button>작성하기</button></div>
+      <div class="sh"><h3>진행 중 프로젝트</h3><a href="#">전체 12건</a></div>
+      <div class="rows">${projRows()}</div>
+      <div class="sh"><h3>최근 조서 활동</h3><a href="#">리뷰함 열기</a></div>
+      <div class="rows">
+        <div class="r"><div class="av" style="background:#1F9D61">XLS</div><div><div class="t">3200-02 매출 실증절차</div><div class="m">알파테크 · 김회계</div></div><div class="rt"><span class="tagp f">리뷰 요청</span></div></div>
+        <div class="r"><div class="av" style="background:#0062B8">DOC</div><div><div class="t">재고실사 입회 보고서</div><div class="m">알파테크 · 이수현</div></div><div class="rt"><span class="tagp r">검토 중</span></div></div>
+        <div class="r"><div class="av" style="background:#E81A3B">PDF</div><div><div class="t">경영진 확인서 초안 v2</div><div class="m">알파테크 · 박지훈</div></div><div class="rt"><span class="tagp o">승인</span></div></div>
+      </div>
+    </div>`},
+  rev:{name:'리뷰함', sub:'47건 대기', short:'조서', bg:G.rev, badge:47, w:760, h:520, body:()=>`
+    <table class="tbl">
+      <tr><th>조서</th><th>프로젝트</th><th>작성자</th><th>수정</th><th>상태</th></tr>
+      ${[['3200-02 매출 실증절차','알파테크','김회계','2시간 전','리뷰 요청','f'],
+         ['4100 재고실사 입회','알파테크','이수현','어제','리뷰 요청','f'],
+         ['5300 연결정산표 검토','베타홀딩스','박회계','어제','인차지 검토','r'],
+         ['2100 현금·예금 조회','감마물산','정하늘','4/3','승인','o'],
+         ['6200 우발부채 검토','베타홀딩스','박지훈','4/3','인차지 검토','r'],
+         ['1100 감사계획 요약','엡실론소재','정회계','4/2','승인','o'],
+         ['3400 매출채권 조회서','알파테크','이수현','4/2','회신 대기','a'],
+         ['7400 후속사건 검토','델타에너지','최회계','4/1','승인','o'],
+         ['5100 지분법 평가','베타홀딩스','한수정','4/1','리뷰 요청','f'],
+         ['2300 재고자산 평가','감마물산','정하늘','3/31','인차지 검토','r']]
+        .map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td><td class="tn">${r[3]}</td><td><span class="tagp ${r[5]}">${r[4]}</span></td></tr>`).join('')}
+    </table>`},
+  ai:{name:'AI Assistant 칼', sub:'Claude 기반 · 상시', short:'AI', bg:G.ai, w:420, h:560, body:()=>`
+    <div class="chatwrap">
+      <div class="chat">
+        <div class="msg ai">안녕하세요, 대표이사님. 오늘 <b>알파테크</b> 현장수행이 72%까지 올라왔고 리뷰 대기 조서가 14건 쌓였습니다.</div>
+        <div class="msg me">알파테크 매출 절사 이슈 요약해줘</div>
+        <div class="msg ai">표본 12건 중 <b>3건</b>이 12/28~12/31 거래에 집중되어 있습니다.<br>· 인도조건 확인 필요 2건<br>· 검수확인서 미비 1건<br><b>권고:</b> K-IFRS 1115호 통제이전 시점 기준으로 절사 절차를 기말 ±5영업일까지 확대.</div>
+        <div class="msg me">ISQM1 보고서 목차 잡아줘</div>
+        <div class="msg ai">1. 품질관리 목표와 위험 평가<br>2. 거버넌스와 리더십<br>3. 관련 윤리적 요구사항<br>4. 업무 수임 및 유지<br>5. 업무의 수행<br>6. 자원 / 정보와 의사소통<br>7. 모니터링 및 개선 절차<br>초안을 리뷰함에 저장할까요?</div>
+      </div>
+      <div class="inp"><div class="f">칼에게 물어보기…</div>
+        <div class="go"><svg class="ic" style="width:15px;height:15px" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div></div>
+    </div>`},
+  k1118:{name:'K-IFRS 1118호 분석기', sub:'v1.0', short:'1118', bg:G.k1118, w:800, h:540, body:()=>`
+    <div class="pad">
+      <div class="h1">표시 기준 분석<span>.</span></div>
+      <div class="hsub">㈜알파테크 제25기 · 영업손익 구분 표시 및 재분류 결과</div>
+      <div class="kpis">
+        <div class="kpi"><div class="l">분석 계정</div><div class="v tn">247<small>개</small></div></div>
+        <div class="kpi w"><div class="l">재분류 필요</div><div class="v tn">18<small>개</small></div></div>
+        <div class="kpi"><div class="l">영업이익 변동</div><div class="v tn">+3.2<small>%</small></div></div>
+        <div class="kpi"><div class="l">판단 근거 첨부</div><div class="v tn">18<small>/18</small></div></div>
+      </div>
+      <div class="sh"><h3>주요 재분류 항목</h3><a href="#">전체 18건</a></div>
+      <table class="tbl">
+        <tr><th>계정과목</th><th>현행 표시</th><th>1118호 판단</th><th>금액(백만원)</th></tr>
+        ${[['외환차손익','영업외','영업손익','-1,240'],['대손상각비','판관비','영업손익 유지','842'],
+           ['유형자산처분손익','영업외','영업손익','316'],['지분법손익','영업외','영업외 유지','-1,105'],
+           ['기타 충당부채 전입','판관비','영업손익 유지','228'],['리스 해지이익','영업외','영업손익','74']]
+          .map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td><span class="tagp ${r[2].includes('유지')?'o':'f'}">${r[2]}</span></td><td class="tn">${r[3]}</td></tr>`).join('')}
+      </table>
+    </div>`},
+  fin:{name:'금융기관 조회', sub:'v2.3 · 활성 15건', short:'FIN', bg:G.fin, badge:15, w:780, h:520, body:()=>`
+    <div class="pad">
+      <div class="h1">조회서 발송·회신 현황<span>.</span></div>
+      <div class="hsub">2026 기말감사 · 총 38건 발송 · 회신 23건 (60.5%)</div>
+      <div class="kpis">
+        <div class="kpi"><div class="l"><i style="background:#0062B8"></i>발송</div><div class="v tn">38<small>건</small></div></div>
+        <div class="kpi"><div class="l"><i style="background:#1F9D61"></i>회신 완료</div><div class="v tn">23<small>건</small></div></div>
+        <div class="kpi w"><div class="l"><i style="background:#E81A3B"></i>미회신 7일 초과</div><div class="v tn">6<small>건</small></div></div>
+        <div class="kpi"><div class="l"><i style="background:#C77414"></i>불일치</div><div class="v tn">2<small>건</small></div></div>
+      </div>
+      <table class="tbl">
+        <tr><th>금융기관</th><th>거래처</th><th>발송일</th><th>상태</th></tr>
+        ${[['국민은행 여의도','알파테크','03/12','회신 완료','o'],['신한은행 강남','알파테크','03/12','회신 완료','o'],
+           ['하나은행 중구','베타홀딩스','03/14','미회신 (D+22)','f'],['우리은행 종로','베타홀딩스','03/14','회신 완료','o'],
+           ['농협 본점','감마물산','03/18','불일치 검토','a'],['기업은행 마포','감마물산','03/18','미회신 (D+18)','f'],
+           ['산업은행','델타에너지','03/20','회신 완료','o']]
+          .map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td class="tn">${r[2]}</td><td><span class="tagp ${r[4]}">${r[3]}</span></td></tr>`).join('')}
+      </table>
+    </div>`},
+  xbrl:{name:'XBRL Comparator', sub:'v1.0', short:'XBRL', bg:G.xbrl, w:760, h:500, body:()=>`
+    <div class="pad">
+      <div class="h1">공시 정합성 비교<span>.</span></div>
+      <div class="hsub">㈜베타홀딩스 · 감사보고서 XBRL vs 사업보고서 IXD</div>
+      <div class="kpis">
+        <div class="kpi"><div class="l">비교 태그</div><div class="v tn">1,842</div></div>
+        <div class="kpi"><div class="l"><i style="background:#1F9D61"></i>일치</div><div class="v tn">1,835</div></div>
+        <div class="kpi w"><div class="l"><i style="background:#E81A3B"></i>불일치</div><div class="v tn">7</div></div>
+        <div class="kpi"><div class="l">최종 검증</div><div class="v tn" style="font-size:15px">04/04 18:20</div></div>
+      </div>
+      <table class="tbl">
+        <tr><th>태그</th><th>감사보고서</th><th>사업보고서</th><th>차이</th></tr>
+        ${[['매출액','1,284,320','1,284,320','—','o'],['영업이익','92,140','89,620','2,520','f'],
+           ['법인세비용','18,220','18,220','—','o'],['기타포괄손익','-3,410','-3,120','290','f'],
+           ['자본총계','842,900','842,900','—','o']]
+          .map(r=>`<tr><td><b>${r[0]}</b></td><td class="tn">${r[1]}</td><td class="tn">${r[2]}</td><td><span class="tagp ${r[4]}">${r[3]}</span></td></tr>`).join('')}
+      </table>
+    </div>`},
+  aqi:{name:'AQI 지표', sub:'2026 Q2', short:'AQI', bg:G.aqi, w:640, h:520, body:()=>`
+    <div class="pad">
+      <div class="h1">감사품질지표<span>.</span></div>
+      <div class="hsub">성현회계법인 · 2026년 2분기 기준 · 금감원 AQI 10개 지표</div>
+      <div class="aqihero">
+        <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke-width="10" stroke="#EFEFF2"/>
+        <circle cx="50" cy="50" r="42" fill="none" stroke-width="10" stroke="#1F9D61" stroke-linecap="round" stroke-dasharray="263.9" stroke-dashoffset="20.1"/></svg>
+        <div><div class="val tn">92.4<small>/100</small></div>
+        <div class="d">전분기 대비 <b style="color:#1F9D61">+1.8</b> · 업계 상위 12%<br>10개 지표 중 8개가 업계 평균 이상입니다.</div></div>
+      </div>
+      <div class="sh"><h3>지표별 점수</h3><a href="#">산출 근거</a></div>
+      ${[['감사시간 투입','96','#1F9D61'],['핵심감사인력 비율','94','#1F9D61'],['품질관리인력 비중','91','#1F9D61'],
+         ['감사인 경력','89','#1F9D61'],['교육시간','88','#1F9D61'],['감리 지적 이력','97','#1F9D61'],
+         ['이직률','74','#C77414'],['보수 적정성','86','#1F9D61'],['내부 심리 비중','68','#E81A3B'],['IT 투자','93','#1F9D61']]
+        .map(m=>`<div class="metric"><div class="n">${m[0]}</div><div class="tr"><i style="width:${m[1]}%;background:${m[2]}"></i></div><div class="v tn">${m[1]}</div></div>`).join('')}
+    </div>`},
+  notice:{name:'공지사항', sub:'전사', short:'공지', bg:G.notice, badge:3, w:700, h:480, body:()=>`
+    <div class="pad">
+      <div class="h1">공지 · 규정<span>.</span></div>
+      <div class="hsub">품질관리본부 · IT본부 · 경영지원실</div>
+      <div class="dband"><div class="dd tn">D-12</div>
+        <div><div class="tt2">ISQM1 2026년 품질관리보고서</div><div class="mm">4월 17일 (금) 마감 · 미제출 3개 본부</div></div>
+        <button>작성하기</button></div>
+      <div class="rows">
+        ${[['긴급','f','ISQM1 2026년 품질관리 보고서 작성 안내','품질관리본부','04/03'],
+           ['업데이트','r','SH Audit Platform 기초정보 기능 오픈','IT본부','04/02'],
+           ['일정','o','4월 파트너 월례회의 (15일 14시)','경영지원실','04/01'],
+           ['구독','o','삼일 TAX Agent 법인 구독 완료','경영지원실','03/28'],
+           ['규정','r','내부회계관리제도 감사 매뉴얼 v3 배포','품질관리본부','03/25'],
+           ['교육','o','2026 상반기 필수 교육 이수 안내 (6/30까지)','인사팀','03/20']]
+          .map(n=>`<div class="r" style="grid-template-columns:auto 1fr auto"><span class="tagp ${n[1]}">${n[0]}</span>
+            <div><div class="t">${n[2]}</div><div class="m">${n[3]}</div></div>
+            <div class="rt tn" style="min-width:44px;font-size:10.5px;color:var(--txt3)">${n[4]}</div></div>`).join('')}
+      </div>
+    </div>`},
+  cal:{name:'일정', sub:'2026년 4월', short:'4월 5', bg:G.cal, w:720, h:540, body:()=>{
+    const ev={7:['알파테크 재고실사','#0062B8'],10:['인차지 리뷰 마감','#C77414'],15:['파트너 월례회의','#5B6E7F'],
+      17:['ISQM1 보고서 마감','#E81A3B'],24:['감마물산 현장 종료','#0062B8'],30:['1분기 마감','#5B6E7F']};
+    let cells='';
+    for(let i=0;i<3;i++) cells+=`<div class="d off"><div class="n tn">${29+i}</div></div>`;
+    for(let d=1;d<=30;d++){
+      const e=ev[d];
+      cells+=`<div class="d${d===5?' today':''}"><div class="n tn">${d}</div>${
+        e?`<div class="ev" style="background:${e[1]}1A;color:${e[1]}">${e[0]}</div>`:''}</div>`;
+    }
+    for(let i=1;i<=2;i++) cells+=`<div class="d off"><div class="n tn">${i}</div></div>`;
+    return `<div class="pad">
+      <div class="h1">2026년 4월<span>.</span></div>
+      <div class="hsub">감사 일정 · 마감 · 회의 · ERP 연동</div>
+      <div class="cal"><div class="hd"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>
+      <div class="bd">${cells}</div></div>
+    </div>`}},
+  tax:{name:'삼일 TAX 에이전트', sub:'법인 구독', short:'TAX', bg:G.tax, w:560, h:420},
+  ins:{name:'인사이트', sub:'리서치', short:'INS', bg:G.ins, w:560, h:420},
+  law:{name:'소송조회', sub:'개발 중', short:'LAW', bg:G.gray, soon:1, w:520, h:380},
+  erp:{name:'ERP', sub:'2026 Q3 오픈', short:'ERP', bg:G.gray, soon:1, w:520, h:380},
+  rag:{name:'규정 RAG', sub:'예정', short:'RAG', bg:G.gray, soon:1, w:520, h:380}
+};
+const HOME_ORDER=['aud','k1118','fin','xbrl','ai','tax','ins','law','erp','rag','cal','rev','aqi','notice'];
+const DOCK_ORDER=['aud','k1118','fin','xbrl','ai','|','rev','cal','aqi'];
+
+/* ══════════ 홈 · Dock 렌더 ══════════ */
+const apps=document.getElementById('apps'), dock=document.getElementById('dock');
+HOME_ORDER.forEach(id=>{
+  const a=APPS[id];
+  const el=document.createElement('button');
+  el.className='ap'+(a.soon?' soon':''); el.dataset.open=id;
+  el.innerHTML=`<div class="icon" style="background:${a.bg};${id==='cal'?'color:#1D1D1F':''}">
+    ${id==='cal'?'<div style="font-size:8px;font-weight:800;color:#E81A3B">4월</div><div class="tn" style="font-size:22px;font-weight:800;line-height:1.05">5</div>'
+      :a.short+(id==='ai'?'<small>칼</small>':'')}
+    ${a.badge?`<span class="bd tn">${a.badge}</span>`:''}</div>
+    <div class="nm">${a.name}${a.soon?'<br>('+a.sub+')':''}</div>`;
+  apps.appendChild(el);
+});
+DOCK_ORDER.forEach(id=>{
+  if(id==='|'){const s=document.createElement('div');s.className='dsep';dock.appendChild(s);return;}
+  const a=APPS[id];
+  const el=document.createElement('button');
+  el.className='dk'; el.dataset.dock=id;
+  el.style.background=a.bg; if(id==='cal') el.style.color='#1D1D1F';
+  el.innerHTML=`${id==='cal'?'<span style="font-size:7px;font-weight:800;color:#E81A3B">4월</span><span class="tn" style="font-size:16px;line-height:1">5</span>'
+    :a.short+(id==='ai'?'<small>칼</small>':'')}<span class="run"></span><span class="tip">${a.name}</span>`;
+  dock.appendChild(el);
+});
+
+/* ══════════ 창 시스템 ══════════ */
+const wins=new Map();            // id -> {el, state, restore}
+let zTop=100, cascade=0;
+const snapEl=document.getElementById('snap');
+const homeEl=document.getElementById('home');
+const MIN_W=320, MIN_H=220, EDGE=10;
+const area=()=>({x:8, y:36, w:innerWidth-16, h:innerHeight-36-88});
+
+function syncHome(){
+  const open=[...wins.values()].some(w=>w.state!=='min');
+  homeEl.classList.toggle('pushed',open);
+}
+function markDock(){
+  document.querySelectorAll('[data-dock]').forEach(d=>d.classList.toggle('on', wins.has(d.dataset.dock)));
+}
+function focusWin(id){
+  const w=wins.get(id); if(!w) return;
+  w.el.style.zIndex=++zTop;
+  wins.forEach((v,k)=>v.el.classList.toggle('active',k===id));
+}
+/* 남아 있는 창 중 가장 위의 창으로 포커스 이동 */
+function focusTop(){
+  let top=null,tz=-1;
+  wins.forEach((v,k)=>{ if(v.state==='min') return;
+    const z=+v.el.style.zIndex||0; if(z>tz){tz=z;top=k;} });
+  wins.forEach(v=>v.el.classList.remove('active'));
+  if(top) focusWin(top);
+}
+function openApp(id){
+  const a=APPS[id]; if(!a) return;
+  if(wins.has(id)){
+    const w=wins.get(id);
+    if(w.state==='min'){ w.el.style.display='flex'; w.el.classList.remove('min'); w.state='normal'; }
+    focusWin(id); syncHome(); return;
+  }
+  const ar=area();
+  const w=Math.min(a.w||720, ar.w-40), h=Math.min(a.h||520, ar.h-30);
+  const off=(cascade++%6)*28;
+  let x=ar.x+Math.max(20,(ar.w-w)/2-120)+off, y=ar.y+Math.max(14,(ar.h-h)/2-30)+off;
+  x=Math.min(x, ar.x+ar.w-w-10); y=Math.min(y, ar.y+ar.h-h-10);
+
+  const el=document.createElement('div');
+  el.className='win active';
+  el.style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px;z-index:${++zTop}`;
+  el.innerHTML=`
+    <div class="wtb">
+      <div class="lights">
+        <button class="c" data-act="close" title="닫기"><svg viewBox="0 0 8 8"><path d="M1.5 1.5l5 5M6.5 1.5l-5 5"/></svg></button>
+        <button class="m" data-act="min" title="최소화"><svg viewBox="0 0 8 8"><path d="M1.5 4h5"/></svg></button>
+        <button class="z" data-act="max" title="최대화"><svg viewBox="0 0 8 8"><path d="M1.5 1.5h5v5h-5z"/></svg></button>
+      </div>
+      <div class="tt"><span class="mk" style="background:${a.bg};${id==='cal'?'color:#1D1D1F':''}">${a.short.slice(0,4)}</span>
+        <span class="n">${a.name}</span><span class="s">${a.sub||''}</span></div>
+    </div>
+    <div class="wbody">${a.body?a.body():`
+      <div class="empty"><div class="bigicon" style="background:${a.bg}">${a.short}</div>
+      <div class="t">${a.name}</div>
+      <div class="d">${a.soon?'아직 준비 중인 App입니다. 오픈 시 이 창에서 바로 실행됩니다.':'구독 App입니다. 외부 서비스 창이 이 자리에 임베드됩니다.'}<br>${a.sub}</div></div>`}</div>
+    ${['n','s','w','e','nw','ne','sw','se'].map(d=>`<div class="rs ${d}" data-rs="${d}"></div>`).join('')}`;
+  document.body.appendChild(el);
+  wins.set(id,{el,state:'normal',restore:null});
+  bindWindow(id,el);
+  focusWin(id); markDock(); syncHome();
+}
+function closeApp(id){
+  const w=wins.get(id); if(!w) return;
+  w.el.classList.add('closing');
+  setTimeout(()=>{w.el.remove(); wins.delete(id); markDock(); syncHome(); focusTop();},170);
+}
+function minApp(id){
+  const w=wins.get(id); if(!w) return;
+  w.el.classList.add('min'); w.state='min';
+  w.el.classList.remove('active');
+  setTimeout(()=>{ if(w.state==='min') w.el.style.display='none'; },210);
+  syncHome(); focusTop();
+}
+function maxApp(id){
+  const w=wins.get(id); if(!w) return;
+  const el=w.el, ar=area();
+  el.classList.add('snapping');
+  if(w.state==='max' && w.restore){
+    Object.assign(el.style,w.restore); w.state='normal'; w.restore=null;
+  }else{
+    w.restore={left:el.style.left,top:el.style.top,width:el.style.width,height:el.style.height};
+    Object.assign(el.style,{left:ar.x+'px',top:ar.y+'px',width:ar.w+'px',height:ar.h+'px'});
+    w.state='max';
+  }
+  setTimeout(()=>el.classList.remove('snapping'),200);
+}
+function snapTo(id,rect){
+  const w=wins.get(id); if(!w) return;
+  if(w.state!=='max' && !w.restore) w.restore={left:w.el.style.left,top:w.el.style.top,width:w.el.style.width,height:w.el.style.height};
+  w.el.classList.add('snapping');
+  Object.assign(w.el.style,{left:rect.x+'px',top:rect.y+'px',width:rect.w+'px',height:rect.h+'px'});
+  w.state='snap';
+  setTimeout(()=>w.el.classList.remove('snapping'),200);
+}
+function zoneRect(zone){
+  const a=area();
+  if(zone==='max') return a;
+  if(zone==='left') return {x:a.x,y:a.y,w:a.w/2-4,h:a.h};
+  if(zone==='right') return {x:a.x+a.w/2+4,y:a.y,w:a.w/2-4,h:a.h};
+  return null;
+}
+
+function bindWindow(id,el){
+  const w=wins.get(id);
+  el.addEventListener('pointerdown',()=>focusWin(id),true);
+
+  /* 트래픽 라이트 */
+  el.querySelector('.lights').addEventListener('click',e=>{
+    const b=e.target.closest('[data-act]'); if(!b) return;
+    e.stopPropagation();
+    ({close:closeApp,min:minApp,max:maxApp})[b.dataset.act](id);
+  });
+
+  /* 타이틀바 드래그 + 스냅 */
+  const tb=el.querySelector('.wtb');
+  tb.addEventListener('dblclick',()=>maxApp(id));
+  tb.addEventListener('pointerdown',e=>{
+    if(e.target.closest('.lights')) return;
+    e.preventDefault(); tb.setPointerCapture(e.pointerId);
+    let sx=e.clientX, sy=e.clientY;
+    let ox=el.offsetLeft, oy=el.offsetTop, moved=false, zone=null;
+
+    const move=ev=>{
+      const dx=ev.clientX-sx, dy=ev.clientY-sy;
+      if(!moved && Math.abs(dx)+Math.abs(dy)<3) return;
+      /* 최대화·스냅 상태에서 끌면 원래 크기로 복귀하며 커서를 따라감 */
+      if(!moved && (w.state==='max'||w.state==='snap') && w.restore){
+        const rw=parseFloat(w.restore.width);
+        Object.assign(el.style,{width:w.restore.width,height:w.restore.height});
+        ox=ev.clientX-rw/2; oy=ev.clientY-20; sx=ev.clientX; sy=ev.clientY;
+        w.state='normal'; w.restore=null;
+      }
+      moved=true;
+      const ar=area();
+      let nx=ox+(ev.clientX-sx), ny=oy+(ev.clientY-sy);
+      nx=Math.max(ar.x-el.offsetWidth+120, Math.min(nx, ar.x+ar.w-120));
+      ny=Math.max(ar.y-2, Math.min(ny, ar.y+ar.h-40));
+      el.style.left=nx+'px'; el.style.top=ny+'px';
+
+      zone = ev.clientY<=area().y+6 ? 'max' : ev.clientX<=EDGE ? 'left' : ev.clientX>=innerWidth-EDGE ? 'right' : null;
+      const r=zone&&zoneRect(zone);
+      if(r){ Object.assign(snapEl.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'});
+             snapEl.classList.add('show'); }
+      else snapEl.classList.remove('show');
+    };
+    const up=ev=>{
+      tb.releasePointerCapture(e.pointerId);
+      tb.removeEventListener('pointermove',move); tb.removeEventListener('pointerup',up);
+      snapEl.classList.remove('show');
+      if(zone==='max') maxApp(id);
+      else if(zone) snapTo(id,zoneRect(zone));
+    };
+    tb.addEventListener('pointermove',move); tb.addEventListener('pointerup',up);
+  });
+
+  /* 8방향 리사이즈 */
+  el.querySelectorAll('[data-rs]').forEach(h=>{
+    h.addEventListener('pointerdown',e=>{
+      e.preventDefault(); e.stopPropagation(); h.setPointerCapture(e.pointerId);
+      const dir=h.dataset.rs, sx=e.clientX, sy=e.clientY;
+      const ox=el.offsetLeft, oy=el.offsetTop, ow=el.offsetWidth, oh=el.offsetHeight;
+      const ar=area();
+      if(w.state!=='normal'){ w.state='normal'; w.restore=null; }
+      const move=ev=>{
+        const dx=ev.clientX-sx, dy=ev.clientY-sy;
+        let x=ox,y=oy,ww=ow,hh=oh;
+        if(dir.includes('e')) ww=Math.max(MIN_W,Math.min(ow+dx, ar.x+ar.w-ox));
+        if(dir.includes('s')) hh=Math.max(MIN_H,Math.min(oh+dy, ar.y+ar.h-oy));
+        if(dir.includes('w')){ ww=Math.max(MIN_W,Math.min(ow-dx, ox+ow-ar.x)); x=ox+ow-ww; }
+        if(dir.includes('n')){ hh=Math.max(MIN_H,Math.min(oh-dy, oy+oh-ar.y)); y=oy+oh-hh; }
+        Object.assign(el.style,{left:x+'px',top:y+'px',width:ww+'px',height:hh+'px'});
+      };
+      const up=()=>{ h.releasePointerCapture(e.pointerId);
+        h.removeEventListener('pointermove',move); h.removeEventListener('pointerup',up); };
+      h.addEventListener('pointermove',move); h.addEventListener('pointerup',up);
+    });
+  });
+}
+
+/* ══════════ 이벤트 ══════════ */
+document.addEventListener('click',e=>{
+  const o=e.target.closest('[data-open]'); if(o){ openApp(o.dataset.open); return; }
+  const d=e.target.closest('[data-dock]');
+  if(d){ const id=d.dataset.dock;
+    if(wins.has(id) && wins.get(id).state!=='min' && wins.get(id).el.classList.contains('active')) minApp(id);
+    else openApp(id);
+  }
+});
+document.addEventListener('keydown',e=>{
+  const act=[...wins.entries()].find(([,v])=>v.el.classList.contains('active')&&v.state!=='min');
+  if(!act) return;
+  if(e.key==='Escape') closeApp(act[0]);
+  if((e.metaKey||e.ctrlKey)&&e.key==='w'){ e.preventDefault(); closeApp(act[0]); }
+  if((e.metaKey||e.ctrlKey)&&e.key==='m'){ e.preventDefault(); minApp(act[0]); }
+});
+addEventListener('resize',()=>{
+  const ar=area();
+  wins.forEach((w,id)=>{
+    if(w.state==='max'){ Object.assign(w.el.style,{left:ar.x+'px',top:ar.y+'px',width:ar.w+'px',height:ar.h+'px'}); return; }
+    const el=w.el;
+    el.style.width=Math.min(el.offsetWidth,ar.w)+'px';
+    el.style.left=Math.max(ar.x-el.offsetWidth+120,Math.min(el.offsetLeft,ar.x+ar.w-120))+'px';
+    el.style.top=Math.max(ar.y-2,Math.min(el.offsetTop,ar.y+ar.h-40))+'px';
+  });
+});
+/* 첫 화면에 대시보드 한 창 띄워두기 */
+openApp('aud');
+</script>
+</body>
+</html>
