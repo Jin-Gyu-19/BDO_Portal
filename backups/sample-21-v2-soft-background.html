@@ -20,9 +20,9 @@ button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
 
 /* ══ 배경 테마 토큰 (기본: 화이트) ══ */
 body{
---pageBg:#EDF0F4;
---wall:radial-gradient(1200px 900px at 12% 0%,#FFFFFF,#F0F4F8 44%,#E0E7EF);
---blob1:rgba(232,26,59,.30);--blob2:rgba(0,98,184,.27);--blob3:rgba(91,110,127,.20);--bs:1.6;
+--pageBg:#EEF1F4;
+--wall:radial-gradient(1100px 800px at 15% 4%,#FFFFFF,#F2F5F8 46%,#E5EBF1);
+--blob1:rgba(232,26,59,.10);--blob2:rgba(0,98,184,.10);--blob3:rgba(91,110,127,.12);
 --fg:#1C1C1E;--tshadow:none;
 --wgBg:rgba(255,255,255,.86);--wgBorder:rgba(20,30,45,.08);--wgShadow:0 8px 24px rgba(20,30,45,.09);
 --wgFg:#1C1C1E;--wgTrack:rgba(20,30,45,.11);--wgBar:#3A3A3C;--ringFg:#1F9D61;
@@ -35,19 +35,14 @@ body{
 --rszBg:rgba(20,30,45,.08);
 --menuBg:rgba(252,252,253,.9);--menuBorder:rgba(20,30,45,.1);--menuShadow:0 24px 54px rgba(20,30,45,.2);
 --menuHov:rgba(20,30,45,.06);--menuLine:rgba(20,30,45,.08)}
-/* 이전 화이트 배경 (은은한 버전) — 백업으로 남겨 둠 */
-body[data-theme="soft"]{
---pageBg:#EEF1F4;
---wall:radial-gradient(1100px 800px at 15% 4%,#FFFFFF,#F2F5F8 46%,#E5EBF1);
---blob1:rgba(232,26,59,.10);--blob2:rgba(0,98,184,.10);--blob3:rgba(91,110,127,.12);--bs:1}
 body[data-theme="mist"]{
 --pageBg:#DCE5ED;
 --wall:radial-gradient(1100px 850px at 20% 0%,#F8FAFC,#DBE5EE 50%,#C4D2DF);
---blob1:rgba(232,26,59,.2);--blob2:rgba(0,98,184,.22);--blob3:rgba(91,110,127,.24);--bs:1.35}
+--blob1:rgba(232,26,59,.14);--blob2:rgba(0,98,184,.16);--blob3:rgba(91,110,127,.2)}
 body[data-theme="dark"]{
 --pageBg:#0F1620;
 --wall:radial-gradient(1200px 900px at 18% 8%,#3B4A5A,#232E3A 45%,#141C25);
---blob1:rgba(232,26,59,.42);--blob2:rgba(0,98,184,.38);--blob3:rgba(91,110,127,.55);--bs:1;
+--blob1:rgba(232,26,59,.42);--blob2:rgba(0,98,184,.38);--blob3:rgba(91,110,127,.55);
 --fg:#fff;--tshadow:0 1px 3px rgba(0,0,0,.35);
 --wgBg:rgba(18,23,30,.42);--wgBorder:rgba(255,255,255,.15);--wgShadow:0 10px 30px rgba(0,0,0,.28);
 --wgFg:#fff;--wgTrack:rgba(255,255,255,.18);--wgBar:#fff;--ringFg:#5AD07A;
@@ -63,8 +58,7 @@ body[data-theme="dark"]{
 
 /* ══ 배경 ══ */
 .wall{position:fixed;inset:0;overflow:hidden;background:var(--wall);transition:background .3s}
-.wall span{position:absolute;border-radius:50%;filter:blur(100px);transform:scale(var(--bs,1));
-transition:transform .35s}
+.wall span{position:absolute;border-radius:50%;filter:blur(100px)}
 .b1{width:760px;height:600px;left:-140px;top:-120px;background:var(--blob1)}
 .b2{width:820px;height:640px;right:-180px;top:12%;background:var(--blob2)}
 .b3{width:700px;height:520px;left:26%;bottom:-220px;background:var(--blob3)}
@@ -89,7 +83,7 @@ flex-shrink:0;text-shadow:none}
 .prof .nm{font-size:11px;font-weight:700;letter-spacing:-.2px}
 
 /* 프로필 드롭다운 */
-.pmenu{position:fixed;top:36px;right:16px;width:268px;z-index:950;border-radius:20px;corner-shape:squircle;padding:6px;
+.pmenu{position:fixed;top:36px;right:16px;width:268px;z-index:950;border-radius:16px;padding:6px;
 background:var(--menuBg);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);
 border:1px solid var(--menuBorder);box-shadow:var(--menuShadow);color:var(--fg);
 opacity:0;transform:translateY(-8px) scale(.97);transform-origin:top right;pointer-events:none;
@@ -112,10 +106,9 @@ min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;jus
 .pmenu .sep{height:1px;background:var(--menuLine);margin:5px 2px}
 .pmenu .lbl{padding:6px 10px 5px;font-size:9.5px;font-weight:800;letter-spacing:1.1px;opacity:.5;text-transform:uppercase}
 .swatches{display:flex;gap:7px;padding:2px 8px 8px}
-.sw{flex:1;height:38px;border-radius:10px;corner-shape:squircle;border:1.5px solid var(--menuLine);position:relative;overflow:hidden}
-.sw span{position:absolute;left:4px;right:4px;bottom:4px;font-size:8px;font-weight:800;color:#1C1C1E;
-background:rgba(255,255,255,.82);border-radius:4px;padding:1px 3px;text-align:center;
-white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sw{flex:1;height:38px;border-radius:9px;border:1.5px solid var(--menuLine);position:relative;overflow:hidden}
+.sw span{position:absolute;left:5px;bottom:4px;font-size:8.5px;font-weight:800;color:#1C1C1E;
+background:rgba(255,255,255,.8);border-radius:4px;padding:1px 4px}
 .sw.dk span{color:#fff;background:rgba(0,0,0,.45)}
 .sw.on{border-color:var(--red);box-shadow:0 0 0 2px rgba(232,26,59,.25)}
 
@@ -136,7 +129,7 @@ padding:16px 46px 0;z-index:10;transition:transform .38s cubic-bezier(.32,.72,0,
 
 /* 위젯 그리드 — 3열 기준, 크기는 행 × 열 (1×1 ~ 2×3) */
 .wgrid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:190px;gap:16px;align-content:start}
-.wg{border-radius:26px;corner-shape:squircle;padding:17px 19px;position:relative;overflow:hidden;cursor:pointer;color:var(--wgFg);
+.wg{border-radius:22px;padding:17px 19px;position:relative;overflow:hidden;cursor:pointer;color:var(--wgFg);
 background:var(--wgBg);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);
 border:1px solid var(--wgBorder);box-shadow:var(--wgShadow);transition:transform .18s,background .3s,border-color .3s}
 .wg:hover{transform:translateY(-2px)}
@@ -145,7 +138,7 @@ border:1px solid var(--wgBorder);box-shadow:var(--wgShadow);transition:transform
 .wg[data-c="3"],.wgrid .slot[data-c="3"]{grid-column:span 3}
 .wg[data-r="1"],.wgrid .slot[data-r="1"]{grid-row:span 1}
 .wg[data-r="2"],.wgrid .slot[data-r="2"]{grid-row:span 2}
-.wgrid .slot{border-radius:26px;corner-shape:squircle}
+.wgrid .slot{border-radius:22px}
 
 /* 크기별 표시량 — 좁을수록 덜어내고, 2행이면 상세를 덧붙인다 */
 .wg .more{display:none;margin-top:12px;padding-top:11px;border-top:1px solid var(--wgTrack)}
@@ -228,12 +221,16 @@ transition:transform .16s cubic-bezier(.3,1.4,.5,1);background:none}
 .ap:hover{transform:scale(1.07)}
 .ap:active{transform:scale(.94)}
 .ap:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:14px}
-.ap .icon{width:60px;height:60px;border-radius:13.5px;corner-shape:squircle;
-display:flex;flex-direction:column;align-items:center;justify-content:center;
-font-weight:800;font-size:13.5px;letter-spacing:-.5px;position:relative;color:#fff;
-background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,0) 54%),var(--g,#8A9099);
-box-shadow:0 6px 14px rgba(14,22,30,.17),0 1.5px 4px rgba(14,22,30,.12),
-  inset 0 0 0 .5px rgba(255,255,255,.2)}
+.ap .icon{width:60px;height:60px;border-radius:15px;display:flex;flex-direction:column;align-items:center;
+justify-content:center;font-weight:800;font-size:13.5px;letter-spacing:-.5px;position:relative;color:#fff;
+text-shadow:0 1px 1.5px rgba(0,0,0,.28);
+background:
+  radial-gradient(118% 82% at 28% -12%,rgba(255,255,255,.52),rgba(255,255,255,0) 58%),
+  linear-gradient(180deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 40%,rgba(0,0,0,.18) 100%),
+  var(--g,#8A9099);
+box-shadow:0 10px 20px rgba(14,22,30,.26),0 3px 7px rgba(14,22,30,.2),
+  inset 0 1.5px 0 rgba(255,255,255,.5),inset 0 -3px 7px rgba(0,0,0,.22),
+  inset 0 0 0 .5px rgba(0,0,0,.14)}
 .ap .icon small{font-size:8px;font-weight:700;opacity:.85;margin-top:2px}
 .ap .icon .bd{position:absolute;top:-5px;right:-5px;min-width:21px;height:21px;border-radius:11px;background:var(--red);
 font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 6px;
@@ -243,9 +240,9 @@ text-shadow:var(--tshadow);max-width:80px}
 .ap.soon .icon{opacity:.42}.ap.soon .nm{opacity:.5}
 
 /* 아이콘 재배치 (드래그) */
-.slot{border-radius:13.5px;corner-shape:squircle;border:2px dashed var(--slotB);background:var(--slotBg)}
+.slot{border-radius:15px;border:2px dashed var(--slotB);background:var(--slotBg)}
 .apps .slot{width:60px;height:60px;justify-self:center;align-self:start}
-.dock .slot{width:50px;height:50px;border-radius:11.5px;flex-shrink:0;
+.dock .slot{width:50px;height:50px;border-radius:13px;flex-shrink:0;
 border-color:var(--dockSlotB);background:var(--dockSlotBg)}
 .ghost{position:fixed;z-index:2000;pointer-events:none;transform:scale(1.14);transform-origin:center;
 filter:drop-shadow(0 14px 26px rgba(0,0,0,.5))}
@@ -260,14 +257,11 @@ body.editing .ap:hover,body.editing .dk:hover{transform:none}
 body.editing .dk .tip{opacity:0!important}
 @keyframes jig{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg)}}
 body.editing .ap .icon,body.editing .dk{animation:jig .34s ease-in-out infinite}
-/* 상태 표시줄 액션 (배치 초기화 · 창 4분할) */
-.sact{font-size:10.5px;font-weight:600;color:var(--btnFg);background:var(--btnBg);
-border:1px solid var(--btnBorder);border-radius:99px;padding:3px 10px;text-shadow:none;
-display:none;align-items:center;gap:5px;transition:background .15s,color .15s}
-.sact.show{display:inline-flex}
-.sact:hover{background:var(--menuHov);color:var(--fg)}
-.sact:focus-visible{outline:2px solid var(--red);outline-offset:2px}
-.sact .ic{width:12px;height:12px}
+.reset{margin-top:9px;font-size:11px;font-weight:600;color:var(--btnFg);
+background:var(--btnBg);border:1px solid var(--btnBorder);border-radius:99px;padding:5px 12px;
+display:none;align-items:center;gap:6px}
+.reset.show{display:inline-flex}
+.reset:hover{background:var(--menuHov);color:var(--fg)}
 @media (prefers-reduced-motion:reduce){body.editing .ap .icon,body.editing .dk{animation:none}}
 
 /* 페이지 도트 */
@@ -277,21 +271,19 @@ display:none;align-items:center;gap:5px;transition:background .15s,color .15s}
 
 /* ══ Dock ══ */
 .dock{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:800;display:flex;align-items:center;gap:14px;
-padding:10px 16px;border-radius:28px;corner-shape:squircle;background:var(--dockBg);
+padding:10px 16px;border-radius:26px;background:var(--dockBg);
 backdrop-filter:blur(34px) saturate(180%);-webkit-backdrop-filter:blur(34px) saturate(180%);
-border:1px solid var(--dockBorder);box-shadow:var(--dockShadow);
-transition:background .3s,border-color .3s,transform .3s cubic-bezier(.2,.8,.3,1)}
-/* 창을 최대화하면 Dock은 끝만 남기고 내려가고, 아래쪽에 커서를 대면 올라온다 */
-body.dockhide .dock{transform:translateX(-50%) translateY(calc(100% + 4px))}
-body.dockhide .dock:hover,body.dockhide .dockzone:hover ~ .dock{transform:translateX(-50%)}
-body.dockhide .dots,body.dockhide .homebar{opacity:0;transition:opacity .25s}
-.dockzone{position:fixed;left:0;right:0;bottom:0;height:16px;z-index:790;display:none}
-body.dockhide .dockzone{display:block}
-.dk{width:50px;height:50px;border-radius:11.5px;corner-shape:squircle;display:flex;flex-direction:column;align-items:center;justify-content:center;
+border:1px solid var(--dockBorder);box-shadow:var(--dockShadow);transition:background .3s,border-color .3s}
+.dk{width:50px;height:50px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;
 color:#fff;font-size:11.5px;font-weight:800;letter-spacing:-.3px;position:relative;cursor:pointer;
-background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0) 54%),var(--g,#8A9099);
-box-shadow:0 5px 12px rgba(14,22,30,.2),0 1.5px 4px rgba(14,22,30,.14),
-  inset 0 0 0 .5px rgba(255,255,255,.2);
+text-shadow:0 1px 1.5px rgba(0,0,0,.28);
+background:
+  radial-gradient(118% 82% at 28% -12%,rgba(255,255,255,.5),rgba(255,255,255,0) 58%),
+  linear-gradient(180deg,rgba(255,255,255,.15) 0%,rgba(255,255,255,0) 40%,rgba(0,0,0,.18) 100%),
+  var(--g,#8A9099);
+box-shadow:0 8px 16px rgba(14,22,30,.28),0 2px 5px rgba(14,22,30,.22),
+  inset 0 1.5px 0 rgba(255,255,255,.46),inset 0 -3px 6px rgba(0,0,0,.22),
+  inset 0 0 0 .5px rgba(0,0,0,.14);
 transition:transform .17s cubic-bezier(.3,1.4,.5,1)}
 .dk:hover{transform:translateY(-8px) scale(1.1)}
 .dk:active{transform:translateY(-2px) scale(.96)}
@@ -308,12 +300,12 @@ box-shadow:0 4px 14px rgba(0,0,0,.22);opacity:0;pointer-events:none;transition:o
 background:var(--homebar);z-index:850;pointer-events:none}
 
 /* ══ 창 시스템 ══ */
-.snap{position:fixed;z-index:400;border-radius:16px;corner-shape:squircle;border:2px solid rgba(255,255,255,.6);
+.snap{position:fixed;z-index:400;border-radius:16px;border:2px solid rgba(255,255,255,.6);
 background:rgba(255,255,255,.16);backdrop-filter:blur(6px);pointer-events:none;opacity:0;
 transition:opacity .14s,left .12s,top .12s,width .12s,height .12s}
 .snap.show{opacity:1}
 
-.win{position:fixed;border-radius:16px;corner-shape:squircle;overflow:hidden;background:#fff;color:var(--txt);display:flex;flex-direction:column;
+.win{position:fixed;border-radius:14px;overflow:hidden;background:#fff;color:var(--txt);display:flex;flex-direction:column;
 box-shadow:0 26px 70px rgba(0,0,0,.42),0 0 0 .5px rgba(0,0,0,.3);
 animation:winIn .26s cubic-bezier(.2,.9,.3,1.1)}
 @keyframes winIn{from{opacity:0;transform:scale(.9) translateY(14px)}to{opacity:1;transform:none}}
@@ -330,7 +322,7 @@ background:#F3F3F5;border-bottom:.5px solid var(--line);user-select:none}
 .wtb:active{cursor:grabbing}
 .wtb .tt{display:flex;align-items:center;gap:8px;padding-left:13px;margin-right:auto;pointer-events:none;
 min-width:0;overflow:hidden;white-space:nowrap}
-.wtb .tt .mk{width:18px;height:18px;border-radius:5.5px;corner-shape:squircle;display:flex;align-items:center;justify-content:center;
+.wtb .tt .mk{width:18px;height:18px;border-radius:5px;display:flex;align-items:center;justify-content:center;
 font-size:6.5px;font-weight:900;color:#fff;flex-shrink:0}
 .wtb .tt .n{font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:-.3px;
 overflow:hidden;text-overflow:ellipsis}
@@ -403,23 +395,20 @@ padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:16px}
 .dband button{margin-left:auto;background:var(--red);color:#fff;font-size:10.5px;font-weight:600;padding:6px 11px;border-radius:8px}
 .empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
 color:var(--txt3);padding:40px}
-.empty .bigicon{width:64px;height:64px;border-radius:14.5px;corner-shape:squircle;display:flex;align-items:center;justify-content:center;
+.empty .bigicon{width:64px;height:64px;border-radius:17px;display:flex;align-items:center;justify-content:center;
 font-size:15px;font-weight:800;color:#fff;opacity:.6}
 .empty .t{font-size:14px;font-weight:700;color:var(--txt2)}
 .empty .d{font-size:11.5px;text-align:center;line-height:1.6;max-width:280px}
 /* 설정 창 */
-.thgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
+.thgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .thc{border:1.5px solid var(--line);border-radius:12px;padding:9px;text-align:left;background:#fff;
 display:flex;flex-direction:column;gap:2px;transition:border-color .15s,box-shadow .15s}
 .thc:hover{border-color:#C9CDD3}
 .thc.on{border-color:var(--red);box-shadow:0 0 0 2.5px rgba(232,26,59,.16)}
-.thc .pv{height:56px;border-radius:10px;corner-shape:squircle;margin-bottom:7px;border:.5px solid rgba(0,0,0,.08)}
+.thc .pv{height:56px;border-radius:8px;margin-bottom:7px;border:.5px solid rgba(0,0,0,.08)}
 .thc .tn2{font-size:12.5px;font-weight:700;color:var(--ink)}
 .thc .td{font-size:10.5px;color:var(--txt3)}
-.pv.light,.sw.light{background:radial-gradient(70% 90% at 20% 0%,rgba(232,26,59,.34),rgba(232,26,59,0) 62%),
-radial-gradient(70% 90% at 95% 40%,rgba(0,98,184,.3),rgba(0,98,184,0) 62%),linear-gradient(150deg,#FFFFFF,#E3EAF1)}
-.pv.soft,.sw.soft{background:radial-gradient(70% 90% at 20% 0%,rgba(232,26,59,.12),rgba(232,26,59,0) 62%),
-linear-gradient(150deg,#FFFFFF,#E5EBF1)}
+.pv.light,.sw.light{background:linear-gradient(150deg,#FFFFFF,#E5EBF1)}
 .pv.mist,.sw.mist{background:linear-gradient(150deg,#F8FAFC,#C4D2DF)}
 .pv.dark,.sw.dark{background:linear-gradient(150deg,#3B4A5A,#141C25)}
 .sbtn{font-size:11.5px;font-weight:600;padding:6px 12px;border-radius:8px;border:.5px solid var(--line);
@@ -473,12 +462,6 @@ background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 <div class="status">
   <div class="tn">오전 9:41 · 4월 5일 (일)</div>
   <div class="r">
-    <button class="sact" id="tile4" title="열린 창을 4분할로 정렬 (Ctrl/⌘+4)">
-      <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18M3 12h18"/></svg>
-      4분할</button>
-    <button class="sact" id="resetLayout" title="아이콘·위젯 배치를 기본값으로">
-      <svg class="ic" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
-      배치 초기화</button>
     <span class="sys">SH-Office</span>
     <button class="prof" id="profBtn" aria-haspopup="true" aria-expanded="false" aria-label="윤길배 계정 메뉴">
       <span class="av">윤길</span><span class="nm">윤길배</span>
@@ -490,7 +473,10 @@ background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
   <div class="pane">
     <div class="greet">
       <h1>윤길배 대표이사님, 좋은 아침입니다</h1>
-      <p>성현회계법인 · 진행 중 12건 · 리뷰 대기 47건 — 아이콘·위젯은 끌어서 옮기고, 창은 화면 모서리로 끌면 4분할됩니다</p>
+      <p>성현회계법인 · 진행 중 12건 · 리뷰 대기 47건 — 아이콘·위젯을 끌어 옮기고, 위젯 모서리로 크기를 바꿉니다</p>
+      <button class="reset" id="resetLayout">
+        <svg class="ic" style="width:13px;height:13px" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+        홈 화면 배치 초기화</button>
     </div>
     <div class="wgrid" id="wgrid"></div>
   </div>
@@ -499,7 +485,6 @@ background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 
 <div class="dots"><i class="on"></i><i></i><i></i></div>
 <div class="snap" id="snap"></div>
-<div class="dockzone"></div>
 <div class="dock" id="dock"></div>
 <div class="homebar"></div>
 
@@ -532,10 +517,9 @@ const USER={id:'yoon.gb', name:'윤길배', title:'대표이사', firm:'성현�
             mail:'yoon.gb@shcpa.kr', init:'윤길'};
 const LKEY='sh-portal:'+USER.id+':v2';
 const THEMES={
-  light:{n:'화이트', sn:'화이트', d:'컬러 번짐이 뚜렷한 기본'},
-  soft :{n:'화이트 소프트', sn:'소프트', d:'번짐이 은은한 이전 버전'},
-  mist :{n:'미스트', sn:'미스트', d:'옅은 블루그레이'},
-  dark :{n:'다크 슬레이트', sn:'다크', d:'어두운 배경'}
+  light:{n:'화이트', d:'밝고 깔끔한 기본'},
+  mist :{n:'미스트', d:'옅은 블루그레이'},
+  dark :{n:'다크 슬레이트', d:'기존 어두운 배경'}
 };
 let theme='light';
 /* 배경 선택 UI(메뉴 스와치 · 설정 창 카드)의 선택 상태를 맞춘다 */
@@ -890,8 +874,6 @@ function renderDock(){
 
 /* ── 배치 저장 (사용자 계정별로 이 브라우저에 보관) ── */
 const resetBtn=document.getElementById('resetLayout');
-const tile4Btn=document.getElementById('tile4');
-tile4Btn.addEventListener('click',tileQuarters);
 const isDefault=()=>homeOrder.join()===HOME_DEFAULT.join() && dockOrder.join()===DOCK_DEFAULT.join()
   && wgOrder.join()===WG_DEFAULT.join() && WG_DEFAULT.every(id=>wgSize[id]===WG_SIZE_DEFAULT[id]);
 function saveLayout(){
@@ -1075,12 +1057,6 @@ function syncHome(){
 function markDock(){
   document.querySelectorAll('[data-dock]').forEach(d=>d.classList.toggle('on', wins.has(d.dataset.dock)));
 }
-/* 최대화 시 Dock 감추기, 창이 2개 이상일 때 4분할 버튼 노출 */
-function syncChrome(){
-  const live=[...wins.values()].filter(w=>w.state!=='min');
-  document.body.classList.toggle('dockhide', live.some(w=>w.state==='max'));
-  tile4Btn.classList.toggle('show', live.length>=2);
-}
 function focusWin(id){
   const w=wins.get(id); if(!w) return;
   w.el.style.zIndex=++zTop;
@@ -1129,19 +1105,19 @@ function openApp(id){
   syncThemeUI();                              /* 설정 창의 배경 카드 선택 상태 반영 */
   wins.set(id,{el,state:'normal',restore:null});
   bindWindow(id,el);
-  focusWin(id); markDock(); syncHome(); syncChrome();
+  focusWin(id); markDock(); syncHome();
 }
 function closeApp(id){
   const w=wins.get(id); if(!w) return;
   w.el.classList.add('closing');
-  setTimeout(()=>{w.el.remove(); wins.delete(id); markDock(); syncHome(); focusTop(); syncChrome();},170);
+  setTimeout(()=>{w.el.remove(); wins.delete(id); markDock(); syncHome(); focusTop();},170);
 }
 function minApp(id){
   const w=wins.get(id); if(!w) return;
   w.el.classList.add('min'); w.state='min';
   w.el.classList.remove('active');
   setTimeout(()=>{ if(w.state==='min') w.el.style.display='none'; },210);
-  syncHome(); focusTop(); syncChrome();
+  syncHome(); focusTop();
 }
 function maxApp(id){
   const w=wins.get(id); if(!w) return;
@@ -1155,7 +1131,7 @@ function maxApp(id){
     w.state='max';
   }
   setTimeout(()=>el.classList.remove('snapping'),200);
-  paintMaxBtn(id); syncChrome();
+  paintMaxBtn(id);
 }
 /* 최대화 상태면 '이전 크기로 복원' 아이콘(겹친 사각형)으로 바꿈 */
 const ICON_MAX='<svg viewBox="0 0 12 12"><rect x="2.4" y="2.4" width="7.2" height="7.2"/></svg>';
@@ -1174,27 +1150,13 @@ function snapTo(id,rect){
   Object.assign(w.el.style,{left:rect.x+'px',top:rect.y+'px',width:rect.w+'px',height:rect.h+'px'});
   w.state='snap';
   setTimeout(()=>w.el.classList.remove('snapping'),200);
-  paintMaxBtn(id); syncChrome();
 }
 function zoneRect(zone){
-  const a=area(), hw=a.w/2-4, hh=a.h/2-4;
-  if(zone==='max')   return a;
-  if(zone==='left')  return {x:a.x,y:a.y,w:hw,h:a.h};
-  if(zone==='right') return {x:a.x+a.w/2+4,y:a.y,w:hw,h:a.h};
-  if(zone==='q1')    return {x:a.x,y:a.y,w:hw,h:hh};                     /* 좌상 */
-  if(zone==='q2')    return {x:a.x+a.w/2+4,y:a.y,w:hw,h:hh};             /* 우상 */
-  if(zone==='q3')    return {x:a.x,y:a.y+a.h/2+4,w:hw,h:hh};             /* 좌하 */
-  if(zone==='q4')    return {x:a.x+a.w/2+4,y:a.y+a.h/2+4,w:hw,h:hh};     /* 우하 */
+  const a=area();
+  if(zone==='max') return a;
+  if(zone==='left') return {x:a.x,y:a.y,w:a.w/2-4,h:a.h};
+  if(zone==='right') return {x:a.x+a.w/2+4,y:a.y,w:a.w/2-4,h:a.h};
   return null;
-}
-/* 열려 있는 창을 최대 4개까지 4분할로 정렬 */
-function tileQuarters(){
-  const open=[...wins.entries()].filter(([,v])=>v.state!=='min')
-    .sort((a,b)=>(+b[1].el.style.zIndex||0)-(+a[1].el.style.zIndex||0)).slice(0,4);
-  if(!open.length) return;
-  const zones=open.length===1?['max']:open.length===2?['left','right']:['q1','q2','q3','q4'];
-  open.forEach(([id],i)=>snapTo(id,zoneRect(zones[i])));
-  toast(open.length>=3?'창을 4분할로 정렬했습니다':'창을 좌우로 정렬했습니다');
 }
 
 function bindWindow(id,el){
@@ -1234,14 +1196,7 @@ function bindWindow(id,el){
       ny=Math.max(ar.y-2, Math.min(ny, ar.y+ar.h-40));
       el.style.left=nx+'px'; el.style.top=ny+'px';
 
-      /* 위 = 최대화, 좌우 가장자리 = 반화면, 모서리 = 4분할 */
-      const ar2=area(), CN=110;
-      zone=null;
-      if(ev.clientY<=ar2.y+6) zone='max';
-      else if(ev.clientX<=EDGE)
-        zone = ev.clientY<ar2.y+CN ? 'q1' : ev.clientY>ar2.y+ar2.h-CN ? 'q3' : 'left';
-      else if(ev.clientX>=innerWidth-EDGE)
-        zone = ev.clientY<ar2.y+CN ? 'q2' : ev.clientY>ar2.y+ar2.h-CN ? 'q4' : 'right';
+      zone = ev.clientY<=area().y+6 ? 'max' : ev.clientX<=EDGE ? 'left' : ev.clientX>=innerWidth-EDGE ? 'right' : null;
       const r=zone&&zoneRect(zone);
       if(r){ Object.assign(snapEl.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'});
              snapEl.classList.add('show'); }
@@ -1295,7 +1250,7 @@ function menu(open){
   profBtn.setAttribute('aria-expanded',open);
 }
 swatches.innerHTML=Object.entries(THEMES).map(([k,t])=>
-  `<button class="sw ${k}${k==='dark'?' dk':''}" data-theme-opt="${k}" title="${t.n}"><span>${t.sn||t.n}</span></button>`).join('');
+  `<button class="sw ${k}${k==='dark'?' dk':''}" data-theme-opt="${k}" title="${t.n}"><span>${t.n}</span></button>`).join('');
 
 profBtn.addEventListener('click',e=>{ e.stopPropagation(); menu(!pmenu.classList.contains('on')); });
 document.addEventListener('click',e=>{
@@ -1327,7 +1282,6 @@ document.addEventListener('click',e=>{
   }
 });
 document.addEventListener('keydown',e=>{
-  if((e.metaKey||e.ctrlKey)&&e.key==='4'){ e.preventDefault(); tileQuarters(); return; }
   const act=[...wins.entries()].find(([,v])=>v.el.classList.contains('active')&&v.state!=='min');
   if(!act) return;
   if(e.key==='Escape') closeApp(act[0]);
