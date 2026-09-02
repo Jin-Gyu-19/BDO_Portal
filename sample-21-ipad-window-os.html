@@ -78,11 +78,13 @@ text-shadow:var(--tshadow);pointer-events:none}
 /* 상태 표시줄 (조직명 + 프로필만) */
 .status .sys{font-size:11px;font-weight:700;opacity:.88}
 
-/* 사용자 프로필 — 상태 표시줄에 얹히는 형태 (드롭다운 장식 없음) */
-.prof{display:flex;align-items:center;gap:6px;padding:2px 7px 2px 2px;margin-left:3px;border-radius:99px;
-color:var(--fg);text-shadow:inherit;background:transparent;transition:background .15s}
-.prof:hover,.prof.on{background:var(--menuHov)}
-.prof:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+/* 사용자 프로필 — 상태 표시줄에 얹히는 형태 (배경 없이, hover는 확대만) */
+.prof{display:flex;align-items:center;gap:6px;padding:2px 3px;margin-left:5px;
+color:var(--fg);text-shadow:inherit;background:none;
+transition:transform .17s cubic-bezier(.3,1.4,.5,1)}
+.prof:hover,.prof.on{transform:scale(1.07)}
+.prof:active{transform:scale(.97)}
+.prof:focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:8px}
 .prof .av{width:19px;height:19px;border-radius:50%;background:linear-gradient(145deg,#FF5A72,var(--red));
 color:#fff;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;
 flex-shrink:0;text-shadow:none}
@@ -147,7 +149,13 @@ border:1px solid var(--wgBorder);box-shadow:var(--wgShadow);transition:transform
 .wg[data-r="2"],.wgrid .slot[data-r="2"]{grid-row:span 2}
 .wgrid .slot{border-radius:26px;corner-shape:squircle}
 
-/* 크기별 표시량 — 좁을수록 덜어내고, 2행이면 상세를 덧붙인다 */
+/* 줄인 만큼 내용도 같이 줄어들도록 — 폭 비율에 맞춰 본문 전체를 축소 */
+.wgc{width:calc(100% / var(--s,1));height:calc(100% / var(--s,1));
+transform:scale(var(--s,1));transform-origin:top left;transition:transform .16s}
+/* 폭이 줄어도 행 높이가 늘지 않도록 한 줄로 자른다 */
+.pitem .t,.pitem .s{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* 크기별 표시량 — 2행이면 상세를 덧붙인다 */
 .wg .more{display:none;margin-top:12px;padding-top:11px;border-top:1px solid var(--wgTrack)}
 .wg[data-r="2"] .more{display:block}
 .wg.deadline[data-r="1"][data-c="2"] .more,
@@ -156,16 +164,10 @@ border:1px solid var(--wgBorder);box-shadow:var(--wgShadow);transition:transform
 .wg[data-r="1"] .plist{gap:6px;margin-top:7px}
 .wg[data-r="1"] .pitem{grid-template-columns:24px 1fr 38px}
 .wg[data-r="1"] .pitem .av{width:24px;height:24px}
-/* 규칙은 (행,열) 조합별로 배타적으로 — 상위 규칙이 숨긴 행은 하위 규칙이 되살리지 못하므로 */
-.wg[data-r="1"][data-c="1"] .plist .pitem:nth-child(n+2){display:none}
-.wg[data-r="1"][data-c="2"] .plist .pitem:nth-child(n+3){display:none}
-.wg[data-r="1"][data-c="3"] .plist .pitem:nth-child(n+4){display:none}
-.wg[data-r="2"][data-c="1"] .plist .pitem:nth-child(n+4){display:none}
-.wg[data-r="2"][data-c="2"] .plist .pitem:nth-child(n+6){display:none}
-.wg[data-r="2"][data-c="3"] .plist .pitem:nth-child(n+6){display:none}
-.wg[data-r="1"][data-c="1"] .nlist .nrow:nth-child(n+3){display:none}
-.wg[data-r="1"][data-c="2"] .nlist .nrow:nth-child(n+4){display:none}
-.wg[data-r="1"][data-c="3"] .nlist .nrow:nth-child(n+5){display:none}
+/* 행 수만으로 결정 — 폭이 줄면 감추는 게 아니라 축소해서 보여준다 */
+.wg[data-r="1"] .plist .pitem:nth-child(n+4){display:none}
+.wg[data-r="2"] .plist .pitem:nth-child(n+6){display:none}
+.wg[data-r="1"] .nlist .nrow:nth-child(n+5){display:none}
 .wg[data-r="2"] .nlist .nrow:nth-child(n+6){display:none}
 /* 1열 폭에서는 링과 수치를 세로로 쌓고 링을 줄인다 */
 .wg[data-c="1"] .ring{flex-direction:column;align-items:flex-start;gap:9px;margin-top:10px}
@@ -260,13 +262,14 @@ body.editing .ap:hover,body.editing .dk:hover{transform:none}
 body.editing .dk .tip{opacity:0!important}
 @keyframes jig{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg)}}
 body.editing .ap .icon,body.editing .dk{animation:jig .34s ease-in-out infinite}
-/* 상태 표시줄 액션 (배치 초기화 · 창 4분할) */
-.sact{font-size:10.5px;font-weight:600;color:var(--btnFg);background:var(--btnBg);
-border:1px solid var(--btnBorder);border-radius:99px;padding:3px 10px;text-shadow:none;
-display:none;align-items:center;gap:5px;transition:background .15s,color .15s}
+/* 상태 표시줄 액션 (배치 초기화 · 창 4분할) — 배경 없이, hover는 확대만 */
+.sact{font-size:10.5px;font-weight:600;color:var(--fg);background:none;border:none;padding:2px 3px;
+display:none;align-items:center;gap:5px;opacity:.72;
+transition:transform .17s cubic-bezier(.3,1.4,.5,1),opacity .15s}
 .sact.show{display:inline-flex}
-.sact:hover{background:var(--menuHov);color:var(--fg)}
-.sact:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.sact:hover{transform:scale(1.09);opacity:1}
+.sact:active{transform:scale(.97)}
+.sact:focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:6px}
 .sact .ic{width:12px;height:12px}
 @media (prefers-reduced-motion:reduce){body.editing .ap .icon,body.editing .dk{animation:none}}
 
@@ -824,6 +827,11 @@ const WG_DEFAULT=['dday','aqi','notice','proj'];
 const WG_SIZE_DEFAULT={dday:'1x2',aqi:'1x1',notice:'1x3',proj:'1x3'};
 const WG_COLS=3, WG_ROWS=2, WG_ROWH=190, WG_GAP=16;
 const validSize=v=>/^[1-2]x[1-3]$/.test(v);
+/* 기본 크기보다 좁아진 만큼 본문을 축소한다 (읽을 수 있는 하한 유지) */
+function contentScale(id,cols){
+  const dc=Number((WG_SIZE_DEFAULT[id]||'1x1').split('x')[1]);
+  return Math.min(1, Math.round((0.62+0.38*(cols/dc))*1000)/1000);
+}
 const sizeOf=id=>validSize(wgSize[id])?wgSize[id]:'1x1';
 const sizeLabel=v=>v.replace('x',' × ');
 
@@ -845,7 +853,7 @@ function renderWidgets(){
     el.className='wg'+(w.cls?' '+w.cls:'');
     const [r,c]=sizeOf(id).split('x');
     el.dataset.id=id; el.dataset.open=w.open; el.dataset.r=r; el.dataset.c=c;
-    el.innerHTML=w.body()+
+    el.innerHTML=`<div class="wgc" style="--s:${contentScale(id,+c)}">${w.body()}</div>`+
       `<span class="szl tn">${sizeLabel(sizeOf(id))}</span>
        <button class="rsz" title="크기 조정" aria-label="크기 조정">
          <svg viewBox="0 0 12 12"><path d="M10 4v6H4M10 10L3 3"/></svg></button>`;
@@ -1019,6 +1027,7 @@ function startResize(e,handle){
     if(size!==wgSize[id]){
       wgSize[id]=size; el.dataset.r=rows; el.dataset.c=cols;
       el.querySelector('.szl').textContent=sizeLabel(size);
+      el.querySelector('.wgc').style.setProperty('--s',contentScale(id,cols));
     }
   };
   const up=()=>{
