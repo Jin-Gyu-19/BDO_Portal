@@ -95,6 +95,7 @@ transition:transform .17s cubic-bezier(.3,1.4,.5,1)}
 color:#fff;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;
 flex-shrink:0;text-shadow:none}
 .prof .nm{font-size:11px;font-weight:700;letter-spacing:-.2px}
+.prof .sys{margin-right:5px}
 
 /* 프로필 드롭다운 */
 .pmenu{position:fixed;top:36px;right:16px;width:268px;z-index:950;border-radius:20px;corner-shape:squircle;padding:6px;
@@ -375,6 +376,44 @@ background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,0) 54%)
 .sres .ss{font-size:11px;opacity:.55;margin-top:1px}
 .sres .sk{margin-left:auto;font-size:9.5px;font-weight:800;letter-spacing:.6px;opacity:.45;text-transform:uppercase}
 .spotempty{padding:26px 16px;text-align:center;font-size:12.5px;opacity:.5}
+
+/* 모든 App 서랍 */
+.lib{padding-top:9vh}
+.libbox{width:min(880px,94vw);max-height:80vh;display:flex;flex-direction:column}
+.libhd{display:flex;align-items:center;gap:16px;padding:20px 22px 14px;border-bottom:1px solid var(--menuLine)}
+.libhd h2{font-size:19px;font-weight:800;letter-spacing:-.5px}
+.libhd p{font-size:12px;opacity:.55;margin-top:2px}
+.libsearch{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--btnBg);
+border:1px solid var(--btnBorder);border-radius:99px;padding:7px 12px;width:220px}
+.libsearch .ic{width:15px;height:15px;opacity:.5}
+.libsearch input{flex:1;border:none;background:none;outline:none;font:inherit;font-size:13px;color:var(--fg);min-width:0}
+.libsearch input::placeholder{color:var(--fg);opacity:.4}
+.libhd kbd{font:inherit;font-size:10.5px;font-weight:700;opacity:.45;border:1px solid var(--menuLine);border-radius:6px;padding:2px 7px}
+.libbody{overflow-y:auto;padding:8px 22px 22px}
+.lsec{margin-top:16px}
+.lsec h3{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:1px;opacity:.55;
+text-transform:uppercase;margin-bottom:10px}
+.lsec h3 i{width:7px;height:7px;border-radius:50%;display:block}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.lcard{display:flex;align-items:center;gap:10px;padding:8px 10px 8px 8px;border-radius:14px;
+border:1px solid transparent;transition:background .15s,border-color .15s}
+.lcard:hover{background:var(--menuHov);border-color:var(--menuLine)}
+.lcard.soon .lic{opacity:.45}
+.lcard .lic{width:40px;height:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+font-size:11px;font-weight:800;color:#fff;
+background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,0) 54%),var(--g,#8A9099);
+-webkit-mask:var(--sqmask);mask:var(--sqmask);transition:transform .15s}
+.lcard .lic:hover{transform:scale(1.08)}
+.lcard .ln{min-width:0;flex:1}
+.lcard .ln b{display:block;font-size:12.5px;font-weight:700;letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lcard .ln small{display:block;font-size:10.5px;opacity:.55;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lcard .ln .soonpill{display:inline-block;font-size:9px;font-weight:800;padding:1px 6px;border-radius:99px;
+background:var(--chip);opacity:.8;margin-left:4px;vertical-align:1px}
+.ltg{flex-shrink:0;font-size:10.5px;font-weight:700;padding:5px 10px;border-radius:99px;
+border:1px solid var(--btnBorder);background:var(--btnBg);color:var(--fg);opacity:.85;transition:all .15s}
+.ltg:hover{opacity:1}
+.ltg.on{background:var(--red);border-color:transparent;color:#fff;opacity:1}
+.lcard.soon .ltg{visibility:hidden}
 .homebar{position:fixed;bottom:5px;left:50%;transform:translateX(-50%);width:132px;height:4.5px;border-radius:3px;
 background:var(--homebar);z-index:850;pointer-events:none}
 
@@ -552,8 +591,8 @@ background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
     <button class="sact" id="resetLayout" title="아이콘·위젯 배치를 기본값으로">
       <svg class="ic" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
       배치 초기화</button>
-    <span class="sys">SH-Office</span>
-    <button class="prof" id="profBtn" aria-haspopup="true" aria-expanded="false" aria-label="윤길배 계정 메뉴">
+    <button class="prof" id="profBtn" aria-haspopup="true" aria-expanded="false" aria-label="SH-Office · 윤길배 계정 메뉴">
+      <span class="sys">SH-Office</span>
       <span class="av">윤길</span><span class="nm">윤길배</span>
     </button>
   </div>
@@ -562,7 +601,7 @@ background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 <div class="home" id="home">
   <div class="greet">
       <h1><em>윤길배 <span class="role">대표이사</span></em>님, 좋은 아침입니다</h1>
-      <p>성현회계법인 · 진행 중 12건 · 리뷰 대기 47건 — 앱은 감사 · 세무 · 용역 · 행정 구역에 놓여 있고, 구역 라벨을 끌면 통째로 옮겨집니다</p>
+      <p>성현회계법인 · 진행 중 12건 · 리뷰 대기 47건 — 홈에는 핵심 앱만 두었습니다. 나머지는 Dock의 ‘모든 App’에서 꺼내 홈에 추가하세요</p>
   </div>
   <div class="hgrid" id="hgrid"></div>
 </div>
@@ -576,7 +615,27 @@ background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
     <svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.3-4.3"/></svg>
     <span class="tip">검색 · ⌘K</span>
   </button>
+  <button class="dk dsearch" id="dockLib" aria-label="모든 App" title="모든 App">
+    <span class="dksurf"></span>
+    <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
+    <span class="tip">모든 App</span>
+  </button>
   <div class="dsep"></div>
+</div>
+
+<!-- 모든 App 서랍 -->
+<div class="spot lib" id="lib">
+  <div class="spotbox libbox">
+    <div class="libhd">
+      <div><h2>모든 App</h2><p>홈에는 지금 쓰는 앱만 두고, 나머지는 여기서 꺼내 씁니다</p></div>
+      <div class="libsearch">
+        <svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.3-4.3"/></svg>
+        <input id="libq" type="text" placeholder="앱 검색" autocomplete="off" spellcheck="false">
+      </div>
+      <kbd>esc</kbd>
+    </div>
+    <div class="libbody" id="libbody"></div>
+  </div>
 </div>
 
 <!-- 스포트라이트 검색 -->
@@ -619,7 +678,7 @@ background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 /* ══════════ 사용자 · 테마 ══════════ */
 const USER={id:'yoon.gb', name:'윤길배', title:'대표이사', firm:'성현회계법인',
             mail:'yoon.gb@shcpa.kr', init:'윤길'};
-const LKEY='sh-portal:'+USER.id+':v3';
+const LKEY='sh-portal:'+USER.id+':v4';
 const THEMES={
   light:{n:'화이트', sn:'화이트', d:'컬러 번짐이 뚜렷한 기본'},
   soft :{n:'화이트 소프트', sn:'소프트', d:'번짐이 은은한 이전 버전'},
@@ -933,25 +992,30 @@ const ZONES={
   admin:{n:'행정',     dot:'#5C6E80'},
   ai   :{n:'AI · 공통', dot:'#232B36'}
 };
+/* 앱 → 카테고리 (모든 App 서랍의 분류, 홈 추가 시 들어갈 구역) */
+const APP_CAT={aud:'audit',k1118:'audit',xbrl:'audit',fin:'audit',rev:'audit',aqi:'audit',
+  tax:'tax',taxadj:'tax',efile:'tax', ins:'adv',law:'adv',valu:'adv',
+  cal:'admin',notice:'admin',erp:'admin',hr:'admin',settings:'admin', ai:'ai',rag:'ai'};
 /* k: 'w' 위젯 · 'z' 존 · 'a' 앱 / r,c: 시작 칸 / rs,cs: 차지하는 칸 수 */
 const row=(k,r,c0,ids)=>ids.map((id,i)=>({k,id,r,c:c0+i,rs:1,cs:1}));
+/* 홈에는 지금 쓰는 핵심 앱만 — 나머지는 '모든 App' 서랍에서 꺼내 온다 */
 const LAYOUT_DEFAULT=[
   {k:'w',id:'dday',  r:1,c:1, rs:2,cs:2},
   {k:'w',id:'aqi',   r:1,c:3, rs:2,cs:2},
   {k:'w',id:'proj',  r:3,c:1, rs:2,cs:4},
   {k:'w',id:'notice',r:5,c:1, rs:1,cs:4},
-  {k:'z',id:'audit', r:1,c:5, rs:1,cs:6},
-  {k:'z',id:'tax',   r:2,c:5, rs:1,cs:3},
-  {k:'z',id:'adv',   r:2,c:8, rs:1,cs:3},
-  {k:'z',id:'admin', r:3,c:5, rs:1,cs:5},
-  {k:'z',id:'ai',    r:4,c:5, rs:1,cs:2},
-  ...row('a',1,5,['aud','k1118','xbrl','fin','rev','aqi']),
-  ...row('a',2,5,['tax','taxadj','efile']),
-  ...row('a',2,8,['ins','law','valu']),
-  ...row('a',3,5,['cal','notice','erp','hr','settings']),
-  ...row('a',4,5,['ai','rag'])
+  {k:'z',id:'audit', r:1,c:5, rs:1,cs:4},
+  {k:'z',id:'ai',    r:1,c:9, rs:1,cs:2},
+  {k:'z',id:'tax',   r:2,c:5, rs:1,cs:2},
+  {k:'z',id:'adv',   r:2,c:7, rs:1,cs:2},
+  {k:'z',id:'admin', r:2,c:9, rs:1,cs:2},
+  ...row('a',1,5,['aud','rev','k1118','fin']),
+  ...row('a',1,9,['ai']),
+  ...row('a',2,5,['tax']),
+  ...row('a',2,7,['ins']),
+  ...row('a',2,9,['cal','notice'])
 ];
-const DOCK_DEFAULT=['aud','k1118','fin','xbrl','ai','rev','cal','aqi'];
+const DOCK_DEFAULT=['aud','ai','rev','cal'];
 const DOCK_MAX=10;
 const WG_DEF_COLS={dday:2,aqi:2,notice:4,proj:4};   /* 축소 비율 기준 */
 
@@ -1539,6 +1603,7 @@ function paintSpot(){
     : '<div class="spotempty">일치하는 항목이 없습니다</div>';
 }
 function openSpot(){
+  closeLib();
   if(!INDEX.length) INDEX=buildIndex();
   hits=match(''); sel=0; paintSpot();
   spot.classList.add('on'); spotq.value=''; setTimeout(()=>spotq.focus(),30);
@@ -1567,6 +1632,73 @@ spotq.addEventListener('keydown',e=>{
   else if(e.key==='Enter'){ e.preventDefault(); runSel(); }
   else if(e.key==='Escape'){ e.preventDefault(); closeSpot(); }
 });
+
+/* ══════════ 모든 App 서랍 ══════════ */
+const lib=document.getElementById('lib'), libq=document.getElementById('libq'),
+      libbody=document.getElementById('libbody');
+const onHome=id=>layout.some(o=>o.k==='a'&&o.id===id);
+const libOpen=()=>lib.classList.contains('on');
+
+/* 홈에 추가: 카테고리 구역 안 빈 칸 → 없으면 격자 첫 빈 칸 */
+function freeCellIn(box){
+  for(let r=box.r;r<box.r+box.rs;r++) for(let c=box.c;c<box.c+box.cs;c++){
+    const cell={k:'a',r,c,rs:1,cs:1};
+    if(!collide(cell).length) return cell;
+  }
+  return null;
+}
+function addToHome(id){
+  if(onHome(id)) return;
+  const zone=layout.find(o=>o.k==='z'&&o.id===APP_CAT[id]);
+  let cell=zone?freeCellIn(zone):null;
+  /* 자기 구역이 꽉 찼으면 다른 구역 안은 피해서 빈 칸을 찾고, 그래도 없으면 아무 빈 칸 */
+  if(!cell){
+    const zones=layout.filter(o=>o.k==='z');
+    outer: for(let r=1;r<=ROWS;r++) for(let c=1;c<=COLS;c++){
+      const cand={k:'a',r,c,rs:1,cs:1};
+      if(!collide(cand).length && !zones.some(z=>within(cand,z))){ cell=cand; break outer; }
+    }
+  }
+  if(!cell) cell=freeCellIn({r:1,c:1,rs:ROWS,cs:COLS});
+  if(!cell){ toast('홈에 빈 칸이 없습니다. 위젯이나 구역을 줄여 주세요'); return; }
+  layout.push({k:'a',id,r:cell.r,c:cell.c,rs:1,cs:1});
+  renderGrid(); saveLayout();
+  toast(APPS[id].name+'을(를) 홈'+(zone&&within(cell,zone)?' · '+ZONES[zone.id].n+' 구역':'')+'에 추가했습니다');
+}
+function removeFromHome(id){
+  layout=layout.filter(o=>!(o.k==='a'&&o.id===id));
+  renderGrid(); saveLayout();
+  toast(APPS[id].name+'을(를) 홈에서 뺐습니다 (모든 App에는 남아 있어요)');
+}
+function paintLib(){
+  const k=libq.value.trim().toLowerCase(), cho=k&&isCho(k);
+  const ok=id=>{ if(!k) return true; const a=APPS[id];
+    const hay=(a.name+' '+(a.sub||'')+' '+a.short).toLowerCase();
+    return hay.includes(k) || (cho&&chosung(hay).includes(k)); };
+  libbody.innerHTML=Object.entries(ZONES).map(([cat,z])=>{
+    const ids=Object.keys(APPS).filter(id=>APP_CAT[id]===cat && ok(id));
+    if(!ids.length) return '';
+    return `<div class="lsec"><h3><i style="background:${z.dot}"></i>${z.n}<span style="opacity:.6;font-weight:700">${ids.length}</span></h3>
+      <div class="lgrid">${ids.map(id=>{const a=APPS[id], on=onHome(id);
+        return `<div class="lcard${a.soon?' soon':''}" data-lid="${id}">
+          <button class="lic" data-lopen="${id}" style="--g:${a.bg};${a.fg?`color:${a.fg}`:''}" title="${a.name} 열기">${a.short}</button>
+          <div class="ln"><b>${a.name}${a.soon?'<span class="soonpill">예정</span>':''}</b><small>${a.sub||''}</small></div>
+          <button class="ltg${on?' on':''}" data-ltoggle="${id}">${on?'홈 ✓':'+ 홈'}</button>
+        </div>`;}).join('')}</div></div>`;
+  }).join('') || '<div class="spotempty">일치하는 앱이 없습니다</div>';
+}
+function openLib(){ closeSpot(); paintLib(); lib.classList.add('on'); setTimeout(()=>libq.focus(),30); }
+function closeLib(){ lib.classList.remove('on'); libq.blur(); }
+document.getElementById('dockLib').addEventListener('click',e=>{ e.stopPropagation(); libOpen()?closeLib():openLib(); });
+libq.addEventListener('input',paintLib);
+lib.addEventListener('pointerdown',e=>{ if(!e.target.closest('.libbox')) closeLib(); });
+libbody.addEventListener('click',e=>{
+  const o=e.target.closest('[data-lopen]');
+  if(o){ if(!APPS[o.dataset.lopen].soon){ closeLib(); openApp(o.dataset.lopen); } return; }
+  const t=e.target.closest('[data-ltoggle]');
+  if(t){ const id=t.dataset.ltoggle; onHome(id)?removeFromHome(id):addToHome(id); paintLib(); }
+});
+libq.addEventListener('keydown',e=>{ if(e.key==='Escape'){ e.preventDefault(); closeLib(); } });
 
 /* ══════════ 프로필 메뉴 · 토스트 · 배경 ══════════ */
 const profBtn=document.getElementById('profBtn'), pmenu=document.getElementById('pmenu'),
@@ -1601,7 +1733,7 @@ document.addEventListener('click',e=>{
   }
   if(!e.target.closest('#pmenu,#profBtn')) menu(false);
 });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ menu(false); closeSpot(); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ menu(false); closeSpot(); closeLib(); } });
 
 /* ══════════ 이벤트 ══════════ */
 document.addEventListener('click',e=>{
@@ -1616,7 +1748,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&(e.key==='k'||e.key==='K')){
     e.preventDefault(); spotOpen()?closeSpot():openSpot(); return; }
-  if(spotOpen()) return;                       /* 검색 중에는 창 단축키를 막는다 */
+  if(spotOpen()||libOpen()) return;            /* 검색·서랍 중에는 창 단축키를 막는다 */
   if(e.key==='/' && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName)){
     e.preventDefault(); openSpot(); return; }
   if((e.metaKey||e.ctrlKey)&&e.key==='4'){ e.preventDefault(); tileQuarters(); return; }
