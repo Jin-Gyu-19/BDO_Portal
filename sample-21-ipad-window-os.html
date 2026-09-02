@@ -38,7 +38,8 @@ body{
 --btnBg:rgba(20,30,45,.06);--btnBorder:rgba(20,30,45,.11);--btnFg:rgba(28,28,30,.7);
 --rszBg:rgba(20,30,45,.08);
 --menuBg:rgba(252,252,253,.9);--menuBorder:rgba(20,30,45,.1);--menuShadow:0 24px 54px rgba(20,30,45,.2);
---menuHov:rgba(20,30,45,.06);--menuLine:rgba(20,30,45,.08)}
+--menuHov:rgba(20,30,45,.06);--menuLine:rgba(20,30,45,.08);
+--zoneBg:rgba(255,255,255,.34);--zoneBorder:rgba(20,30,45,.09);--zoneTab:rgba(255,255,255,.9)}
 /* 이전 화이트 배경 (은은한 버전) — 백업으로 남겨 둠 */
 body[data-theme="soft"]{
 --pageBg:#EEF1F4;
@@ -63,7 +64,8 @@ body[data-theme="dark"]{
 --btnBg:rgba(255,255,255,.14);--btnBorder:rgba(255,255,255,.2);--btnFg:rgba(255,255,255,.72);
 --rszBg:rgba(255,255,255,.2);
 --menuBg:rgba(26,31,38,.78);--menuBorder:rgba(255,255,255,.14);--menuShadow:0 24px 54px rgba(0,0,0,.5);
---menuHov:rgba(255,255,255,.09);--menuLine:rgba(255,255,255,.1)}
+--menuHov:rgba(255,255,255,.09);--menuLine:rgba(255,255,255,.1);
+--zoneBg:rgba(255,255,255,.05);--zoneBorder:rgba(255,255,255,.12);--zoneTab:rgba(34,40,48,.9)}
 
 /* ══ 배경 ══ */
 .wall{position:fixed;inset:0;overflow:hidden;background:var(--wall);transition:background .3s}
@@ -222,6 +224,30 @@ border-color:rgba(255,255,255,.13);box-shadow:0 10px 28px rgba(16,24,32,.24)}
 .nrow .tg.u{background:var(--chipU);color:var(--chipUFg)}
 .nrow .t{opacity:.9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nrow .d{margin-left:auto;opacity:.55;font-size:9.5px;flex-shrink:0}
+
+/* 카테고리 존 — 격자 위에 깔리는 반투명 판. 아이콘은 그 위에 놓인다 */
+.zone{position:relative;z-index:0;border-radius:28px;corner-shape:squircle;
+background:var(--zoneBg);border:1px solid var(--zoneBorder);cursor:grab;min-width:0;min-height:0;
+transition:background .3s,border-color .3s}
+.zone:active{cursor:grabbing}
+.zone .zl{position:absolute;left:16px;top:0;transform:translateY(-50%);display:flex;align-items:center;gap:6px;
+cursor:grab;transition:transform .15s,box-shadow .15s;
+font-size:11px;font-weight:800;letter-spacing:-.2px;color:var(--fg);padding:3px 10px;border-radius:99px;
+background:var(--zoneTab);border:1px solid var(--zoneBorder);white-space:nowrap;
+box-shadow:0 2px 8px rgba(14,22,30,.08)}
+.zone .zl:hover{transform:translateY(-50%) scale(1.06);box-shadow:0 4px 12px rgba(14,22,30,.14)}
+.zone .zl i{width:7px;height:7px;border-radius:50%;background:var(--zdot);display:block}
+.zone .zl small{font-weight:700;opacity:.5;margin-left:1px}
+.zone .rsz{position:absolute;right:7px;bottom:7px;width:22px;height:22px;border-radius:7px;
+display:flex;align-items:center;justify-content:center;background:var(--rszBg);color:var(--fg);
+opacity:0;transition:opacity .15s;cursor:nwse-resize;touch-action:none}
+.zone:hover .rsz{opacity:.7}
+.zone .rsz svg{width:11px;height:11px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round}
+.zone.rz{outline:2px solid var(--red);outline-offset:-2px}
+.hgrid .ap,.hgrid .wg{position:relative;z-index:1}
+.hgrid .ap{justify-self:center;align-self:center;padding:6px 8px;border-radius:16px}
+.hgrid .slot.zone-slot{border-radius:28px;border-style:dashed}
+.ghost .zone{width:100%;height:100%}
 
 /* 앱 아이콘 — 격자 한 칸 */
 .ap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;cursor:pointer;
@@ -536,7 +562,7 @@ background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 <div class="home" id="home">
   <div class="greet">
       <h1><em>윤길배 <span class="role">대표이사</span></em>님, 좋은 아침입니다</h1>
-      <p>성현회계법인 · 진행 중 12건 · 리뷰 대기 47건 — Dock 맨 앞 검색(⌘K)에서 앱·프로젝트·공지를 바로 찾을 수 있습니다</p>
+      <p>성현회계법인 · 진행 중 12건 · 리뷰 대기 47건 — 앱은 감사 · 세무 · 용역 · 행정 구역에 놓여 있고, 구역 라벨을 끌면 통째로 옮겨집니다</p>
   </div>
   <div class="hgrid" id="hgrid"></div>
 </div>
@@ -593,7 +619,7 @@ background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 /* ══════════ 사용자 · 테마 ══════════ */
 const USER={id:'yoon.gb', name:'윤길배', title:'대표이사', firm:'성현회계법인',
             mail:'yoon.gb@shcpa.kr', init:'윤길'};
-const LKEY='sh-portal:'+USER.id+':v2';
+const LKEY='sh-portal:'+USER.id+':v3';
 const THEMES={
   light:{n:'화이트', sn:'화이트', d:'컬러 번짐이 뚜렷한 기본'},
   soft :{n:'화이트 소프트', sn:'소프트', d:'번짐이 은은한 이전 버전'},
@@ -803,6 +829,10 @@ const APPS = {
   law:{name:'소송조회', sub:'개발 중', short:'LAW', bg:G.gray, soon:1, w:520, h:380},
   erp:{name:'ERP', sub:'2026 Q3 오픈', short:'ERP', bg:G.gray, soon:1, w:520, h:380},
   rag:{name:'규정 RAG', sub:'예정', short:'RAG', bg:G.gray, soon:1, w:520, h:380},
+  taxadj:{name:'세무조정', sub:'2026 Q4 오픈', short:'조정', bg:G.gray, soon:1, w:520, h:380},
+  efile:{name:'전자신고', sub:'홈택스 연동', short:'신고', bg:G.gray, soon:1, w:520, h:380},
+  valu:{name:'가치평가', sub:'예정', short:'VAL', bg:G.gray, soon:1, w:520, h:380},
+  hr:{name:'인사 · 근태', sub:'예정', short:'HR', bg:G.gray, soon:1, w:520, h:380},
   settings:{name:'설정', sub:USER.firm, short:'설정', bg:G.set, w:640, h:560, body:()=>`
     <div class="pad">
       <div class="h1">설정<span>.</span></div>
@@ -895,19 +925,35 @@ const hgrid=document.getElementById('hgrid'), dock=document.getElementById('dock
 hgrid.style.setProperty('--cols',COLS);
 hgrid.style.setProperty('--rows',ROWS);
 
-/* k: 'w' 위젯 · 'a' 앱 / r,c: 시작 칸 / rs,cs: 차지하는 칸 수 */
+/* 카테고리 존 — 아이콘은 존 위에 놓이고, 존 자체도 옮기거나 늘릴 수 있다 */
+const ZONES={
+  audit:{n:'감사',     dot:'#D3374F'},
+  tax  :{n:'세무',     dot:'#DFA748'},
+  adv  :{n:'용역',     dot:'#7B62D2'},
+  admin:{n:'행정',     dot:'#5C6E80'},
+  ai   :{n:'AI · 공통', dot:'#232B36'}
+};
+/* k: 'w' 위젯 · 'z' 존 · 'a' 앱 / r,c: 시작 칸 / rs,cs: 차지하는 칸 수 */
+const row=(k,r,c0,ids)=>ids.map((id,i)=>({k,id,r,c:c0+i,rs:1,cs:1}));
 const LAYOUT_DEFAULT=[
-  {k:'w',id:'dday',  r:1,c:1, rs:2,cs:3},
-  {k:'w',id:'aqi',   r:1,c:4, rs:2,cs:2},
-  {k:'w',id:'notice',r:1,c:6, rs:2,cs:5},
-  {k:'w',id:'proj',  r:3,c:1, rs:2,cs:5},
-  ...['aud','k1118','fin','xbrl','ai'].map((id,i)=>({k:'a',id,r:3,c:6+i,rs:1,cs:1})),
-  ...['tax','ins','law','erp','rag'].map((id,i)=>({k:'a',id,r:4,c:6+i,rs:1,cs:1})),
-  ...['cal','rev','aqi','notice','settings'].map((id,i)=>({k:'a',id,r:5,c:1+i,rs:1,cs:1}))
+  {k:'w',id:'dday',  r:1,c:1, rs:2,cs:2},
+  {k:'w',id:'aqi',   r:1,c:3, rs:2,cs:2},
+  {k:'w',id:'proj',  r:3,c:1, rs:2,cs:4},
+  {k:'w',id:'notice',r:5,c:1, rs:1,cs:4},
+  {k:'z',id:'audit', r:1,c:5, rs:1,cs:6},
+  {k:'z',id:'tax',   r:2,c:5, rs:1,cs:3},
+  {k:'z',id:'adv',   r:2,c:8, rs:1,cs:3},
+  {k:'z',id:'admin', r:3,c:5, rs:1,cs:5},
+  {k:'z',id:'ai',    r:4,c:5, rs:1,cs:2},
+  ...row('a',1,5,['aud','k1118','xbrl','fin','rev','aqi']),
+  ...row('a',2,5,['tax','taxadj','efile']),
+  ...row('a',2,8,['ins','law','valu']),
+  ...row('a',3,5,['cal','notice','erp','hr','settings']),
+  ...row('a',4,5,['ai','rag'])
 ];
 const DOCK_DEFAULT=['aud','k1118','fin','xbrl','ai','rev','cal','aqi'];
 const DOCK_MAX=10;
-const WG_DEF_COLS={dday:3,aqi:2,notice:5,proj:5};   /* 축소 비율 기준 */
+const WG_DEF_COLS={dday:2,aqi:2,notice:4,proj:4};   /* 축소 비율 기준 */
 
 let layout=LAYOUT_DEFAULT.map(o=>({...o}));
 let dockOrder=[...DOCK_DEFAULT];
@@ -915,7 +961,11 @@ let dockOrder=[...DOCK_DEFAULT];
 const uid=o=>o.k+':'+o.id;
 const fits=o=>o.r>=1 && o.c>=1 && o.r+o.rs-1<=ROWS && o.c+o.cs-1<=COLS;
 const hitsBox=(a,b)=>!(a.c+a.cs<=b.c || b.c+b.cs<=a.c || a.r+a.rs<=b.r || b.r+b.rs<=a.r);
-const collide=(box,skip)=>layout.filter(o=>o!==skip && hitsBox(box,o));
+/* 앱은 존 위에 올라갈 수 있으므로 앱-존 사이에는 충돌이 없다 */
+const blocks=(a,b)=>{ if((a.k==='a'&&b.k==='z')||(a.k==='z'&&b.k==='a')) return false; return hitsBox(a,b); };
+const collide=(box,skip)=>layout.filter(o=>o!==skip && blocks(box,o));
+const within=(a,z)=>a.r>=z.r && a.r<z.r+z.rs && a.c>=z.c && a.c<z.c+z.cs;
+const zoneApps=z=>layout.filter(o=>o.k==='a' && within(o,z));
 function contentScale(id,cols){
   const dc=WG_DEF_COLS[id]||2;
   return Math.min(1, Math.round((0.62+0.38*(cols/dc))*1000)/1000);
@@ -929,9 +979,17 @@ const dockFace = id => id==='cal'
   : APPS[id].short+(id==='ai'?'<small>칼</small>':'');
 
 function makeItem(o){
-  const el=document.createElement(o.k==='w'?'div':'button');
+  const el=document.createElement(o.k==='a'?'button':'div');
   el.dataset.uid=uid(o); el.dataset.k=o.k; el.dataset.id=o.id;
   el.style.gridArea=`${o.r} / ${o.c} / span ${o.rs} / span ${o.cs}`;
+  if(o.k==='z'){
+    const z=ZONES[o.id]; if(!z) return null;
+    el.className='zone'; el.style.setProperty('--zdot',z.dot);
+    el.innerHTML=`<span class="zl"><i></i>${z.n}<small class="tn">${zoneApps(o).length}</small></span>
+      <button class="rsz" title="구역 크기 조정" aria-label="구역 크기 조정">
+        <svg viewBox="0 0 12 12"><path d="M10 4v6H4M10 10L3 3"/></svg></button>`;
+    return el;
+  }
   if(o.k==='w'){
     const w=WIDGETS[o.id]; if(!w) return null;
     el.className='wg'+(w.cls?' '+w.cls:'');
@@ -952,7 +1010,9 @@ function makeItem(o){
 }
 function renderGrid(){
   hgrid.querySelectorAll('[data-uid]').forEach(n=>n.remove());
-  layout.forEach(o=>{ const el=makeItem(o); if(el) hgrid.appendChild(el); });
+  /* 존을 먼저 그려 아이콘·위젯이 그 위에 오도록 */
+  [...layout.filter(o=>o.k==='z'), ...layout.filter(o=>o.k!=='z')]
+    .forEach(o=>{ const el=makeItem(o); if(el) hgrid.appendChild(el); });
   fitWidgets();
 }
 /* 칸 높이가 줄어든 화면에서도 내용이 잘리지 않도록 축소 비율을 한 번 더 보정 */
@@ -1002,7 +1062,7 @@ function loadLayout(){
     const o=JSON.parse(raw);
     if(Array.isArray(o.layout) && o.layout.length){
       const seen=new Set();
-      const ok=o.layout.filter(it=>it && (it.k==='w'?WIDGETS[it.id]:APPS[it.id])
+      const ok=o.layout.filter(it=>it && (it.k==='w'?WIDGETS[it.id]:it.k==='z'?ZONES[it.id]:APPS[it.id])
         && [it.r,it.c,it.rs,it.cs].every(n=>Number.isInteger(n)&&n>=1)
         && !seen.has(it.k+':'+it.id) && seen.add(it.k+':'+it.id)
         && it.r+it.rs-1<=ROWS && it.c+it.cs-1<=COLS);
@@ -1050,11 +1110,11 @@ function beginDrag(e,el){
   const fromDock=!!el.closest('.dock');
   const item = fromDock ? {k:'a',id,r:0,c:0,rs:1,cs:1}
                         : layout.find(o=>uid(o)===el.dataset.uid);
-  const face=(k==='w')?el:(fromDock?el:el.querySelector('.ish'));
+  const face=(k==='w'||k==='z')?el:(fromDock?el:el.querySelector('.ish'));
   const r=face.getBoundingClientRect();
 
   const ghost=document.createElement('div');
-  ghost.className = k==='w' ? 'ghost wgg' : (fromDock?'ghost':'ghost ap');
+  ghost.className = (k==='w'||k==='z') ? 'ghost wgg' : (fromDock?'ghost':'ghost ap');
   ghost.style.cssText=`left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`;
   const clone=face.cloneNode(true);
   clone.style.width=r.width+'px'; clone.style.height=r.height+'px'; clone.style.margin='0';
@@ -1062,14 +1122,19 @@ function beginDrag(e,el){
   document.body.appendChild(ghost);
 
   const slot=document.createElement('div');
-  slot.className='slot'+(item.rs===1&&item.cs===1&&item.k==='a'?' icon-slot':'');
+  slot.className='slot'+(item.rs===1&&item.cs===1&&item.k==='a'?' icon-slot':k==='z'?' zone-slot':'');
 
-  drag={item:{...item}, origin:item, fromDock, ghost, slot, target:null, swap:null,
+  /* 존을 옮기면 그 위의 앱도 같이 이동 */
+  const carried = k==='z' ? zoneApps(item).map(o=>({...o, dr:o.r-item.r, dc:o.c-item.c})) : [];
+  drag={item:{...item}, origin:item, fromDock, ghost, slot, target:null, swap:null, carried,
         dockIdx:fromDock?dockOrder.indexOf(id):-1,
         offX:e.clientX-r.left, offY:e.clientY-r.top};
 
   if(fromDock){ dockOrder.splice(drag.dockIdx,1); renderDock(); }
-  else { layout=layout.filter(o=>o!==item); renderGrid(); }
+  else {
+    const gone=new Set([item, ...carried.map(c=>layout.find(o=>uid(o)===uid(c)))]);
+    layout=layout.filter(o=>!gone.has(o)); renderGrid();
+  }
   document.body.classList.add('editing');
 }
 function moveDrag(e){
@@ -1089,8 +1154,13 @@ function moveDrag(e){
     const cell=cellAt(e.clientX,e.clientY);
     const box={...item, r:Math.min(cell.r,ROWS-item.rs+1), c:Math.min(cell.c,COLS-item.cs+1)};
     const bump=collide(box);
-    const swappable = bump.length===1 && bump[0].rs===item.rs && bump[0].cs===item.cs;
-    if(bump.length===0 || swappable){
+    const carriedOK = drag.carried.every(c=>{
+      const nb={...c, r:box.r+c.dr, c:box.c+c.dc};
+      return fits(nb) && !collide(nb).length;
+    });
+    const swappable = item.k!=='z' && bump.length===1 && bump[0].k===item.k
+                      && bump[0].rs===item.rs && bump[0].cs===item.cs;
+    if((bump.length===0 && carriedOK) || swappable){
       slot.classList.remove('bad');
       slot.style.gridArea=`${box.r} / ${box.c} / span ${box.rs} / span ${box.cs}`;
       hgrid.appendChild(slot);
@@ -1109,9 +1179,13 @@ function endDrag(){
   }else if(target){
     if(swap){ swap.r=fromDock?swap.r:origin.r; swap.c=fromDock?swap.c:origin.c; }
     layout.push({...item, r:target.r, c:target.c});
+    drag.carried.forEach(c=>layout.push({k:c.k,id:c.id,rs:1,cs:1, r:target.r+c.dr, c:target.c+c.dc}));
   }else{                                   /* 유효한 자리가 없으면 원위치 */
     if(fromDock) dockOrder.splice(Math.max(0,drag.dockIdx),0,item.id);
-    else layout.push({...origin});
+    else {
+      layout.push({...origin});
+      drag.carried.forEach(c=>layout.push({k:c.k,id:c.id,rs:1,cs:1, r:origin.r+c.dr, c:origin.c+c.dc}));
+    }
   }
   slot.remove(); ghost.remove(); clearSwapHint();
   document.body.classList.remove('editing');
@@ -1122,8 +1196,9 @@ function endDrag(){
 
 /* ── 위젯 크기 조정 — 격자 칸 단위, 다른 위젯과 겹치면 더 커지지 않는다 ── */
 function startResize(e,handle){
-  const el=handle.closest('.wg'), u=el.dataset.uid;
+  const el=handle.closest('.wg,.zone'), u=el.dataset.uid;
   const item=layout.find(o=>uid(o)===u); if(!item) return;
+  const isZone=item.k==='z';
   const m=cellMetrics(), before=item.rs+'x'+item.cs;
   const x0=m.left+(item.c-1)*(m.w+GAP), y0=m.top+(item.r-1)*(m.h+GAP);
   el.classList.add('rz');
@@ -1132,6 +1207,7 @@ function startResize(e,handle){
     item.rs=rs; item.cs=cs;
     el.style.gridArea=`${item.r} / ${item.c} / span ${rs} / span ${cs}`;
     el.dataset.r=rs; el.dataset.c=cs;
+    if(isZone){ const n=el.querySelector('.zl small'); if(n) n.textContent=zoneApps(item).length; return; }
     el.querySelector('.szl').textContent=rs+' × '+cs;
     fitWidgets();
   };
@@ -1141,7 +1217,8 @@ function startResize(e,handle){
     const rsT=Math.max(1,Math.min(ROWS-item.r+1,Math.ceil((ev.clientY-y0+GAP/2)/(m.h+GAP))));
     /* 커서가 가리킨 크기에 가장 가까우면서 다른 항목과 겹치지 않는 크기를 고른다 */
     let best=null;
-    for(let R=rsT;R>=1;R--) for(let C=csT;C>=2;C--){
+    const minC=isZone?1:2;
+    for(let R=rsT;R>=1;R--) for(let C=csT;C>=minC;C--){
       if(collide({...item,rs:R,cs:C},item).length) continue;
       const d=(rsT-R)+(csT-C);
       if(!best||d<best.d||(d===best.d&&R*C>best.rs*best.cs)) best={rs:R,cs:C,d};
