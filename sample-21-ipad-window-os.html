@@ -133,24 +133,27 @@ animation:winIn .26s cubic-bezier(.2,.9,.3,1.1)}
 .win.snapping{transition:left .18s cubic-bezier(.2,.8,.3,1),top .18s,width .18s,height .18s}
 .win.active{box-shadow:0 34px 84px rgba(0,0,0,.5),0 0 0 .5px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.1)}
 
-.wtb{height:42px;flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 12px;cursor:grab;
-background:#F5F5F7;border-bottom:.5px solid var(--line);user-select:none}
-.win.active .wtb{background:#EDEDF0}
+.wtb{height:40px;flex-shrink:0;display:flex;align-items:stretch;cursor:grab;
+background:#F3F3F5;border-bottom:.5px solid var(--line);user-select:none}
+.win.active .wtb{background:#E9E9EE}
 .wtb:active{cursor:grabbing}
-.lights{display:flex;gap:8px;flex-shrink:0}
-.lights button{width:12px;height:12px;border-radius:50%;background:#D4D4D8;display:flex;align-items:center;
-justify-content:center;padding:0}
-.win.active .lights .c{background:#FF5F57}
-.win.active .lights .m{background:#FEBC2E}
-.win.active .lights .z{background:#28C840}
-.lights svg{width:7px;height:7px;stroke:rgba(0,0,0,.55);stroke-width:2.2;fill:none;stroke-linecap:round;opacity:0}
-.lights:hover svg{opacity:1}
-.wtb .tt{display:flex;align-items:center;gap:8px;margin:0 auto;transform:translateX(-22px);pointer-events:none;
-max-width:calc(100% - 120px);overflow:hidden;white-space:nowrap}
-.wtb .tt .mk{width:17px;height:17px;border-radius:5px;display:flex;align-items:center;justify-content:center;
-font-size:6.5px;font-weight:900;color:#fff}
-.wtb .tt .n{font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
-.wtb .tt .s{font-size:10.5px;color:var(--txt3);font-weight:600}
+.wtb .tt{display:flex;align-items:center;gap:8px;padding-left:13px;margin-right:auto;pointer-events:none;
+min-width:0;overflow:hidden;white-space:nowrap}
+.wtb .tt .mk{width:18px;height:18px;border-radius:5px;display:flex;align-items:center;justify-content:center;
+font-size:6.5px;font-weight:900;color:#fff;flex-shrink:0}
+.wtb .tt .n{font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:-.3px;
+overflow:hidden;text-overflow:ellipsis}
+.wtb .tt .s{font-size:10.5px;color:var(--txt3);font-weight:600;flex-shrink:0}
+/* 우측 창 컨트롤 (Windows 스타일) */
+.wctl{display:flex;flex-shrink:0;align-self:stretch}
+.wctl button{width:44px;display:flex;align-items:center;justify-content:center;color:var(--txt2);
+border-left:.5px solid transparent;transition:background .12s,color .12s}
+.wctl button:hover{background:rgba(0,0,0,.08);color:var(--ink)}
+.wctl button:active{background:rgba(0,0,0,.14)}
+.wctl button.close:hover{background:var(--red);color:#fff}
+.wctl button.close:active{background:#C4142F;color:#fff}
+.wctl button:focus-visible{outline:2px solid var(--blue);outline-offset:-3px}
+.wctl svg{width:11px;height:11px;stroke:currentColor;stroke-width:1.35;fill:none;stroke-linecap:square}
 .wbody{flex:1;overflow:auto;background:#fff;min-height:0}
 .wbody::-webkit-scrollbar{width:9px;height:9px}
 .wbody::-webkit-scrollbar-thumb{background:rgba(0,0,0,.2);border-radius:9px;border:2.5px solid #fff}
@@ -573,13 +576,13 @@ function openApp(id){
   el.style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px;z-index:${++zTop}`;
   el.innerHTML=`
     <div class="wtb">
-      <div class="lights">
-        <button class="c" data-act="close" title="닫기"><svg viewBox="0 0 8 8"><path d="M1.5 1.5l5 5M6.5 1.5l-5 5"/></svg></button>
-        <button class="m" data-act="min" title="최소화"><svg viewBox="0 0 8 8"><path d="M1.5 4h5"/></svg></button>
-        <button class="z" data-act="max" title="최대화"><svg viewBox="0 0 8 8"><path d="M1.5 1.5h5v5h-5z"/></svg></button>
-      </div>
       <div class="tt"><span class="mk" style="background:${a.bg};${id==='cal'?'color:#1D1D1F':''}">${a.short.slice(0,4)}</span>
         <span class="n">${a.name}</span><span class="s">${a.sub||''}</span></div>
+      <div class="wctl">
+        <button data-act="min" title="최소화" aria-label="최소화"><svg viewBox="0 0 12 12"><path d="M2 6h8"/></svg></button>
+        <button data-act="max" title="최대화" aria-label="최대화"><svg viewBox="0 0 12 12"><rect x="2.4" y="2.4" width="7.2" height="7.2"/></svg></button>
+        <button class="close" data-act="close" title="닫기" aria-label="닫기"><svg viewBox="0 0 12 12"><path d="M2.6 2.6l6.8 6.8M9.4 2.6l-6.8 6.8"/></svg></button>
+      </div>
     </div>
     <div class="wbody">${a.body?a.body():`
       <div class="empty"><div class="bigicon" style="background:${a.bg}">${a.short}</div>
@@ -615,6 +618,17 @@ function maxApp(id){
     w.state='max';
   }
   setTimeout(()=>el.classList.remove('snapping'),200);
+  paintMaxBtn(id);
+}
+/* 최대화 상태면 '이전 크기로 복원' 아이콘(겹친 사각형)으로 바꿈 */
+const ICON_MAX='<svg viewBox="0 0 12 12"><rect x="2.4" y="2.4" width="7.2" height="7.2"/></svg>';
+const ICON_RESTORE='<svg viewBox="0 0 12 12"><rect x="2" y="4" width="6" height="6"/><path d="M4.2 4V2h5.8v5.8H8"/></svg>';
+function paintMaxBtn(id){
+  const w=wins.get(id); if(!w) return;
+  const b=w.el.querySelector('[data-act="max"]'); if(!b) return;
+  const on=w.state==='max';
+  b.innerHTML=on?ICON_RESTORE:ICON_MAX;
+  b.title=b.ariaLabel=on?'이전 크기로':'최대화';
 }
 function snapTo(id,rect){
   const w=wins.get(id); if(!w) return;
@@ -637,7 +651,7 @@ function bindWindow(id,el){
   el.addEventListener('pointerdown',()=>focusWin(id),true);
 
   /* 트래픽 라이트 */
-  el.querySelector('.lights').addEventListener('click',e=>{
+  el.querySelector('.wctl').addEventListener('click',e=>{
     const b=e.target.closest('[data-act]'); if(!b) return;
     e.stopPropagation();
     ({close:closeApp,min:minApp,max:maxApp})[b.dataset.act](id);
@@ -647,7 +661,7 @@ function bindWindow(id,el){
   const tb=el.querySelector('.wtb');
   tb.addEventListener('dblclick',()=>maxApp(id));
   tb.addEventListener('pointerdown',e=>{
-    if(e.target.closest('.lights')) return;
+    if(e.target.closest('.wctl')) return;
     e.preventDefault(); tb.setPointerCapture(e.pointerId);
     let sx=e.clientX, sy=e.clientY;
     let ox=el.offsetLeft, oy=el.offsetTop, moved=false, zone=null;
