@@ -136,8 +136,11 @@ box-shadow:0 10px 30px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:o
 padding:14px 46px 0;z-index:10;transition:transform .38s cubic-bezier(.32,.72,0,1),opacity .3s,filter .38s}
 .home.pushed{transform:scale(.968);opacity:.62;filter:blur(1.2px)}
 .greet{flex-shrink:0}
-.greet h1{font-size:25px;font-weight:800;letter-spacing:-1.1px;text-shadow:var(--tshadow)}
-.greet p{font-size:12.5px;opacity:.72;margin-top:4px}
+.greet h1{font-size:38px;font-weight:700;letter-spacing:-1.6px;text-shadow:var(--tshadow);
+line-height:1.18;opacity:.74}
+.greet h1 em{font-style:normal;font-weight:900;opacity:1;letter-spacing:-1.9px}
+.greet h1 em .role{font-weight:800;font-size:.82em;letter-spacing:-.8px;opacity:.86;margin-left:2px}
+.greet p{font-size:15px;opacity:.66;margin-top:7px;letter-spacing:-.2px}
 
 /* 홈 격자 — 아이콘과 위젯이 같은 칸을 쓴다 (경계 없음, 빈 칸은 빈 칸으로) */
 .hgrid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(var(--cols),1fr);
@@ -308,7 +311,44 @@ background:rgba(255,255,255,.92);opacity:0;transition:opacity .2s}
 font-weight:600;color:#1D1D1F;background:rgba(255,255,255,.95);padding:4px 10px;border-radius:7px;
 box-shadow:0 4px 14px rgba(0,0,0,.22);opacity:0;pointer-events:none;transition:opacity .15s}
 .dk:hover .tip{opacity:1}
-.dsep{width:1px;height:38px;background:rgba(255,255,255,.28)}
+.dsep{width:1px;height:38px;background:var(--dockBorder);opacity:.9}
+/* Dock 맨 앞 검색 버튼 */
+.dk.dsearch{color:var(--fg);filter:none}
+.dk.dsearch .dksurf{background:var(--btnBg);border:1px solid var(--btnBorder);
+-webkit-mask:var(--sqmask);mask:var(--sqmask)}
+.dk.dsearch .ic{width:21px;height:21px;position:relative;z-index:1;stroke-width:2.1;opacity:.75}
+.dk.dsearch:hover .ic{opacity:1}
+
+/* 스포트라이트 검색 */
+.spot{position:fixed;inset:0;z-index:1200;display:flex;align-items:flex-start;justify-content:center;
+padding-top:14vh;background:rgba(16,22,30,.28);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+opacity:0;pointer-events:none;transition:opacity .16s}
+.spot.on{opacity:1;pointer-events:auto}
+.spotbox{width:min(620px,92vw);border-radius:24px;corner-shape:squircle;overflow:hidden;
+background:var(--menuBg);backdrop-filter:blur(34px) saturate(180%);-webkit-backdrop-filter:blur(34px) saturate(180%);
+border:1px solid var(--menuBorder);box-shadow:var(--menuShadow);color:var(--fg);
+transform:translateY(-10px) scale(.98);transition:transform .18s cubic-bezier(.2,.9,.3,1.1)}
+.spot.on .spotbox{transform:none}
+.spotin{display:flex;align-items:center;gap:12px;padding:16px 18px}
+.spotin .ic{width:20px;height:20px;opacity:.5;stroke-width:2.1}
+.spotin input{flex:1;border:none;background:none;outline:none;font:inherit;font-size:19px;font-weight:600;
+color:var(--fg);letter-spacing:-.3px}
+.spotin input::placeholder{color:var(--fg);opacity:.36;font-weight:500}
+.spotin kbd{font:inherit;font-size:10.5px;font-weight:700;opacity:.45;border:1px solid var(--menuLine);
+border-radius:6px;padding:2px 7px}
+.spotres{max-height:52vh;overflow-y:auto;border-top:1px solid var(--menuLine);padding:8px}
+.spotres:empty{display:none}
+.sres{display:flex;align-items:center;gap:12px;width:100%;padding:9px 11px;border-radius:12px;
+text-align:left;color:var(--fg)}
+.sres:hover,.sres.sel{background:var(--menuHov)}
+.sres .si{width:34px;height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+font-size:10.5px;font-weight:800;color:#fff;
+background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,0) 54%),var(--g,#8A9099);
+-webkit-mask:var(--sqmask);mask:var(--sqmask)}
+.sres .st{font-size:13.5px;font-weight:700;letter-spacing:-.3px}
+.sres .ss{font-size:11px;opacity:.55;margin-top:1px}
+.sres .sk{margin-left:auto;font-size:9.5px;font-weight:800;letter-spacing:.6px;opacity:.45;text-transform:uppercase}
+.spotempty{padding:26px 16px;text-align:center;font-size:12.5px;opacity:.5}
 .homebar{position:fixed;bottom:5px;left:50%;transform:translateX(-50%);width:132px;height:4.5px;border-radius:3px;
 background:var(--homebar);z-index:850;pointer-events:none}
 
@@ -495,8 +535,8 @@ background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 
 <div class="home" id="home">
   <div class="greet">
-      <h1>윤길배 대표이사님, 좋은 아침입니다</h1>
-      <p>성현회계법인 · 진행 중 12건 · 리뷰 대기 47건 — 아이콘과 위젯을 같은 격자에서 옮기고, 위젯 모서리로 크기를 바꿉니다</p>
+      <h1><em>윤길배 <span class="role">대표이사</span></em>님, 좋은 아침입니다</h1>
+      <p>성현회계법인 · 진행 중 12건 · 리뷰 대기 47건 — Dock 맨 앞 검색(⌘K)에서 앱·프로젝트·공지를 바로 찾을 수 있습니다</p>
   </div>
   <div class="hgrid" id="hgrid"></div>
 </div>
@@ -504,7 +544,26 @@ background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 <div class="dots"><i class="on"></i><i></i><i></i></div>
 <div class="snap" id="snap"></div>
 <div class="dockzone"></div>
-<div class="dock" id="dock"></div>
+<div class="dock" id="dock">
+  <button class="dk dsearch" id="dockSearch" aria-label="검색" title="검색 (⌘K / Ctrl+K)">
+    <span class="dksurf"></span>
+    <svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.3-4.3"/></svg>
+    <span class="tip">검색 · ⌘K</span>
+  </button>
+  <div class="dsep"></div>
+</div>
+
+<!-- 스포트라이트 검색 -->
+<div class="spot" id="spot">
+  <div class="spotbox">
+    <div class="spotin">
+      <svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.3-4.3"/></svg>
+      <input id="spotq" type="text" placeholder="앱 · 프로젝트 · 공지 검색" autocomplete="off" spellcheck="false">
+      <kbd>esc</kbd>
+    </div>
+    <div class="spotres" id="spotres"></div>
+  </div>
+</div>
 <div class="homebar"></div>
 
 <!-- 프로필 드롭다운 -->
@@ -570,10 +629,10 @@ const G = {
   cal  :'#ffffff', notice:'linear-gradient(160deg,#8496A6,#536676)'
 };
 const PROJ = [
-  ['A','㈜알파테크 제25기 외부감사','K-IFRS · 12월 결산 · 인차지 김회계',72,'현장수행','f','#E81A3B','linear-gradient(145deg,#FF5A72,#E81A3B)'],
-  ['B','㈜베타홀딩스 연결감사','K-IFRS · 12월 결산 · 인차지 박회계',91,'리뷰','r','#0062B8','linear-gradient(145deg,#4E97E0,#0062B8)'],
-  ['C','㈜감마물산 제18기 감사','일반기준 · 12월 결산 · 인차지 이회계',45,'현장수행','f','#5B6E7F','linear-gradient(145deg,#7C8FA0,#5B6E7F)'],
-  ['D','㈜델타에너지 기말감사','K-IFRS · 12월 결산 · 인차지 최회계',100,'완료','o','#1F9D61','linear-gradient(145deg,#38C77E,#1F9D61)']
+  ['A','㈜알파테크 제25기 외부감사','K-IFRS · 12월 결산 · 인차지 김회계',72,'현장수행','f','#D3374F',G.aud],
+  ['B','㈜베타홀딩스 연결감사','K-IFRS · 12월 결산 · 인차지 박회계',91,'리뷰','r','#3C6CB8',G.k1118],
+  ['C','㈜감마물산 제18기 감사','일반기준 · 12월 결산 · 인차지 이회계',45,'현장수행','f','#5C6E80',G.fin],
+  ['D','㈜델타에너지 기말감사','K-IFRS · 12월 결산 · 인차지 최회계',100,'완료','o','#17836A',G.xbrl]
 ];
 const projRows = () => PROJ.map(p=>`
   <div class="r"><div class="av" style="background:${p[7]}">${p[0]}</div>
@@ -1350,6 +1409,88 @@ function bindWindow(id,el){
   });
 }
 
+/* ══════════ 스포트라이트 검색 ══════════ */
+const spot=document.getElementById('spot'), spotq=document.getElementById('spotq'),
+      spotres=document.getElementById('spotres');
+const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+const chosung=t=>[...t].map(ch=>{const c=ch.charCodeAt(0)-0xAC00;
+  return c>=0&&c<11172?CHO[Math.floor(c/588)]:ch}).join('');
+
+/* 검색 대상: 앱 · 진행 중 프로젝트 · 공지 · 설정 */
+function buildIndex(){
+  const ix=[];
+  Object.entries(APPS).forEach(([id,a])=>ix.push(
+    {t:a.name, s:a.sub||'', kind:'앱', g:a.bg, fg:a.fg, mark:a.short, run:()=>openApp(id)}));
+  PROJ.forEach(pr=>ix.push(
+    {t:pr[1], s:pr[2], kind:'프로젝트', g:pr[7]||G.aud, mark:pr[0], run:()=>openApp('aud')}));
+  [['ISQM1 2026년 품질관리 보고서 작성 안내','품질관리본부 · 04/03'],
+   ['SH Audit Platform 기초정보 기능 오픈','IT본부 · 04/02'],
+   ['4월 파트너 월례회의 (15일 14시)','경영지원실 · 04/01'],
+   ['삼일 TAX Agent 법인 구독 완료','경영지원실 · 03/28'],
+   ['내부회계관리제도 감사 매뉴얼 v3 배포','품질관리본부 · 03/25']]
+   .forEach(n=>ix.push({t:n[0], s:n[1], kind:'공지', g:G.notice, mark:'공지', run:()=>openApp('notice')}));
+  [['배경 테마 바꾸기','화이트 · 소프트 · 미스트 · 다크'],
+   ['홈 화면 배치 초기화','아이콘·위젯을 기본값으로']]
+   .forEach(n=>ix.push({t:n[0], s:n[1], kind:'설정', g:G.set, mark:'설정', run:()=>openApp('settings')}));
+  return ix;
+}
+let INDEX=[], hits=[], sel=0;
+const isCho=k=>[...k].every(ch=>CHO.includes(ch));
+function match(q){
+  const k=q.trim().toLowerCase(); if(!k) return INDEX.slice(0,7);
+  const cho=isCho(k);                       /* 'ㅇㅍㅌㅋ' 처럼 초성만 입력했을 때만 초성 검색 */
+  const scored=[];
+  INDEX.forEach(o=>{
+    const name=o.t.toLowerCase(), rest=(o.s+' '+o.mark).toLowerCase();
+    let sc=-1;
+    if(name.startsWith(k)) sc=0;
+    else if(name.includes(k)) sc=1;
+    else if(rest.includes(k)) sc=2;
+    else if(cho && chosung(name).includes(k)) sc=3;
+    else if(cho && chosung(rest).includes(k)) sc=4;
+    if(sc>=0) scored.push({o,sc});
+  });
+  return scored.sort((a,b)=>a.sc-b.sc).slice(0,8).map(x=>x.o);
+}
+function paintSpot(){
+  spotres.innerHTML = hits.length ? hits.map((o,i)=>
+    `<button class="sres${i===sel?' sel':''}" data-i="${i}">
+       <span class="si" style="--g:${o.g};${o.fg?`color:${o.fg}`:''}">${o.mark}</span>
+       <span><span class="st">${o.t}</span><span class="ss" style="display:block">${o.s}</span></span>
+       <span class="sk">${o.kind}</span>
+     </button>`).join('')
+    : '<div class="spotempty">일치하는 항목이 없습니다</div>';
+}
+function openSpot(){
+  if(!INDEX.length) INDEX=buildIndex();
+  hits=match(''); sel=0; paintSpot();
+  spot.classList.add('on'); spotq.value=''; setTimeout(()=>spotq.focus(),30);
+}
+function closeSpot(){ spot.classList.remove('on'); spotq.blur(); }
+const spotOpen=()=>spot.classList.contains('on');
+function runSel(){
+  const o=hits[sel]; if(!o) return;
+  closeSpot(); o.run();
+}
+document.getElementById('dockSearch').addEventListener('click',e=>{ e.stopPropagation(); openSpot(); });
+spotq.addEventListener('input',()=>{ hits=match(spotq.value); sel=0; paintSpot(); });
+spotres.addEventListener('click',e=>{
+  const b=e.target.closest('.sres'); if(!b) return;
+  sel=+b.dataset.i; runSel();
+});
+spot.addEventListener('pointerdown',e=>{ if(!e.target.closest('.spotbox')) closeSpot(); });
+spotq.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+    e.preventDefault();
+    if(!hits.length) return;
+    sel=(sel+(e.key==='ArrowDown'?1:hits.length-1))%hits.length;
+    paintSpot();
+    spotres.querySelector('.sel')?.scrollIntoView({block:'nearest'});
+  }
+  else if(e.key==='Enter'){ e.preventDefault(); runSel(); }
+  else if(e.key==='Escape'){ e.preventDefault(); closeSpot(); }
+});
+
 /* ══════════ 프로필 메뉴 · 토스트 · 배경 ══════════ */
 const profBtn=document.getElementById('profBtn'), pmenu=document.getElementById('pmenu'),
       toastEl=document.getElementById('toast'), swatches=document.getElementById('swatches');
@@ -1383,7 +1524,7 @@ document.addEventListener('click',e=>{
   }
   if(!e.target.closest('#pmenu,#profBtn')) menu(false);
 });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') menu(false); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ menu(false); closeSpot(); } });
 
 /* ══════════ 이벤트 ══════════ */
 document.addEventListener('click',e=>{
@@ -1396,6 +1537,11 @@ document.addEventListener('click',e=>{
   }
 });
 document.addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&(e.key==='k'||e.key==='K')){
+    e.preventDefault(); spotOpen()?closeSpot():openSpot(); return; }
+  if(spotOpen()) return;                       /* 검색 중에는 창 단축키를 막는다 */
+  if(e.key==='/' && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName)){
+    e.preventDefault(); openSpot(); return; }
   if((e.metaKey||e.ctrlKey)&&e.key==='4'){ e.preventDefault(); tileQuarters(); return; }
   const act=[...wins.entries()].find(([,v])=>v.el.classList.contains('active')&&v.state!=='min');
   if(!act) return;
