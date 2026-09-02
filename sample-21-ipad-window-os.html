@@ -414,6 +414,43 @@ border:1px solid var(--btnBorder);background:var(--btnBg);color:var(--fg);opacit
 .ltg:hover{opacity:1}
 .ltg.on{background:var(--red);border-color:transparent;color:#fff;opacity:1}
 .lcard.soon .ltg{visibility:hidden}
+.libtabs{display:flex;gap:2px;background:var(--btnBg);border-radius:99px;padding:3px;margin-left:8px;flex-shrink:0}
+.libtabs button{font-size:12px;font-weight:700;padding:5px 13px;border-radius:99px;color:var(--fg);opacity:.6;white-space:nowrap}
+.libtabs button.on{background:var(--menuBg);opacity:1;box-shadow:0 1px 4px rgba(14,22,30,.12)}
+.wcard .lic{font-size:14px}
+.lsize{font-size:9.5px;font-weight:800;opacity:.5;margin-left:5px}
+/* 구역 편집 행 */
+.zrow{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:14px;border:1px solid transparent}
+.zrow:hover{background:var(--menuHov);border-color:var(--menuLine)}
+.zrow .zdot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.zrow input.zname{flex:1;min-width:0;border:none;background:none;outline:none;font:inherit;font-size:13px;font-weight:700;
+color:var(--fg);padding:5px 8px;border-radius:8px;letter-spacing:-.3px}
+.zrow input.zname:focus{background:var(--btnBg)}
+.zrow .zcount{font-size:10.5px;opacity:.5;white-space:nowrap}
+.zcolors{display:flex;gap:5px}
+.zcolors button{width:16px;height:16px;border-radius:50%;border:2px solid transparent;padding:0}
+.zcolors button.on{border-color:var(--fg)}
+.zdel{font-size:10.5px;font-weight:700;color:var(--red);opacity:.75;padding:4px 8px;border-radius:8px}
+.zdel:hover{opacity:1;background:rgba(232,26,59,.1)}
+.nz{margin-top:14px;padding:12px 12px 12px 14px;border:1px dashed var(--menuLine);border-radius:14px;
+display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.nz .nzl{font-size:11px;font-weight:800;opacity:.55;letter-spacing:.6px;text-transform:uppercase;width:100%}
+.nz input{flex:1;min-width:140px;font:inherit;font-size:13px;font-weight:700;color:var(--fg);background:var(--btnBg);
+border:1px solid var(--btnBorder);border-radius:10px;padding:7px 11px;outline:none}
+.nz select{font:inherit;font-size:12px;font-weight:600;color:var(--fg);background:var(--btnBg);border:1px solid var(--btnBorder);
+border-radius:10px;padding:7px 9px;outline:none}
+.nz .go{font-size:12px;font-weight:700;background:var(--red);color:#fff;padding:8px 14px;border-radius:10px}
+/* 컨텍스트 메뉴 (우클릭) */
+.cmenu{position:fixed;z-index:1300;min-width:180px;padding:5px;border-radius:14px;corner-shape:squircle;
+background:var(--menuBg);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);
+border:1px solid var(--menuBorder);box-shadow:var(--menuShadow);color:var(--fg);display:none}
+.cmenu.on{display:block}
+.cmenu .ct{padding:6px 10px 4px;font-size:10px;font-weight:800;letter-spacing:.8px;opacity:.5;text-transform:uppercase}
+.cmenu button{display:flex;align-items:center;gap:9px;width:100%;padding:7px 10px;border-radius:9px;font-size:12.5px;
+font-weight:600;color:var(--fg);text-align:left}
+.cmenu button:hover{background:var(--menuHov)}
+.cmenu button.danger{color:var(--red)}
+.cmenu .sep{height:1px;background:var(--menuLine);margin:4px 2px}
 .homebar{position:fixed;bottom:5px;left:50%;transform:translateX(-50%);width:132px;height:4.5px;border-radius:3px;
 background:var(--homebar);z-index:850;pointer-events:none}
 
@@ -601,7 +638,7 @@ background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 <div class="home" id="home">
   <div class="greet">
       <h1><em>윤길배 <span class="role">대표이사</span></em>님, 좋은 아침입니다</h1>
-      <p>성현회계법인 · 진행 중 12건 · 리뷰 대기 47건 — 홈에는 핵심 앱만 두었습니다. 나머지는 Dock의 ‘모든 App’에서 꺼내 홈에 추가하세요</p>
+      <p>성현회계법인 · 진행 중 12건 · 리뷰 대기 47건 — 홈에는 핵심 앱만 두었습니다. Dock의 ‘홈에 추가’에서 App · 위젯 · 구역을 더하거나, 우클릭으로 빼 보세요</p>
   </div>
   <div class="hgrid" id="hgrid"></div>
 </div>
@@ -615,10 +652,10 @@ background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
     <svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.3-4.3"/></svg>
     <span class="tip">검색 · ⌘K</span>
   </button>
-  <button class="dk dsearch" id="dockLib" aria-label="모든 App" title="모든 App">
+  <button class="dk dsearch" id="dockLib" aria-label="홈에 추가" title="홈에 추가 (App · 위젯 · 구역)">
     <span class="dksurf"></span>
     <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
-    <span class="tip">모든 App</span>
+    <span class="tip">홈에 추가 · App · 위젯 · 구역</span>
   </button>
   <div class="dsep"></div>
 </div>
@@ -627,7 +664,10 @@ background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 <div class="spot lib" id="lib">
   <div class="spotbox libbox">
     <div class="libhd">
-      <div><h2>모든 App</h2><p>홈에는 지금 쓰는 앱만 두고, 나머지는 여기서 꺼내 씁니다</p></div>
+      <div><h2>홈에 추가</h2><p>App · 위젯 · 구역을 홈에 넣거나 뺍니다. 홈에서는 우클릭으로도 뺄 수 있어요</p></div>
+      <div class="libtabs" id="libtabs">
+        <button data-ltab="app" class="on">App</button><button data-ltab="wg">위젯</button><button data-ltab="zone">구역</button>
+      </div>
       <div class="libsearch">
         <svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.3-4.3"/></svg>
         <input id="libq" type="text" placeholder="앱 검색" autocomplete="off" spellcheck="false">
@@ -673,6 +713,7 @@ background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
     <svg class="ic" viewBox="0 0 24 24"><path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>로그아웃</button>
 </div>
 <div class="toast" id="toast"></div>
+<div class="cmenu" id="cmenu"></div>
 
 <script>
 /* ══════════ 사용자 · 테마 ══════════ */
@@ -985,12 +1026,21 @@ hgrid.style.setProperty('--cols',COLS);
 hgrid.style.setProperty('--rows',ROWS);
 
 /* 카테고리 존 — 아이콘은 존 위에 놓이고, 존 자체도 옮기거나 늘릴 수 있다 */
-const ZONES={
+const ZONES_BUILTIN={
   audit:{n:'감사',     dot:'#D3374F'},
   tax  :{n:'세무',     dot:'#DFA748'},
   adv  :{n:'용역',     dot:'#7B62D2'},
   admin:{n:'행정',     dot:'#5C6E80'},
   ai   :{n:'AI · 공통', dot:'#232B36'}
+};
+let zones=JSON.parse(JSON.stringify(ZONES_BUILTIN));    /* 사용자가 만든 구역까지 포함 */
+const ZONE_COLORS=['#D3374F','#DFA748','#7B62D2','#5C6E80','#232B36','#2F82C9','#17836A','#C7519A'];
+/* 위젯 갤러리 메타 (이름 · 설명 · 기본 크기) */
+const WG_META={
+  dday  :{n:'다가오는 마감',   d:'ISQM1 보고서 등 D-day와 다음 마감', rs:2,cs:2, dot:'#FFB454', mark:'D-'},
+  aqi   :{n:'AQI 지수',       d:'감사품질지표 링과 주요 항목',       rs:2,cs:2, dot:'#1F9D61', mark:'AQI'},
+  proj  :{n:'진행 중 프로젝트', d:'감사 진행률 상위 5건',              rs:2,cs:4, dot:'#D3374F', mark:'P'},
+  notice:{n:'공지사항',       d:'최근 전사 공지 5건',               rs:1,cs:4, dot:'#5C6E80', mark:'N'}
 };
 /* 앱 → 카테고리 (모든 App 서랍의 분류, 홈 추가 시 들어갈 구역) */
 const APP_CAT={aud:'audit',k1118:'audit',xbrl:'audit',fin:'audit',rev:'audit',aqi:'audit',
@@ -1047,7 +1097,7 @@ function makeItem(o){
   el.dataset.uid=uid(o); el.dataset.k=o.k; el.dataset.id=o.id;
   el.style.gridArea=`${o.r} / ${o.c} / span ${o.rs} / span ${o.cs}`;
   if(o.k==='z'){
-    const z=ZONES[o.id]; if(!z) return null;
+    const z=zones[o.id]; if(!z) return null;
     el.className='zone'; el.style.setProperty('--zdot',z.dot);
     el.innerHTML=`<span class="zl"><i></i>${z.n}<small class="tn">${zoneApps(o).length}</small></span>
       <button class="rsz" title="구역 크기 조정" aria-label="구역 크기 조정">
@@ -1118,15 +1168,23 @@ const isDefault=()=>sameLayout() && dockOrder.join()===DOCK_DEFAULT.join();
 function saveLayout(){
   resetBtn.classList.toggle('show',!isDefault());
   try{ localStorage.setItem(LKEY,JSON.stringify(
-    {user:USER.mail,layout,dock:dockOrder,theme})); }catch(e){}
+    {user:USER.mail,layout,dock:dockOrder,theme,zones})); }catch(e){}
 }
 function loadLayout(){
   try{
     const raw=localStorage.getItem(LKEY); if(!raw) return;
     const o=JSON.parse(raw);
+    if(o.zones && typeof o.zones==='object'){
+      const z={};
+      Object.entries(o.zones).forEach(([id,v])=>{
+        if(/^[a-z0-9_]{1,24}$/.test(id) && v && typeof v.n==='string' && /^#[0-9A-Fa-f]{6}$/.test(v.dot||''))
+          z[id]={n:v.n.slice(0,20), dot:v.dot};
+      });
+      if(Object.keys(z).length) zones=z;
+    }
     if(Array.isArray(o.layout) && o.layout.length){
       const seen=new Set();
-      const ok=o.layout.filter(it=>it && (it.k==='w'?WIDGETS[it.id]:it.k==='z'?ZONES[it.id]:APPS[it.id])
+      const ok=o.layout.filter(it=>it && (it.k==='w'?WIDGETS[it.id]:it.k==='z'?zones[it.id]:APPS[it.id])
         && [it.r,it.c,it.rs,it.cs].every(n=>Number.isInteger(n)&&n>=1)
         && !seen.has(it.k+':'+it.id) && seen.add(it.k+':'+it.id)
         && it.r+it.rs-1<=ROWS && it.c+it.cs-1<=COLS);
@@ -1143,6 +1201,7 @@ function loadLayout(){
 }
 function resetLayout(){
   layout=LAYOUT_DEFAULT.map(o=>({...o})); dockOrder=[...DOCK_DEFAULT];
+  zones=JSON.parse(JSON.stringify(ZONES_BUILTIN));
   renderGrid(); renderDock(); saveLayout();
   toast('홈 화면 배치를 기본값으로 되돌렸습니다');
 }
@@ -1666,51 +1725,231 @@ function addToHome(id){
   let cell=zone?freeCellIn(zone):null;
   /* 자기 구역이 꽉 찼으면 다른 구역 안은 피해서 빈 칸을 찾고, 그래도 없으면 아무 빈 칸 */
   if(!cell){
-    const zones=layout.filter(o=>o.k==='z');
+    const zs=layout.filter(o=>o.k==='z');
     outer: for(let r=1;r<=ROWS;r++) for(let c=1;c<=COLS;c++){
       const cand={k:'a',r,c,rs:1,cs:1};
-      if(!collide(cand).length && !zones.some(z=>within(cand,z))){ cell=cand; break outer; }
+      if(!collide(cand).length && !zs.some(z=>within(cand,z))){ cell=cand; break outer; }
     }
   }
   if(!cell) cell=freeCellIn({r:1,c:1,rs:ROWS,cs:COLS});
   if(!cell){ toast('홈에 빈 칸이 없습니다. 위젯이나 구역을 줄여 주세요'); return; }
   layout.push({k:'a',id,r:cell.r,c:cell.c,rs:1,cs:1});
   renderGrid(); saveLayout();
-  toast(APPS[id].name+'을(를) 홈'+(zone&&within(cell,zone)?' · '+ZONES[zone.id].n+' 구역':'')+'에 추가했습니다');
+  toast(APPS[id].name+'을(를) 홈'+(zone&&within(cell,zone)?' · '+zones[zone.id].n+' 구역':'')+'에 추가했습니다');
 }
 function removeFromHome(id){
   layout=layout.filter(o=>!(o.k==='a'&&o.id===id));
   renderGrid(); saveLayout();
   toast(APPS[id].name+'을(를) 홈에서 뺐습니다 (모든 App에는 남아 있어요)');
 }
+/* 위젯 · 구역 추가/제거 */
+const onHomeW=id=>layout.some(o=>o.k==='w'&&o.id===id);
+const onHomeZ=id=>layout.some(o=>o.k==='z'&&o.id===id);
+/* 격자에서 rs×cs 크기의 빈 자리를 찾는다 (strict: 구역이 앱 위에 겹치는 것도 피함) */
+function findFree(k,rs,cs,strict){
+  for(let r=1;r<=ROWS-rs+1;r++) for(let c=1;c<=COLS-cs+1;c++){
+    const box={k,r,c,rs,cs};
+    if(collide(box).length) continue;
+    if(strict && k==='z' && zoneApps(box).length) continue;
+    return box;
+  }
+  return null;
+}
+function addWidget(id){
+  if(onHomeW(id)) return;
+  const m=WG_META[id];
+  const box=findFree('w',m.rs,m.cs) || findFree('w',1,Math.min(2,m.cs));
+  if(!box){ toast('홈에 '+m.rs+' × '+m.cs+' 칸 빈 자리가 없습니다. 다른 항목을 줄이거나 빼 주세요'); return; }
+  layout.push({...box,id}); renderGrid(); saveLayout();
+  toast(m.n+' 위젯을 홈에 추가했습니다');
+}
+function removeWidget(id){
+  layout=layout.filter(o=>!(o.k==='w'&&o.id===id)); renderGrid(); saveLayout();
+  toast(WG_META[id].n+' 위젯을 홈에서 뺐습니다 (홈에 추가에서 다시 넣을 수 있어요)');
+}
+function addZone(id,rs=1,cs=3){
+  if(onHomeZ(id)) return;
+  const box=findFree('z',rs,cs,true) || findFree('z',rs,cs) || findFree('z',1,2,true) || findFree('z',1,2);
+  if(!box){ toast('구역을 놓을 빈 자리가 없습니다'); return; }
+  layout.push({...box,id}); renderGrid(); saveLayout();
+  toast(zones[id].n+' 구역을 홈에 추가했습니다');
+}
+function removeZone(id){
+  layout=layout.filter(o=>!(o.k==='z'&&o.id===id)); renderGrid(); saveLayout();
+  toast(zones[id].n+' 구역을 홈에서 뺐습니다 (안에 있던 앱은 그대로 남아요)');
+}
+function deleteZone(id){
+  if(ZONES_BUILTIN[id]) return;
+  const n=zones[id].n;
+  layout=layout.filter(o=>!(o.k==='z'&&o.id===id)); delete zones[id];
+  renderGrid(); saveLayout(); toast(n+' 구역을 삭제했습니다');
+}
+function renameZone(id,name){
+  name=name.trim().slice(0,20); if(!name||!zones[id]) return;
+  zones[id].n=name; renderGrid(); saveLayout();
+}
+function recolorZone(id,dot){
+  if(!zones[id]||!ZONE_COLORS.includes(dot)) return;
+  zones[id].dot=dot; renderGrid(); saveLayout();
+}
+function createZone(name,dot,cs){
+  name=name.trim().slice(0,20);
+  if(!name){ toast('구역 이름을 입력해 주세요'); return false; }
+  const id='z_'+Date.now().toString(36);
+  zones[id]={n:name, dot:ZONE_COLORS.includes(dot)?dot:ZONE_COLORS[5]};
+  addZone(id,1,cs); return true;
+}
+
+let libTab='app';
+const LIB_PH={app:'앱 검색', wg:'위젯 검색', zone:'구역 검색'};
 function paintLib(){
   const k=libq.value.trim().toLowerCase(), cho=k&&isCho(k);
-  const ok=id=>{ if(!k) return true; const a=APPS[id];
-    const hay=(a.name+' '+(a.sub||'')+' '+a.short).toLowerCase();
-    return hay.includes(k) || (cho&&chosung(hay).includes(k)); };
-  libbody.innerHTML=Object.entries(ZONES).map(([cat,z])=>{
-    const ids=Object.keys(APPS).filter(id=>APP_CAT[id]===cat && ok(id));
-    if(!ids.length) return '';
-    return `<div class="lsec"><h3><i style="background:${z.dot}"></i>${z.n}<span style="opacity:.6;font-weight:700">${ids.length}</span></h3>
-      <div class="lgrid">${ids.map(id=>{const a=APPS[id], on=onHome(id);
-        return `<div class="lcard${a.soon?' soon':''}" data-lid="${id}">
-          <button class="lic" data-lopen="${id}" style="--g:${a.bg};${a.fg?`color:${a.fg}`:''}" title="${a.name} 열기">${a.short}</button>
-          <div class="ln"><b>${a.name}${a.soon?'<span class="soonpill">예정</span>':''}</b><small>${a.sub||''}</small></div>
-          <button class="ltg${on?' on':''}" data-ltoggle="${id}">${on?'홈 ✓':'+ 홈'}</button>
-        </div>`;}).join('')}</div></div>`;
-  }).join('') || '<div class="spotempty">일치하는 앱이 없습니다</div>';
+  const hit=hay=>{ hay=hay.toLowerCase(); return !k || hay.includes(k) || (cho&&chosung(hay).includes(k)); };
+  libq.placeholder=LIB_PH[libTab];
+  if(libTab==='app'){
+    const ok=id=>{ const a=APPS[id]; return hit(a.name+' '+(a.sub||'')+' '+a.short); };
+    libbody.innerHTML=Object.entries(zones).map(([cat,z])=>{
+      const ids=Object.keys(APPS).filter(id=>APP_CAT[id]===cat && ok(id));
+      if(!ids.length) return '';
+      return `<div class="lsec"><h3><i style="background:${z.dot}"></i>${z.n}<span style="opacity:.6;font-weight:700">${ids.length}</span></h3>
+        <div class="lgrid">${ids.map(id=>{const a=APPS[id], on=onHome(id);
+          return `<div class="lcard${a.soon?' soon':''}" data-lid="${id}">
+            <button class="lic" data-lopen="${id}" style="--g:${a.bg};${a.fg?`color:${a.fg}`:''}" title="${a.name} 열기">${a.short}</button>
+            <div class="ln"><b>${a.name}${a.soon?'<span class="soonpill">예정</span>':''}</b><small>${a.sub||''}</small></div>
+            <button class="ltg${on?' on':''}" data-ltoggle="${id}">${on?'홈 ✓':'+ 홈'}</button>
+          </div>`;}).join('')}</div></div>`;
+    }).join('') || '<div class="spotempty">일치하는 앱이 없습니다</div>';
+    return;
+  }
+  if(libTab==='wg'){
+    const ids=Object.keys(WG_META).filter(id=>hit(WG_META[id].n+' '+WG_META[id].d));
+    libbody.innerHTML=ids.length?`<div class="lsec"><h3>위젯<span style="opacity:.6;font-weight:700">${ids.length}</span></h3>
+      <div class="lgrid">${ids.map(id=>{const m=WG_META[id], on=onHomeW(id);
+        return `<div class="lcard wcard" data-lid="${id}">
+          <span class="lic" style="--g:${m.dot}">${m.mark}</span>
+          <div class="ln"><b>${m.n}<span class="lsize tn">${m.rs} × ${m.cs}</span></b><small>${m.d}</small></div>
+          <button class="ltg${on?' on':''}" data-wtoggle="${id}">${on?'홈 ✓':'+ 홈'}</button>
+        </div>`;}).join('')}</div></div>`
+      :'<div class="spotempty">일치하는 위젯이 없습니다</div>';
+    return;
+  }
+  /* 구역 탭: 이름 · 색 · 홈 추가/제거 · 새 구역 만들기 */
+  const ids=Object.keys(zones).filter(id=>hit(zones[id].n));
+  const rows=ids.map(id=>{const z=zones[id], zo=layout.find(o=>o.k==='z'&&o.id===id), on=!!zo;
+    const cnt=zo?zoneApps(zo).length:Object.keys(APP_CAT).filter(a=>APP_CAT[a]===id&&onHome(a)).length;
+    return `<div class="zrow" data-zid="${id}">
+      <span class="zdot" style="background:${z.dot}"></span>
+      <input class="zname" data-zname="${id}" value="${z.n.replace(/"/g,'&quot;')}" maxlength="20" title="이름을 바꾸려면 클릭">
+      <span class="zcount tn">${on?'앱 '+cnt+'개':'홈에 없음'}</span>
+      <span class="zcolors">${ZONE_COLORS.map(c=>`<button data-zcolor="${c}" data-zid="${id}" class="${c===z.dot?'on':''}" style="background:${c}" title="색 바꾸기"></button>`).join('')}</span>
+      <button class="ltg${on?' on':''}" data-ztoggle="${id}">${on?'홈 ✓':'+ 홈'}</button>
+      ${ZONES_BUILTIN[id]?'':`<button class="zdel" data-zdel="${id}">삭제</button>`}
+    </div>`;}).join('');
+  libbody.innerHTML=`<div class="lsec"><h3>구역<span style="opacity:.6;font-weight:700">${ids.length}</span></h3>
+    ${rows||'<div class="spotempty">일치하는 구역이 없습니다</div>'}</div>
+    <form class="nz" id="nz"><span class="nzl">새 구역 만들기</span>
+      <input id="nzName" type="text" placeholder="구역 이름 (예: 내부통제)" maxlength="20" autocomplete="off">
+      <span class="zcolors" id="nzColors">${ZONE_COLORS.map((c,i)=>`<button type="button" data-c="${c}" class="${i===5?'on':''}" style="background:${c}"></button>`).join('')}</span>
+      <select id="nzSize"><option value="2">1 × 2 칸</option><option value="3" selected>1 × 3 칸</option><option value="4">1 × 4 칸</option></select>
+      <button type="submit" class="go">추가</button>
+    </form>`;
 }
 function openLib(){ closeSpot(); paintLib(); lib.classList.add('on'); setTimeout(()=>libq.focus(),30); }
 function closeLib(){ lib.classList.remove('on'); libq.blur(); }
 document.getElementById('dockLib').addEventListener('click',e=>{ e.stopPropagation(); libOpen()?closeLib():openLib(); });
 libq.addEventListener('input',paintLib);
 lib.addEventListener('pointerdown',e=>{ if(!e.target.closest('.libbox')) closeLib(); });
+document.getElementById('libtabs').addEventListener('click',e=>{
+  const b=e.target.closest('[data-ltab]'); if(!b) return;
+  libTab=b.dataset.ltab;
+  document.querySelectorAll('#libtabs [data-ltab]').forEach(x=>x.classList.toggle('on',x===b));
+  paintLib();
+});
+function setLibTab(t){ libTab=t; document.querySelectorAll('#libtabs [data-ltab]').forEach(x=>x.classList.toggle('on',x.dataset.ltab===t)); }
 libbody.addEventListener('click',e=>{
   const o=e.target.closest('[data-lopen]');
   if(o){ if(!APPS[o.dataset.lopen].soon){ closeLib(); openApp(o.dataset.lopen); } return; }
   const t=e.target.closest('[data-ltoggle]');
-  if(t){ const id=t.dataset.ltoggle; onHome(id)?removeFromHome(id):addToHome(id); paintLib(); }
+  if(t){ const id=t.dataset.ltoggle; onHome(id)?removeFromHome(id):addToHome(id); paintLib(); return; }
+  const w=e.target.closest('[data-wtoggle]');
+  if(w){ const id=w.dataset.wtoggle; onHomeW(id)?removeWidget(id):addWidget(id); paintLib(); return; }
+  const z=e.target.closest('[data-ztoggle]');
+  if(z){ const id=z.dataset.ztoggle; onHomeZ(id)?removeZone(id):addZone(id); paintLib(); return; }
+  const zc=e.target.closest('[data-zcolor]');
+  if(zc){ recolorZone(zc.dataset.zid,zc.dataset.zcolor); paintLib(); return; }
+  const zd=e.target.closest('[data-zdel]');
+  if(zd){ deleteZone(zd.dataset.zdel); paintLib(); return; }
+  const nc=e.target.closest('#nzColors [data-c]');
+  if(nc){ nc.parentElement.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===nc)); return; }
 });
+libbody.addEventListener('change',e=>{
+  const i=e.target.closest('[data-zname]');
+  if(i){ renameZone(i.dataset.zname,i.value); paintLib(); }
+});
+libbody.addEventListener('keydown',e=>{
+  if(e.key==='Enter' && e.target.closest('[data-zname]')){ e.preventDefault(); e.target.blur(); }
+});
+libbody.addEventListener('submit',e=>{
+  if(e.target.id!=='nz') return;
+  e.preventDefault();
+  const name=document.getElementById('nzName').value,
+        dot=document.querySelector('#nzColors button.on')?.dataset.c,
+        cs=+document.getElementById('nzSize').value;
+  if(createZone(name,dot,cs)) paintLib();
+});
+/* 홈에서 특정 구역 이름을 바로 고칠 수 있게 서랍의 구역 탭을 연다 */
+function openZoneEditor(id){
+  setLibTab('zone'); openLib();
+  setTimeout(()=>{ const i=libbody.querySelector(`[data-zname="${id}"]`); if(i){ i.focus(); i.select(); } },60);
+}
+
+/* ══════════ 우클릭 메뉴 (홈 항목 추가/제거) ══════════ */
+const cmenu=document.getElementById('cmenu');
+let cmTarget=null;
+function closeCmenu(){ cmenu.classList.remove('on'); cmTarget=null; }
+function openCmenu(x,y,html,target){
+  cmTarget=target; cmenu.innerHTML=html; cmenu.classList.add('on');
+  const w=cmenu.offsetWidth, h=cmenu.offsetHeight;
+  cmenu.style.left=Math.min(x,innerWidth-w-8)+'px';
+  cmenu.style.top=Math.min(y,innerHeight-h-8)+'px';
+}
+const CM_ICON={
+  open:'<svg class="ic" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9"/><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg>',
+  minus:'<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>',
+  plus:'<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>',
+  edit:'<svg class="ic" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="M12.5 7.5l4 4"/></svg>',
+  trash:'<svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>'
+};
+const cmBtn=(act,label,icon,cls='')=>`<button data-cact="${act}" class="${cls}">${CM_ICON[icon]}${label}</button>`;
+hgrid.addEventListener('contextmenu',e=>{
+  if(drag) return;
+  e.preventDefault(); menu(false);
+  const el=e.target.closest('[data-uid]');
+  if(!el){
+    openCmenu(e.clientX,e.clientY,`<div class="ct">홈 화면</div>${cmBtn('lib','홈에 추가…','plus')}${cmBtn('reset','기본 배치로 되돌리기','edit')}`,null);
+    return;
+  }
+  const k=el.dataset.k, id=el.dataset.id;
+  let html='';
+  if(k==='a') html=`<div class="ct">${APPS[id].name}</div>${APPS[id].soon?'':cmBtn('open','열기','open')}${cmBtn('rm','홈에서 제거','minus','danger')}`;
+  else if(k==='w') html=`<div class="ct">${WG_META[id]?.n||id} 위젯</div>${cmBtn('open','열기','open')}${cmBtn('rm','홈에서 제거','minus','danger')}`;
+  else html=`<div class="ct">${zones[id].n} 구역</div>${cmBtn('rename','이름 · 색 바꾸기','edit')}${cmBtn('rm','홈에서 제거 (앱은 남김)','minus','danger')}${ZONES_BUILTIN[id]?'':cmBtn('del','구역 삭제','trash','danger')}`;
+  openCmenu(e.clientX,e.clientY,html,{k,id});
+});
+cmenu.addEventListener('click',e=>{
+  const b=e.target.closest('[data-cact]'); if(!b) return;
+  const act=b.dataset.cact, t=cmTarget; closeCmenu();
+  if(act==='lib'){ setLibTab('app'); openLib(); return; }
+  if(act==='reset'){ resetLayout(); return; }
+  if(!t) return;
+  if(act==='open'){ openApp(t.k==='w'?WIDGETS[t.id].open:t.id); return; }
+  if(act==='rm'){ t.k==='a'?removeFromHome(t.id):t.k==='w'?removeWidget(t.id):removeZone(t.id); return; }
+  if(act==='rename'){ openZoneEditor(t.id); return; }
+  if(act==='del'){ deleteZone(t.id); return; }
+});
+document.addEventListener('pointerdown',e=>{ if(!e.target.closest('#cmenu')) closeCmenu(); },true);
+addEventListener('blur',closeCmenu); addEventListener('resize',closeCmenu);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeCmenu(); });
 libq.addEventListener('keydown',e=>{ if(e.key==='Escape'){ e.preventDefault(); closeLib(); } });
 
 /* ══════════ 프로필 메뉴 · 토스트 · 배경 ══════════ */
