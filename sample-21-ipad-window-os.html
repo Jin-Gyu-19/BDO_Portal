@@ -660,11 +660,8 @@ body.compact .mlist{width:auto;max-height:38%;border-right:none;border-bottom:.5
    창은 전체 화면 시트로 연다. 배치 데이터는 그대로 두고 그리는 방식만 바꾼다. */
 /* 넓지만 낮은 화면(노트북)에서는 인사말을 줄여 격자 칸 높이를 확보한다 */
 @media (max-height:840px){
-  body:not(.compact) .home{padding-top:8px;gap:8px}
-  body:not(.compact) .greet h1{font-size:calc(28px * var(--fz));letter-spacing:-0.44px}
-  body:not(.compact) .greet p{font-size:calc(13px * var(--fz));margin-top:3px}
-}
-@media (max-height:720px){
+  body:not(.compact) .home{padding-top:6px;gap:6px}
+  body:not(.compact) .greet h1{font-size:calc(24px * var(--fz));letter-spacing:-0.4px;line-height:1.15}
   body:not(.compact) .greet p{display:none}
   body:not(.compact) .hgrid{gap:12px}
 }
@@ -1379,7 +1376,7 @@ function fitWidgets(){
     for(let i=0;i<5;i++){
       const over=c.scrollHeight-c.clientHeight;
       if(over<=1) break;
-      s=Math.max(0.5, Math.round(((c.clientHeight-2)*s)/c.scrollHeight*1000)/1000);
+      s=Math.max(0.4, Math.round(((c.clientHeight-2)*s)/c.scrollHeight*1000)/1000);
       c.style.setProperty('--s',s);
     }
   });
