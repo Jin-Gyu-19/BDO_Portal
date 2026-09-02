@@ -308,16 +308,17 @@ transition:transform .17s cubic-bezier(.3,1.4,.5,1),opacity .15s}
 .dots i.on{background:var(--dotOn)}
 
 /* ══ Dock ══ */
-.dock{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:800;display:flex;align-items:center;gap:14px;
-padding:10px 16px;border-radius:32px;corner-shape:squircle;background:var(--dockBg);
-backdrop-filter:blur(34px) saturate(180%);-webkit-backdrop-filter:blur(34px) saturate(180%);
-border:1px solid var(--dockBorder);box-shadow:var(--dockShadow);
-transition:background .3s,border-color .3s,transform .3s cubic-bezier(.2,.8,.3,1)}
+/* Dock — 판 없이 아이콘만 배경 위에 떠 있는 형태 */
+.dock{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:800;display:flex;align-items:center;gap:16px;
+padding:6px 12px;background:none;border:none;box-shadow:none;
+transition:transform .3s cubic-bezier(.2,.8,.3,1)}
 /* 창을 최대화하면 Dock은 끝만 남기고 내려가고, 아래쪽에 커서를 대면 올라온다 */
-body.dockhide .dock{transform:translateX(-50%) translateY(calc(100% + 4px))}
-body.dockhide .dock:hover,body.dockhide .dockzone:hover ~ .dock{transform:translateX(-50%)}
+body.dockhide .dock{transform:translateX(-50%) translateY(calc(100% + 16px))}
+body.dockhide .dock:hover,body.dockhide .dockzone:hover ~ .dock,body.dockhide.dockpeek .dock{transform:translateX(-50%)}
 body.dockhide .dots,body.dockhide .homebar{opacity:0;transition:opacity .25s}
 .dockzone{position:fixed;left:0;right:0;bottom:0;height:16px;z-index:790;display:none}
+body.compact .dockzone{height:28px}
+body.compact.dockhide .homebar{display:block;opacity:1;z-index:795;background:rgba(255,255,255,.85);box-shadow:0 1px 4px rgba(0,0,0,.25)}
 body.dockhide .dockzone{display:block}
 .dk{width:50px;height:50px;display:flex;align-items:center;justify-content:center;
 color:#fff;font-size:11.5px;font-weight:800;letter-spacing:-.3px;position:relative;cursor:pointer;background:none;
@@ -338,7 +339,7 @@ background:rgba(255,255,255,.92);opacity:0;transition:opacity .2s}
 font-weight:600;color:#1D1D1F;background:rgba(255,255,255,.95);padding:4px 10px;border-radius:7px;
 box-shadow:0 4px 14px rgba(0,0,0,.22);opacity:0;pointer-events:none;transition:opacity .15s}
 .dk:hover .tip{opacity:1}
-.dsep{width:1px;height:38px;background:var(--dockBorder);opacity:.9}
+.dsep{width:1px;height:34px;background:var(--fg);opacity:.16;border-radius:1px}
 /* Dock 맨 앞 검색 버튼 */
 .dk.dsearch{color:var(--fg);filter:none}
 .dk.dsearch .dksurf{background:var(--btnBg);border:1px solid var(--btnBorder);
@@ -470,6 +471,9 @@ animation:winIn .26s cubic-bezier(.2,.9,.3,1.1)}
 @keyframes winMin{to{opacity:0;transform:scale(.35) translateY(200px)}}
 .win.snapping{transition:left .18s cubic-bezier(.2,.8,.3,1),top .18s,width .18s,height .18s}
 .win.active{box-shadow:0 34px 84px rgba(0,0,0,.5),0 0 0 .5px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.1)}
+/* 최대화: 상태 표시줄 아래 전체를 채운다 (모서리 없이) */
+.win.max{border-radius:0;box-shadow:none}
+.win.max .rs{display:none}
 
 .wtb{height:40px;flex-shrink:0;display:flex;align-items:stretch;cursor:grab;
 background:rgba(246,247,249,.72);backdrop-filter:blur(24px) saturate(180%);
@@ -667,20 +671,19 @@ body.compact .ap .ish{width:54px;height:54px}
 body.compact .ap .icon{font-size:12.5px}
 body.compact .ap .nm{font-size:10px;max-width:74px}
 /* Dock: 탭 바처럼 항상 보이고, 항목이 많으면 가로로 넘긴다 */
-body.compact .dock{bottom:calc(10px + env(safe-area-inset-bottom,0px));gap:8px;padding:8px 10px;border-radius:26px;
+body.compact .dock{bottom:calc(12px + env(safe-area-inset-bottom,0px));gap:10px;padding:6px 8px;
 max-width:calc(100vw - 16px);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
 body.compact .dock::-webkit-scrollbar{display:none}
-body.compact.dockhide .dock{transform:translateX(-50%)}
 body.compact .dk{width:44px;height:44px;font-size:10.5px;flex-shrink:0}
 body.compact .dk .tip{display:none}
-body.compact .dsep{height:32px}
+body.compact .dsep{height:28px}
 body.compact .dots{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 body.compact .homebar{display:none}
 body.compact .toast{bottom:calc(92px + env(safe-area-inset-bottom,0px));max-width:calc(100vw - 32px);text-align:center}
 /* 창: 전체 화면 시트 — 이동·크기 조정·최소화 없이 닫기만 */
-body.compact .win{border-radius:16px;animation:sheetIn .28s cubic-bezier(.2,.9,.3,1)}
+body.compact .win{border-radius:0;animation:sheetIn .28s cubic-bezier(.2,.9,.3,1)}
 @keyframes sheetIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
-body.compact .win.active{box-shadow:0 -6px 30px rgba(0,0,0,.18),0 0 0 .5px rgba(0,0,0,.25)}
+body.compact .win.active{box-shadow:none}
 body.compact .rs{display:none}
 body.compact .wctl [data-act="min"],body.compact .wctl [data-act="max"]{display:none}
 body.compact .wtb{cursor:default}
@@ -1569,6 +1572,8 @@ const MIN_W=320, MIN_H=220, EDGE=10;
 const area=()=>compact
   ? {x:0, y:30, w:innerWidth, h:innerHeight-30-84}
   : {x:8, y:36, w:innerWidth-16, h:innerHeight-36-88};
+/* 최대화 영역: 상태 표시줄(시간·날짜·프로필)만 남기고 화면 전부 */
+const fullArea=()=>({x:0, y:30, w:innerWidth, h:innerHeight-30});
 
 function syncHome(){
   const open=[...wins.values()].some(w=>w.state!=='min');
@@ -1580,14 +1585,15 @@ function markDock(){
 /* 최대화 시 Dock 감추기, 창이 2개 이상일 때 4분할 버튼 노출 */
 /* 창을 작업 영역에 꽉 채운다 (compact 전용, 이전 크기는 넓은 화면으로 돌아갈 때 복원) */
 function fillArea(w){
-  const ar=area(), el=w.el;
+  const ar=fullArea(), el=w.el;
   if(w.state!=='max') w.restore={left:el.style.left,top:el.style.top,width:el.style.width,height:el.style.height};
   Object.assign(el.style,{left:ar.x+'px',top:ar.y+'px',width:ar.w+'px',height:ar.h+'px'});
   w.state='max';
 }
 function syncChrome(){
   const live=[...wins.values()].filter(w=>w.state!=='min');
-  document.body.classList.toggle('dockhide', !compact && live.some(w=>w.state==='max'));
+  document.body.classList.toggle('dockhide', live.some(w=>w.state==='max'));
+  wins.forEach(v=>v.el.classList.toggle('max', v.state==='max'));
   tile4Btn.classList.toggle('show', live.length>=2);
 }
 function focusWin(id){
@@ -1655,7 +1661,7 @@ function minApp(id){
 }
 function maxApp(id){
   const w=wins.get(id); if(!w) return;
-  const el=w.el, ar=area();
+  const el=w.el, ar=fullArea();
   el.classList.add('snapping');
   if(w.state==='max' && w.restore){
     Object.assign(el.style,w.restore); w.state='normal'; w.restore=null;
@@ -1688,7 +1694,7 @@ function snapTo(id,rect){
 }
 function zoneRect(zone){
   const a=area(), hw=a.w/2-4, hh=a.h/2-4;
-  if(zone==='max')   return a;
+  if(zone==='max')   return fullArea();
   if(zone==='left')  return {x:a.x,y:a.y,w:hw,h:a.h};
   if(zone==='right') return {x:a.x+a.w/2+4,y:a.y,w:hw,h:a.h};
   if(zone==='q1')    return {x:a.x,y:a.y,w:hw,h:hh};                     /* 좌상 */
@@ -1735,7 +1741,7 @@ function bindWindow(id,el){
         const rw=parseFloat(w.restore.width);
         Object.assign(el.style,{width:w.restore.width,height:w.restore.height});
         ox=ev.clientX-rw/2; oy=ev.clientY-20; sx=ev.clientX; sy=ev.clientY;
-        w.state='normal'; w.restore=null;
+        w.state='normal'; w.restore=null; syncChrome();
       }
       moved=true;
       const ar=area();
@@ -2121,6 +2127,13 @@ cmenu.addEventListener('click',e=>{
 });
 document.addEventListener('pointerdown',e=>{ if(!e.target.closest('#cmenu')) closeCmenu(); },true);
 addEventListener('blur',closeCmenu); addEventListener('resize',closeCmenu);
+/* 좁은 화면에서 창이 전체 화면일 때: 아래쪽 가장자리(홈 바)를 누르면 Dock이 잠시 올라온다 */
+let peekT, peekAt=0;
+document.querySelector('.dockzone').addEventListener('pointerdown',e=>{
+  e.preventDefault(); document.body.classList.add('dockpeek'); peekAt=Date.now();
+  clearTimeout(peekT); peekT=setTimeout(()=>document.body.classList.remove('dockpeek'),4000);
+});
+document.addEventListener('pointerdown',e=>{ if(!e.target.closest('.dock,.dockzone')) document.body.classList.remove('dockpeek'); },true);
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeCmenu(); });
 libq.addEventListener('keydown',e=>{ if(e.key==='Escape'){ e.preventDefault(); closeLib(); } });
 
@@ -2165,6 +2178,7 @@ document.addEventListener('click',e=>{
   const o=e.target.closest('[data-open]'); if(o){ openApp(o.dataset.open); return; }
   const d=e.target.closest('[data-dock]');
   if(d){ const id=d.dataset.dock;
+    if(Date.now()-peekAt<450) return;          /* Dock을 불러낸 탭이 올라오는 아이콘에 닿는 것을 막는다 */
     if(wins.has(id) && wins.get(id).state!=='min' && wins.get(id).el.classList.contains('active')) minApp(id);
     else openApp(id);
   }
@@ -2191,9 +2205,9 @@ addEventListener('resize',()=>{
     syncChrome();
   }
   fitWidgets();
-  const ar=area();
+  const ar=area(), fa=fullArea();
   wins.forEach((w,id)=>{
-    if(w.state==='max'){ Object.assign(w.el.style,{left:ar.x+'px',top:ar.y+'px',width:ar.w+'px',height:ar.h+'px'}); return; }
+    if(w.state==='max'){ Object.assign(w.el.style,{left:fa.x+'px',top:fa.y+'px',width:fa.w+'px',height:fa.h+'px'}); return; }
     const el=w.el;
     el.style.width=Math.min(el.offsetWidth,ar.w)+'px';
     el.style.left=Math.max(ar.x-el.offsetWidth+120,Math.min(el.offsetLeft,ar.x+ar.w-120))+'px';
