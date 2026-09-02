@@ -324,7 +324,7 @@ background:rgba(255,255,255,.16);backdrop-filter:blur(6px);pointer-events:none;o
 transition:opacity .14s,left .12s,top .12s,width .12s,height .12s}
 .snap.show{opacity:1}
 
-.win{position:fixed;border-radius:20px;corner-shape:squircle;overflow:hidden;background:#fff;color:var(--txt);display:flex;flex-direction:column;
+.win{position:fixed;border-radius:20px;corner-shape:squircle;overflow:hidden;background:transparent;color:var(--txt);display:flex;flex-direction:column;
 box-shadow:0 26px 70px rgba(0,0,0,.42),0 0 0 .5px rgba(0,0,0,.3);
 animation:winIn .26s cubic-bezier(.2,.9,.3,1.1)}
 @keyframes winIn{from{opacity:0;transform:scale(.9) translateY(14px)}to{opacity:1;transform:none}}
@@ -336,8 +336,10 @@ animation:winIn .26s cubic-bezier(.2,.9,.3,1.1)}
 .win.active{box-shadow:0 34px 84px rgba(0,0,0,.5),0 0 0 .5px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.1)}
 
 .wtb{height:40px;flex-shrink:0;display:flex;align-items:stretch;cursor:grab;
-background:#F3F3F5;border-bottom:.5px solid var(--line);user-select:none}
-.win.active .wtb{background:#E9E9EE}
+background:rgba(246,247,249,.72);backdrop-filter:blur(24px) saturate(180%);
+-webkit-backdrop-filter:blur(24px) saturate(180%);
+border-bottom:.5px solid var(--line);user-select:none}
+.win.active .wtb{background:rgba(238,240,244,.84)}
 .wtb:active{cursor:grabbing}
 .wtb .tt{display:flex;align-items:center;gap:8px;padding-left:13px;margin-right:auto;pointer-events:none;
 min-width:0;overflow:hidden;white-space:nowrap}
@@ -561,14 +563,20 @@ function applyTheme(t,save){
 }
 
 /* ══════════ 앱 정의 ══════════ */
+/* 채도를 낮추고 명도 폭을 좁힌 톤 — 원색 대비 대신 같은 계열의 깊이로 */
 const G = {
-  aud:'linear-gradient(155deg,#FF5A72,#D0102F)', k1118:'linear-gradient(155deg,#4E97E0,#00509B)',
-  fin:'linear-gradient(155deg,#8296A7,#4A5C6B)', xbrl:'linear-gradient(155deg,#38C77E,#118A50)',
-  ai:'linear-gradient(155deg,#39424F,#0E1319)',  tax:'linear-gradient(155deg,#F5AE4A,#B8680E)',
-  set:'linear-gradient(155deg,#98A0A9,#5E666E)',
-  ins:'linear-gradient(155deg,#A98BEA,#5F3EB8)', gray:'linear-gradient(155deg,#9AA3AC,#6B747D)',
-  rev:'linear-gradient(155deg,#FFE07A,#E8A21A)', aqi:'linear-gradient(155deg,#5FA9F0,#0062B8)',
-  cal:'#ffffff', notice:'linear-gradient(155deg,#7C8FA0,#46545F)'
+  aud  :'linear-gradient(160deg,#F4677D,#D3374F)',
+  k1118:'linear-gradient(160deg,#6E9FE0,#3C6CB8)',
+  fin  :'linear-gradient(160deg,#8D9FB0,#5C6E80)',
+  xbrl :'linear-gradient(160deg,#45B994,#17836A)',
+  ai   :'linear-gradient(160deg,#4E5A6A,#232B36)',
+  tax  :'linear-gradient(160deg,#F3CE8B,#DFA748)',
+  set  :'linear-gradient(160deg,#A6AFBA,#727C89)',
+  ins  :'linear-gradient(160deg,#A38CE4,#6F55C4)',
+  gray :'linear-gradient(160deg,#C3CBD4,#98A2AD)',
+  rev  :'linear-gradient(160deg,#F7D68A,#E2AC44)',
+  aqi  :'linear-gradient(160deg,#6FB4EE,#2F82C9)',
+  cal  :'#ffffff', notice:'linear-gradient(160deg,#8496A6,#536676)'
 };
 const PROJ = [
   ['A','㈜알파테크 제25기 외부감사','K-IFRS · 12월 결산 · 인차지 김회계',72,'현장수행','f','#E81A3B','linear-gradient(145deg,#FF5A72,#E81A3B)'],
@@ -605,7 +613,7 @@ const APPS = {
         <div class="r"><div class="av" style="background:#E81A3B">PDF</div><div><div class="t">경영진 확인서 초안 v2</div><div class="m">알파테크 · 박지훈</div></div><div class="rt"><span class="tagp o">승인</span></div></div>
       </div>
     </div>`},
-  rev:{name:'리뷰함', sub:'47건 대기', short:'조서', bg:G.rev, badge:47, w:760, h:520, body:()=>`
+  rev:{name:'리뷰함', sub:'47건 대기', short:'조서', bg:G.rev, fg:'#6E4A0E', badge:47, w:760, h:520, body:()=>`
     <table class="tbl">
       <tr><th>조서</th><th>프로젝트</th><th>작성자</th><th>수정</th><th>상태</th></tr>
       ${[['3200-02 매출 실증절차','알파테크','김회계','2시간 전','리뷰 요청','f'],
@@ -723,7 +731,7 @@ const APPS = {
             <div class="rt tn" style="min-width:44px;font-size:10.5px;color:var(--txt3)">${n[4]}</div></div>`).join('')}
       </div>
     </div>`},
-  cal:{name:'일정', sub:'2026년 4월', short:'4월 5', bg:G.cal, w:720, h:540, body:()=>{
+  cal:{name:'일정', sub:'2026년 4월', short:'4월 5', bg:G.cal, fg:'#1D1D1F', w:720, h:540, body:()=>{
     const ev={7:['알파테크 재고실사','#0062B8'],10:['인차지 리뷰 마감','#C77414'],15:['파트너 월례회의','#5B6E7F'],
       17:['ISQM1 보고서 마감','#E81A3B'],24:['감마물산 현장 종료','#0062B8'],30:['1분기 마감','#5B6E7F']};
     let cells='';
@@ -740,7 +748,7 @@ const APPS = {
       <div class="cal"><div class="hd"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>
       <div class="bd">${cells}</div></div>
     </div>`}},
-  tax:{name:'삼일 TAX 에이전트', sub:'법인 구독', short:'TAX', bg:G.tax, w:560, h:420},
+  tax:{name:'삼일 TAX 에이전트', sub:'법인 구독', short:'TAX', bg:G.tax, fg:'#6E4A0E', w:560, h:420},
   ins:{name:'인사이트', sub:'리서치', short:'INS', bg:G.ins, w:560, h:420},
   law:{name:'소송조회', sub:'개발 중', short:'LAW', bg:G.gray, soon:1, w:520, h:380},
   erp:{name:'ERP', sub:'2026 Q3 오픈', short:'ERP', bg:G.gray, soon:1, w:520, h:380},
@@ -811,11 +819,11 @@ const WIDGETS={
   proj:{open:'aud', body:()=>`
     <div class="hd"><span class="sq" style="background:var(--red)">P</span>진행 중 프로젝트 · 12건</div>
     <div class="plist">${[
-      ['A','㈜알파테크 제25기 외부감사','현장수행 · 김회계 · D-12',72,'linear-gradient(145deg,#FF5A72,#E81A3B)'],
-      ['B','㈜베타홀딩스 연결감사','리뷰 · 박회계 · D-19',91,'linear-gradient(145deg,#4E97E0,#0062B8)'],
-      ['C','㈜감마물산 제18기 감사','현장수행 · 이회계 · D-24',45,'linear-gradient(145deg,#7C8FA0,#5B6E7F)'],
-      ['E','㈜엡실론소재 반기검토','계획 · 정회계 · D-46',18,'linear-gradient(145deg,#A98BEA,#5F3EB8)'],
-      ['Z','㈜제타건설 내부회계관리제도','계획 · 한회계 · D-58',31,'linear-gradient(145deg,#F5AE4A,#B8680E)']
+      ['A','㈜알파테크 제25기 외부감사','현장수행 · 김회계 · D-12',72,G.aud],
+      ['B','㈜베타홀딩스 연결감사','리뷰 · 박회계 · D-19',91,G.k1118],
+      ['C','㈜감마물산 제18기 감사','현장수행 · 이회계 · D-24',45,G.fin],
+      ['E','㈜엡실론소재 반기검토','계획 · 정회계 · D-46',18,G.ins],
+      ['Z','㈜제타건설 내부회계관리제도','계획 · 한회계 · D-58',31,G.xbrl]
       ].map(r=>`<div class="pitem"><div class="av" style="background:${r[4]}">${r[0]}</div>
         <div><div class="t">${r[1]}</div><div class="s">${r[2]}</div></div>
         <div class="pc tn">${r[3]}%</div><div class="pbar"><i style="width:${r[3]}%"></i></div></div>`).join('')}</div>`},
@@ -883,7 +891,7 @@ function renderHome(){
     const el=document.createElement('button');
     el.className='ap'+(a.soon?' soon':''); el.dataset.open=id; el.dataset.id=id;
     el.setAttribute('aria-label',a.name);
-    el.innerHTML=`<div class="ish"><div class="icon" style="--g:${a.bg};${id==='cal'?'color:#1D1D1F':''}">
+    el.innerHTML=`<div class="ish"><div class="icon" style="--g:${a.bg};${a.fg?`color:${a.fg}`:''}">
       ${iconFace(id)}</div>${a.badge?`<span class="bd tn">${a.badge}</span>`:''}</div>
       <div class="nm">${a.name}${a.soon?'<br>('+a.sub+')':''}</div>`;
     apps.appendChild(el);
@@ -896,7 +904,7 @@ function renderDock(){
     const el=document.createElement('button');
     el.className='dk'; el.dataset.dock=id; el.dataset.id=id;
     el.style.setProperty('--g',a.bg);
-    if(id==='cal') el.style.color='#1D1D1F';
+    if(a.fg) el.style.color=a.fg;
     el.setAttribute('aria-label',a.name);
     el.innerHTML=`<span class="dksurf"></span><span class="dkl">${dockFace(id)}</span>`+
       `<span class="run"></span><span class="tip">${a.name}</span>`;
@@ -1130,7 +1138,7 @@ function openApp(id){
   el.style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px;z-index:${++zTop}`;
   el.innerHTML=`
     <div class="wtb">
-      <div class="tt"><span class="mk" style="background:${a.bg};${id==='cal'?'color:#1D1D1F':''}">${a.short.slice(0,4)}</span>
+      <div class="tt"><span class="mk" style="background:${a.bg};${a.fg?`color:${a.fg}`:''}">${a.short.slice(0,4)}</span>
         <span class="n">${a.name}</span><span class="s">${a.sub||''}</span></div>
       <div class="wctl">
         <button data-act="min" title="최소화" aria-label="최소화"><svg viewBox="0 0 12 12"><path d="M2 6h8"/></svg></button>
