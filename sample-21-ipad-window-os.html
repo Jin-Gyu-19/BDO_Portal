@@ -642,7 +642,12 @@ body.phone .greet p{display:none}
 body.compact .hgrid{flex:none;display:grid;grid-template-columns:repeat(var(--mc),1fr);grid-template-rows:none;
 grid-auto-rows:auto;grid-auto-flow:row dense;gap:12px 10px;padding:8px 0 6px;align-items:stretch}
 body.compact .hgrid .wg{grid-column:span var(--mcs,4);grid-row:auto;min-height:calc(var(--mrs,1) * 108px);
-padding:15px 16px;cursor:default;border-radius:26px}
+padding:14px 15px;cursor:default;border-radius:26px}
+body.phone .hgrid .wg[data-r="1"] .big{font-size:30px;margin-top:8px}
+body.phone .hgrid .wg[data-r="1"] .ring{gap:10px}
+body.phone .hgrid .wg[data-r="1"] .ring svg{width:54px;height:54px}
+body.phone .hgrid .wg[data-r="1"] .ring .val{font-size:22px}
+body.phone .hgrid .wg[data-r="1"] .ring .lab{font-size:10px}
 body.compact .hgrid .wg:hover{transform:none}
 body.compact .wgc{width:100%;height:100%;transform:none}
 body.compact .wg .rsz,body.compact .wg .szl,body.compact .zone .rsz{display:none}
@@ -1250,8 +1255,11 @@ function renderCompact(){
     }else if(o.k==='w'){
       const el=makeItem(o); if(!el) return;
       el.style.gridArea='';
-      el.style.setProperty('--mcs', phone?MC:(o.cs<=2?3:MC));
-      el.style.setProperty('--mrs', o.rs);
+      /* 작은 위젯(마감 · AQI 지수)은 1×2로 줄여 둘씩 나란히, 큰 위젯은 전체 폭 */
+      const small=o.cs<=2;
+      el.style.setProperty('--mcs', small?MC/2:MC);
+      el.style.setProperty('--mrs', small?1:o.rs);
+      if(small){ el.dataset.r=1; el.dataset.c=2; }
       el.querySelector('.wgc').style.setProperty('--s',1);
       hgrid.appendChild(el);
     }else if(!zs.some(z=>within(o,z))){
