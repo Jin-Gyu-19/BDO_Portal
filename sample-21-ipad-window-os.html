@@ -8,7 +8,11 @@
 <style>
 :root{--red:#E81A3B;--slate:#5B6E7F;--blue:#0062B8;--ok:#1F9D61;--amber:#C77414;
 --ink:#1C1C1E;--txt:#3A3A3C;--txt2:#6C6C70;--txt3:#AEAEB2;--line:#E4E4E9;--line2:#F0F0F3;
---dockH:96px;--statusH:30px}
+--dockH:96px;--statusH:30px;
+/* 애플식 스퀘어클 (superellipse n=5) — 정사각 요소는 마스크로 실제 곡률을 만든다 */
+--sq:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M100.00 50.00L99.97 65.36L99.89 70.26L99.75 73.81L99.56 76.68L99.31 79.12L99.01 81.26L98.64 83.17L98.22 84.89L97.74 86.46L97.20 87.89L96.60 89.21L95.94 90.43L95.20 91.54L94.40 92.58L93.53 93.53L92.58 94.40L91.54 95.20L90.43 95.94L89.21 96.60L87.89 97.20L86.46 97.74L84.89 98.22L83.17 98.64L81.26 99.01L79.12 99.31L76.68 99.56L73.81 99.75L70.26 99.89L65.36 99.97L50.00 100.00L34.64 99.97L29.74 99.89L26.19 99.75L23.32 99.56L20.88 99.31L18.74 99.01L16.83 98.64L15.11 98.22L13.54 97.74L12.11 97.20L10.79 96.60L9.57 95.94L8.46 95.20L7.42 94.40L6.47 93.53L5.60 92.58L4.80 91.54L4.06 90.43L3.40 89.21L2.80 87.89L2.26 86.46L1.78 84.89L1.36 83.17L0.99 81.26L0.69 79.12L0.44 76.68L0.25 73.81L0.11 70.26L0.03 65.36L0.00 50.00L0.03 34.64L0.11 29.74L0.25 26.19L0.44 23.32L0.69 20.88L0.99 18.74L1.36 16.83L1.78 15.11L2.26 13.54L2.80 12.11L3.40 10.79L4.06 9.57L4.80 8.46L5.60 7.42L6.47 6.47L7.42 5.60L8.46 4.80L9.57 4.06L10.79 3.40L12.11 2.80L13.54 2.26L15.11 1.78L16.83 1.36L18.74 0.99L20.88 0.69L23.32 0.44L26.19 0.25L29.74 0.11L34.64 0.03L50.00 0.00L65.36 0.03L70.26 0.11L73.81 0.25L76.68 0.44L79.12 0.69L81.26 0.99L83.17 1.36L84.89 1.78L86.46 2.26L87.89 2.80L89.21 3.40L90.43 4.06L91.54 4.80L92.58 5.60L93.53 6.47L94.40 7.42L95.20 8.46L95.94 9.57L96.60 10.79L97.20 12.11L97.74 13.54L98.22 15.11L98.64 16.83L99.01 18.74L99.31 20.88L99.56 23.32L99.75 26.19L99.89 29.74L99.97 34.64Z' fill='%23000'/%3E%3C/svg%3E");
+--sqmask:var(--sq) center/100% 100% no-repeat}
+.squircle{-webkit-mask:var(--sqmask);mask:var(--sqmask)}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'SF Pro Text','Malgun Gothic',sans-serif;
@@ -138,7 +142,7 @@ padding:16px 46px 0;z-index:10;transition:transform .38s cubic-bezier(.32,.72,0,
 
 /* 위젯 그리드 — 3열 기준, 크기는 행 × 열 (1×1 ~ 2×3) */
 .wgrid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:190px;gap:16px;align-content:start}
-.wg{border-radius:26px;corner-shape:squircle;padding:17px 19px;position:relative;overflow:hidden;cursor:pointer;color:var(--wgFg);
+.wg{border-radius:32px;corner-shape:squircle;padding:17px 19px;position:relative;overflow:hidden;cursor:pointer;color:var(--wgFg);
 background:var(--wgBg);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);
 border:1px solid var(--wgBorder);box-shadow:var(--wgShadow);transition:transform .18s,background .3s,border-color .3s}
 .wg:hover{transform:translateY(-2px)}
@@ -147,7 +151,7 @@ border:1px solid var(--wgBorder);box-shadow:var(--wgShadow);transition:transform
 .wg[data-c="3"],.wgrid .slot[data-c="3"]{grid-column:span 3}
 .wg[data-r="1"],.wgrid .slot[data-r="1"]{grid-row:span 1}
 .wg[data-r="2"],.wgrid .slot[data-r="2"]{grid-row:span 2}
-.wgrid .slot{border-radius:26px;corner-shape:squircle}
+.wgrid .slot{border-radius:32px;corner-shape:squircle}
 
 /* 줄인 만큼 내용도 같이 줄어들도록 — 폭 비율에 맞춰 본문 전체를 축소 */
 .wgc{width:calc(100% / var(--s,1));height:calc(100% / var(--s,1));
@@ -230,28 +234,29 @@ transition:transform .16s cubic-bezier(.3,1.4,.5,1);background:none}
 .ap:hover{transform:scale(1.07)}
 .ap:active{transform:scale(.94)}
 .ap:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:14px}
-.ap .icon{width:60px;height:60px;border-radius:13.5px;corner-shape:squircle;
-display:flex;flex-direction:column;align-items:center;justify-content:center;
-font-weight:800;font-size:13.5px;letter-spacing:-.5px;position:relative;color:#fff;
+.ap .ish{position:relative;width:60px;height:60px;
+filter:drop-shadow(0 6px 12px rgba(14,22,30,.2)) drop-shadow(0 1.5px 3px rgba(14,22,30,.14))}
+.ap .icon{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+font-weight:800;font-size:13.5px;letter-spacing:-.5px;color:#fff;
 background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,0) 54%),var(--g,#8A9099);
-box-shadow:0 6px 14px rgba(14,22,30,.17),0 1.5px 4px rgba(14,22,30,.12),
-  inset 0 0 0 .5px rgba(255,255,255,.2)}
+-webkit-mask:var(--sqmask);mask:var(--sqmask)}
 .ap .icon small{font-size:8px;font-weight:700;opacity:.85;margin-top:2px}
-.ap .icon .bd{position:absolute;top:-5px;right:-5px;min-width:21px;height:21px;border-radius:11px;background:var(--red);
-font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 6px;
-box-shadow:0 2px 5px rgba(0,0,0,.35);border:1.5px solid rgba(255,255,255,.35)}
+.ap .ish .bd{position:absolute;top:-5px;right:-5px;min-width:21px;height:21px;border-radius:11px;background:var(--red);
+color:#fff;font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 6px;
+border:1.5px solid rgba(255,255,255,.4);z-index:2}
 .ap .nm{font-size:10.5px;font-weight:600;text-align:center;line-height:1.3;color:var(--fg);
 text-shadow:var(--tshadow);max-width:80px}
 .ap.soon .icon{opacity:.42}.ap.soon .nm{opacity:.5}
 
 /* 아이콘 재배치 (드래그) */
-.slot{border-radius:13.5px;corner-shape:squircle;border:2px dashed var(--slotB);background:var(--slotBg)}
+.slot{border-radius:19px;corner-shape:squircle;border:2px dashed var(--slotB);background:var(--slotBg)}
 .apps .slot{width:60px;height:60px;justify-self:center;align-self:start}
-.dock .slot{width:50px;height:50px;border-radius:11.5px;flex-shrink:0;
+.dock .slot{width:50px;height:50px;border-radius:16px;flex-shrink:0;
 border-color:var(--dockSlotB);background:var(--dockSlotBg)}
 .ghost{position:fixed;z-index:2000;pointer-events:none;transform:scale(1.14);transform-origin:center;
 filter:drop-shadow(0 14px 26px rgba(0,0,0,.5))}
 .ghost.ap{gap:0}
+.ghost .ish{width:100%;height:100%}
 .ghost.wgg{transform:scale(1.03)}
 .ghost .wg{width:100%;height:100%;transform:none!important;animation:none!important}
 .ghost .icon,.ghost .dk{transform:none!important;animation:none!important}
@@ -280,7 +285,7 @@ transition:transform .17s cubic-bezier(.3,1.4,.5,1),opacity .15s}
 
 /* ══ Dock ══ */
 .dock{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:800;display:flex;align-items:center;gap:14px;
-padding:10px 16px;border-radius:28px;corner-shape:squircle;background:var(--dockBg);
+padding:10px 16px;border-radius:32px;corner-shape:squircle;background:var(--dockBg);
 backdrop-filter:blur(34px) saturate(180%);-webkit-backdrop-filter:blur(34px) saturate(180%);
 border:1px solid var(--dockBorder);box-shadow:var(--dockShadow);
 transition:background .3s,border-color .3s,transform .3s cubic-bezier(.2,.8,.3,1)}
@@ -290,15 +295,18 @@ body.dockhide .dock:hover,body.dockhide .dockzone:hover ~ .dock{transform:transl
 body.dockhide .dots,body.dockhide .homebar{opacity:0;transition:opacity .25s}
 .dockzone{position:fixed;left:0;right:0;bottom:0;height:16px;z-index:790;display:none}
 body.dockhide .dockzone{display:block}
-.dk{width:50px;height:50px;border-radius:11.5px;corner-shape:squircle;display:flex;flex-direction:column;align-items:center;justify-content:center;
-color:#fff;font-size:11.5px;font-weight:800;letter-spacing:-.3px;position:relative;cursor:pointer;
-background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0) 54%),var(--g,#8A9099);
-box-shadow:0 5px 12px rgba(14,22,30,.2),0 1.5px 4px rgba(14,22,30,.14),
-  inset 0 0 0 .5px rgba(255,255,255,.2);
+.dk{width:50px;height:50px;display:flex;align-items:center;justify-content:center;
+color:#fff;font-size:11.5px;font-weight:800;letter-spacing:-.3px;position:relative;cursor:pointer;background:none;
+filter:drop-shadow(0 5px 10px rgba(14,22,30,.22)) drop-shadow(0 1.5px 3px rgba(14,22,30,.16));
 transition:transform .17s cubic-bezier(.3,1.4,.5,1)}
+.dk .dksurf{position:absolute;inset:0;
+background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0) 54%),var(--g,#8A9099);
+-webkit-mask:var(--sqmask);mask:var(--sqmask)}
+.dk .dkl{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+line-height:1.1}
 .dk:hover{transform:translateY(-8px) scale(1.1)}
 .dk:active{transform:translateY(-2px) scale(.96)}
-.dk small{font-size:7.5px;font-weight:700;opacity:.85;margin-top:1px}
+.dk .dkl small{font-size:7.5px;font-weight:700;opacity:.85;margin-top:1px;display:block}
 .dk .run{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;
 background:rgba(255,255,255,.92);opacity:0;transition:opacity .2s}
 .dk.on .run{opacity:1}
@@ -316,7 +324,7 @@ background:rgba(255,255,255,.16);backdrop-filter:blur(6px);pointer-events:none;o
 transition:opacity .14s,left .12s,top .12s,width .12s,height .12s}
 .snap.show{opacity:1}
 
-.win{position:fixed;border-radius:16px;corner-shape:squircle;overflow:hidden;background:#fff;color:var(--txt);display:flex;flex-direction:column;
+.win{position:fixed;border-radius:20px;corner-shape:squircle;overflow:hidden;background:#fff;color:var(--txt);display:flex;flex-direction:column;
 box-shadow:0 26px 70px rgba(0,0,0,.42),0 0 0 .5px rgba(0,0,0,.3);
 animation:winIn .26s cubic-bezier(.2,.9,.3,1.1)}
 @keyframes winIn{from{opacity:0;transform:scale(.9) translateY(14px)}to{opacity:1;transform:none}}
@@ -333,7 +341,7 @@ background:#F3F3F5;border-bottom:.5px solid var(--line);user-select:none}
 .wtb:active{cursor:grabbing}
 .wtb .tt{display:flex;align-items:center;gap:8px;padding-left:13px;margin-right:auto;pointer-events:none;
 min-width:0;overflow:hidden;white-space:nowrap}
-.wtb .tt .mk{width:18px;height:18px;border-radius:5.5px;corner-shape:squircle;display:flex;align-items:center;justify-content:center;
+.wtb .tt .mk{width:18px;height:18px;-webkit-mask:var(--sqmask);mask:var(--sqmask);display:flex;align-items:center;justify-content:center;
 font-size:6.5px;font-weight:900;color:#fff;flex-shrink:0}
 .wtb .tt .n{font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:-.3px;
 overflow:hidden;text-overflow:ellipsis}
@@ -406,7 +414,7 @@ padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:16px}
 .dband button{margin-left:auto;background:var(--red);color:#fff;font-size:10.5px;font-weight:600;padding:6px 11px;border-radius:8px}
 .empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
 color:var(--txt3);padding:40px}
-.empty .bigicon{width:64px;height:64px;border-radius:14.5px;corner-shape:squircle;display:flex;align-items:center;justify-content:center;
+.empty .bigicon{width:64px;height:64px;-webkit-mask:var(--sqmask);mask:var(--sqmask);display:flex;align-items:center;justify-content:center;
 font-size:15px;font-weight:800;color:#fff;opacity:.6}
 .empty .t{font-size:14px;font-weight:700;color:var(--txt2)}
 .empty .d{font-size:11.5px;text-align:center;line-height:1.6;max-width:280px}
@@ -875,8 +883,8 @@ function renderHome(){
     const el=document.createElement('button');
     el.className='ap'+(a.soon?' soon':''); el.dataset.open=id; el.dataset.id=id;
     el.setAttribute('aria-label',a.name);
-    el.innerHTML=`<div class="icon" style="--g:${a.bg};${id==='cal'?'color:#1D1D1F;text-shadow:none':''}">
-      ${iconFace(id)}${a.badge?`<span class="bd tn">${a.badge}</span>`:''}</div>
+    el.innerHTML=`<div class="ish"><div class="icon" style="--g:${a.bg};${id==='cal'?'color:#1D1D1F':''}">
+      ${iconFace(id)}</div>${a.badge?`<span class="bd tn">${a.badge}</span>`:''}</div>
       <div class="nm">${a.name}${a.soon?'<br>('+a.sub+')':''}</div>`;
     apps.appendChild(el);
   });
@@ -888,9 +896,10 @@ function renderDock(){
     const el=document.createElement('button');
     el.className='dk'; el.dataset.dock=id; el.dataset.id=id;
     el.style.setProperty('--g',a.bg);
-    if(id==='cal'){ el.style.color='#1D1D1F'; el.style.textShadow='none'; }
+    if(id==='cal') el.style.color='#1D1D1F';
     el.setAttribute('aria-label',a.name);
-    el.innerHTML=`${dockFace(id)}<span class="run"></span><span class="tip">${a.name}</span>`;
+    el.innerHTML=`<span class="dksurf"></span><span class="dkl">${dockFace(id)}</span>`+
+      `<span class="run"></span><span class="tip">${a.name}</span>`;
     dock.appendChild(el);
   });
   markDock();
@@ -954,7 +963,7 @@ function beginDrag(e,item){
   const kind=item.classList.contains('wg')?'widget':'app';
   const from=kind==='widget'?wgrid:(item.closest('.dock')?dock:apps);
   /* 고스트로 띄울 대상: 위젯/Dock은 요소 자체, 홈 아이콘은 아이콘 사각형만 */
-  const face=(kind==='widget'||from===dock)?item:item.querySelector('.icon');
+  const face=(kind==='widget'||from===dock)?item:item.querySelector('.ish');
   const r=face.getBoundingClientRect();
 
   const ghost=document.createElement('div');
