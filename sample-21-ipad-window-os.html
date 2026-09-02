@@ -88,6 +88,30 @@ box-shadow:0 2px 5px rgba(0,0,0,.35);border:1.5px solid rgba(255,255,255,.35)}
 .ap .nm{font-size:10.5px;font-weight:600;text-align:center;line-height:1.3;text-shadow:0 1px 3px rgba(0,0,0,.45);max-width:80px}
 .ap.soon .icon{opacity:.42}.ap.soon .nm{opacity:.5}
 
+/* 아이콘 재배치 (드래그) */
+.slot{border-radius:15px;border:2px dashed rgba(255,255,255,.5);background:rgba(255,255,255,.12);
+box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+.apps .slot{width:60px;height:60px;justify-self:center;align-self:start}
+.dock .slot{width:50px;height:50px;border-radius:13px;flex-shrink:0;
+border-color:rgba(255,255,255,.85);background:rgba(0,0,0,.22)}
+.ghost{position:fixed;z-index:2000;pointer-events:none;transform:scale(1.14);transform-origin:center;
+filter:drop-shadow(0 14px 26px rgba(0,0,0,.5))}
+.ghost.ap{gap:0}
+.ghost .icon,.ghost .dk{transform:none!important;animation:none!important}
+.ghost .tip{display:none}
+body.editing{cursor:grabbing}
+body.editing .ap,body.editing .dk{cursor:grabbing}
+body.editing .ap:hover,body.editing .dk:hover{transform:none}
+body.editing .dk .tip{opacity:0!important}
+@keyframes jig{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg)}}
+body.editing .ap .icon,body.editing .dk{animation:jig .34s ease-in-out infinite}
+.reset{margin-top:9px;font-size:11px;font-weight:600;color:rgba(255,255,255,.72);
+background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);border-radius:99px;padding:5px 12px;
+display:none;align-items:center;gap:6px}
+.reset.show{display:inline-flex}
+.reset:hover{background:rgba(255,255,255,.24);color:#fff}
+@media (prefers-reduced-motion:reduce){body.editing .ap .icon,body.editing .dk{animation:none}}
+
 /* 페이지 도트 */
 .dots{position:fixed;bottom:98px;left:0;right:0;display:flex;justify-content:center;gap:7px;z-index:15;pointer-events:none}
 .dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.35);display:block}
@@ -269,7 +293,10 @@ font-size:15px;font-weight:800;color:#fff;opacity:.6}
   <div class="pane">
     <div class="greet">
       <h1>윤길배 대표이사님, 좋은 아침입니다</h1>
-      <p>성현회계법인 · 진행 중 12건 · 리뷰 대기 47건 — 아이콘을 누르면 창으로 열립니다</p>
+      <p>성현회계법인 · 진행 중 12건 · 리뷰 대기 47건 — 아이콘을 누르면 창으로 열리고, 끌면 자리를 바꿉니다</p>
+      <button class="reset" id="resetLayout">
+        <svg class="ic" style="width:13px;height:13px" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+        아이콘 배치 초기화</button>
     </div>
     <div class="wgrid">
       <div class="wg red" data-open="cal">
@@ -503,32 +530,168 @@ const APPS = {
   erp:{name:'ERP', sub:'2026 Q3 오픈', short:'ERP', bg:G.gray, soon:1, w:520, h:380},
   rag:{name:'규정 RAG', sub:'예정', short:'RAG', bg:G.gray, soon:1, w:520, h:380}
 };
-const HOME_ORDER=['aud','k1118','fin','xbrl','ai','tax','ins','law','erp','rag','cal','rev','aqi','notice'];
-const DOCK_ORDER=['aud','k1118','fin','xbrl','ai','|','rev','cal','aqi'];
+const HOME_DEFAULT=['aud','k1118','fin','xbrl','ai','tax','ins','law','erp','rag','cal','rev','aqi','notice'];
+const DOCK_DEFAULT=['aud','k1118','fin','xbrl','ai','rev','cal','aqi'];
+const DOCK_MAX=10;
 
 /* ══════════ 홈 · Dock 렌더 ══════════ */
 const apps=document.getElementById('apps'), dock=document.getElementById('dock');
-HOME_ORDER.forEach(id=>{
-  const a=APPS[id];
-  const el=document.createElement('button');
-  el.className='ap'+(a.soon?' soon':''); el.dataset.open=id;
-  el.innerHTML=`<div class="icon" style="background:${a.bg};${id==='cal'?'color:#1D1D1F':''}">
-    ${id==='cal'?'<div style="font-size:8px;font-weight:800;color:#E81A3B">4월</div><div class="tn" style="font-size:22px;font-weight:800;line-height:1.05">5</div>'
-      :a.short+(id==='ai'?'<small>칼</small>':'')}
-    ${a.badge?`<span class="bd tn">${a.badge}</span>`:''}</div>
-    <div class="nm">${a.name}${a.soon?'<br>('+a.sub+')':''}</div>`;
-  apps.appendChild(el);
+let homeOrder=[...HOME_DEFAULT], dockOrder=[...DOCK_DEFAULT];
+
+const iconFace = id => id==='cal'
+  ? '<div style="font-size:8px;font-weight:800;color:#E81A3B">4월</div><div class="tn" style="font-size:22px;font-weight:800;line-height:1.05">5</div>'
+  : APPS[id].short+(id==='ai'?'<small>칼</small>':'');
+const dockFace = id => id==='cal'
+  ? '<span style="font-size:7px;font-weight:800;color:#E81A3B">4월</span><span class="tn" style="font-size:16px;line-height:1">5</span>'
+  : APPS[id].short+(id==='ai'?'<small>칼</small>':'');
+
+function renderHome(){
+  apps.querySelectorAll('[data-id]').forEach(n=>n.remove());
+  homeOrder.forEach(id=>{
+    const a=APPS[id];
+    const el=document.createElement('button');
+    el.className='ap'+(a.soon?' soon':''); el.dataset.open=id; el.dataset.id=id;
+    el.setAttribute('aria-label',a.name);
+    el.innerHTML=`<div class="icon" style="background:${a.bg};${id==='cal'?'color:#1D1D1F':''}">
+      ${iconFace(id)}${a.badge?`<span class="bd tn">${a.badge}</span>`:''}</div>
+      <div class="nm">${a.name}${a.soon?'<br>('+a.sub+')':''}</div>`;
+    apps.appendChild(el);
+  });
+}
+function renderDock(){
+  dock.querySelectorAll('[data-id]').forEach(n=>n.remove());
+  dockOrder.forEach(id=>{
+    const a=APPS[id];
+    const el=document.createElement('button');
+    el.className='dk'; el.dataset.dock=id; el.dataset.id=id;
+    el.style.background=a.bg; if(id==='cal') el.style.color='#1D1D1F';
+    el.setAttribute('aria-label',a.name);
+    el.innerHTML=`${dockFace(id)}<span class="run"></span><span class="tip">${a.name}</span>`;
+    dock.appendChild(el);
+  });
+  markDock();
+}
+
+/* ── 배치 저장 (기기별로 브라우저에 보관) ── */
+const LKEY='sh-portal-layout-v1';
+const resetBtn=document.getElementById('resetLayout');
+const isDefault=()=>homeOrder.join()===HOME_DEFAULT.join() && dockOrder.join()===DOCK_DEFAULT.join();
+function saveLayout(){
+  resetBtn.classList.toggle('show',!isDefault());
+  try{ isDefault() ? localStorage.removeItem(LKEY)
+     : localStorage.setItem(LKEY,JSON.stringify({home:homeOrder,dock:dockOrder})); }catch(e){}
+}
+function loadLayout(){
+  try{
+    const raw=localStorage.getItem(LKEY); if(!raw) return;
+    const o=JSON.parse(raw);
+    const ok=v=>Array.isArray(v)&&v.every(id=>APPS[id]);
+    if(ok(o.home)&&ok(o.dock)){ homeOrder=[...new Set(o.home)]; dockOrder=[...new Set(o.dock)].slice(0,DOCK_MAX); }
+  }catch(e){}
+}
+resetBtn.addEventListener('click',()=>{
+  homeOrder=[...HOME_DEFAULT]; dockOrder=[...DOCK_DEFAULT];
+  renderHome(); renderDock(); saveLayout();
 });
-DOCK_ORDER.forEach(id=>{
-  if(id==='|'){const s=document.createElement('div');s.className='dsep';dock.appendChild(s);return;}
-  const a=APPS[id];
-  const el=document.createElement('button');
-  el.className='dk'; el.dataset.dock=id;
-  el.style.background=a.bg; if(id==='cal') el.style.color='#1D1D1F';
-  el.innerHTML=`${id==='cal'?'<span style="font-size:7px;font-weight:800;color:#E81A3B">4월</span><span class="tn" style="font-size:16px;line-height:1">5</span>'
-    :a.short+(id==='ai'?'<small>칼</small>':'')}<span class="run"></span><span class="tip">${a.name}</span>`;
-  dock.appendChild(el);
+
+/* ══════════ 아이콘 드래그 재배치 ══════════ */
+let drag=null, justDragged=false;
+const listOf = c => c===dock ? dockOrder : homeOrder;
+
+/* 포인터 위치가 들어갈 자리 (읽기 순서 기준) */
+function indexAt(c,x,y){
+  const items=[...c.querySelectorAll('[data-id]')];
+  for(let i=0;i<items.length;i++){
+    const r=items[i].getBoundingClientRect();
+    if(y<r.bottom && x<r.left+r.width/2) return i;
+  }
+  return items.length;
+}
+function hit(el,x,y,pad){
+  const r=el.getBoundingClientRect();
+  return x>=r.left-pad && x<=r.right+pad && y>=r.top-pad && y<=r.bottom+pad;
+}
+function placeSlot(c,idx){
+  const kids=[...c.querySelectorAll('[data-id]')];
+  c.insertBefore(drag.slot, kids[idx]||null);
+  drag.target=c;
+}
+function beginDrag(e,item){
+  const id=item.dataset.id, from=item.closest('.dock')?dock:apps;
+  const face=from===dock?item:item.querySelector('.icon');
+  const r=face.getBoundingClientRect();
+
+  const ghost=document.createElement('div');
+  /* 그리드 아이콘은 .ap 안에서만 스타일이 잡히므로 고스트에도 같은 문맥을 준다 */
+  ghost.className=from===dock?'ghost':'ghost ap';
+  ghost.style.cssText=`left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`;
+  const clone=face.cloneNode(true);
+  clone.style.width=r.width+'px'; clone.style.height=r.height+'px'; clone.style.margin='0';
+  ghost.appendChild(clone);
+  document.body.appendChild(ghost);
+
+  const slot=document.createElement('div'); slot.className='slot';
+  const idx=listOf(from).indexOf(id);
+  drag={id,from,ghost,slot,target:from,
+        offX:e.clientX-r.left, offY:e.clientY-r.top, homeIdx:idx};
+
+  listOf(from).splice(idx,1);
+  from===dock?renderDock():renderHome();
+  placeSlot(from,idx);
+  document.body.classList.add('editing');
+}
+function moveDrag(e){
+  const {ghost}=drag;
+  ghost.style.left=(e.clientX-drag.offX)+'px';
+  ghost.style.top =(e.clientY-drag.offY)+'px';
+
+  if(hit(dock,e.clientX,e.clientY,18) && dockOrder.length<DOCK_MAX){
+    placeSlot(dock,indexAt(dock,e.clientX,e.clientY));
+  }else if(hit(apps,e.clientX,e.clientY,24)){
+    placeSlot(apps,indexAt(apps,e.clientX,e.clientY));
+  }else{
+    drag.slot.remove(); drag.target=null;
+  }
+}
+function endDrag(){
+  const {id,from,slot,ghost}=drag;
+  let c=drag.target, idx;
+  if(c && slot.parentNode===c){
+    idx=[...c.children].filter(n=>n.dataset.id||n===slot).indexOf(slot);
+  }else{ c=from; idx=drag.homeIdx; }          /* 밖에 놓으면 원래 자리로 */
+  const list=listOf(c);
+  const dup=list.indexOf(id);                 /* 다른 쪽에 이미 있던 앱이면 '이동'으로 처리 */
+  if(dup>-1){ list.splice(dup,1); if(dup<idx) idx--; }
+  list.splice(idx,0,id);
+  slot.remove(); ghost.remove();
+  document.body.classList.remove('editing');
+  drag=null;
+  renderHome(); renderDock(); saveLayout();
+  justDragged=true; setTimeout(()=>justDragged=false,0);
+}
+document.addEventListener('pointerdown',e=>{
+  const item=e.target.closest('.ap[data-id],.dk[data-id]');
+  if(!item||e.button) return;
+  const sx=e.clientX, sy=e.clientY;
+  let started=false;
+  const move=ev=>{
+    if(!started){
+      if(Math.abs(ev.clientX-sx)+Math.abs(ev.clientY-sy)<6) return;
+      started=true; beginDrag(ev,item);
+    }
+    ev.preventDefault(); moveDrag(ev);
+  };
+  const up=()=>{
+    document.removeEventListener('pointermove',move);
+    document.removeEventListener('pointerup',up);
+    document.removeEventListener('pointercancel',up);
+    if(started) endDrag();
+  };
+  document.addEventListener('pointermove',move);
+  document.addEventListener('pointerup',up);
+  document.addEventListener('pointercancel',up);
 });
+
 
 /* ══════════ 창 시스템 ══════════ */
 const wins=new Map();            // id -> {el, state, restore}
@@ -725,6 +888,7 @@ function bindWindow(id,el){
 
 /* ══════════ 이벤트 ══════════ */
 document.addEventListener('click',e=>{
+  if(justDragged) return;
   const o=e.target.closest('[data-open]'); if(o){ openApp(o.dataset.open); return; }
   const d=e.target.closest('[data-dock]');
   if(d){ const id=d.dataset.dock;
@@ -749,7 +913,8 @@ addEventListener('resize',()=>{
     el.style.top=Math.max(ar.y-2,Math.min(el.offsetTop,ar.y+ar.h-40))+'px';
   });
 });
-/* 첫 화면에 대시보드 한 창 띄워두기 */
+/* 초기 배치 렌더 후 대시보드 한 창 띄워두기 */
+loadLayout(); renderHome(); renderDock(); saveLayout();
 openApp('aud');
 </script>
 </body>
