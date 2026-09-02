@@ -1130,7 +1130,12 @@ function loadLayout(){
         && [it.r,it.c,it.rs,it.cs].every(n=>Number.isInteger(n)&&n>=1)
         && !seen.has(it.k+':'+it.id) && seen.add(it.k+':'+it.id)
         && it.r+it.rs-1<=ROWS && it.c+it.cs-1<=COLS);
-      if(ok.length) layout=ok.map(it=>({k:it.k,id:it.id,r:it.r,c:it.c,rs:it.rs,cs:it.cs}));
+      const clean=[];
+      ok.forEach(it=>{
+        const o={k:it.k,id:it.id,r:it.r,c:it.c,rs:it.rs,cs:it.cs};
+        if(!clean.some(p=>blocks(o,p))) clean.push(o);
+      });
+      if(clean.length) layout=clean;
     }
     if(Array.isArray(o.dock)&&o.dock.every(id=>APPS[id])) dockOrder=[...new Set(o.dock)].slice(0,DOCK_MAX);
     if(THEMES[o.theme]) theme=o.theme;
@@ -1190,7 +1195,13 @@ function beginDrag(e,el){
 
   /* 존을 옮기면 그 위의 앱도 같이 이동 */
   const carried = k==='z' ? zoneApps(item).map(o=>({...o, dr:o.r-item.r, dc:o.c-item.c})) : [];
-  drag={item:{...item}, origin:item, fromDock, ghost, slot, target:null, swap:null, carried,
+  /* 여러 칸짜리 항목은 '잡은 칸'이 어디였는지 기억해 두어, 놓을 때 그 칸이 커서 아래로 오게 한다 */
+  let grab={dr:0,dc:0};
+  if(!fromDock){
+    const g=cellAt(e.clientX,e.clientY);
+    grab={dr:Math.min(item.rs-1,Math.max(0,g.r-item.r)), dc:Math.min(item.cs-1,Math.max(0,g.c-item.c))};
+  }
+  drag={item:{...item}, origin:item, fromDock, ghost, slot, target:null, swap:null, carried, grab,
         dockIdx:fromDock?dockOrder.indexOf(id):-1,
         offX:e.clientX-r.left, offY:e.clientY-r.top};
 
@@ -1216,13 +1227,15 @@ function moveDrag(e){
   }
   if(hit(hgrid,e.clientX,e.clientY,20)){
     const cell=cellAt(e.clientX,e.clientY);
-    const box={...item, r:Math.min(cell.r,ROWS-item.rs+1), c:Math.min(cell.c,COLS-item.cs+1)};
+    const box={...item,
+      r:Math.max(1,Math.min(cell.r-drag.grab.dr, ROWS-item.rs+1)),
+      c:Math.max(1,Math.min(cell.c-drag.grab.dc, COLS-item.cs+1))};
     const bump=collide(box);
     const carriedOK = drag.carried.every(c=>{
       const nb={...c, r:box.r+c.dr, c:box.c+c.dc};
       return fits(nb) && !collide(nb).length;
     });
-    const swappable = item.k!=='z' && bump.length===1 && bump[0].k===item.k
+    const swappable = !drag.fromDock && item.k!=='z' && bump.length===1 && bump[0].k===item.k
                       && bump[0].rs===item.rs && bump[0].cs===item.cs;
     if((bump.length===0 && carriedOK) || swappable){
       slot.classList.remove('bad');
