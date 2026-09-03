@@ -101,7 +101,6 @@ body.phone .status .brand img{height:21px}
 body.phone .status .brand span{font-size:calc(10px * var(--fz))}
 
 /* 상태 표시줄 (조직명 + 프로필만) */
-.status .sys{font-size:calc(11px * var(--fz));font-weight:700;opacity:.88}
 
 /* 사용자 프로필 — 상태 표시줄에 얹히는 형태 (배경 없이, hover는 확대만) */
 .prof{display:flex;align-items:center;gap:6px;padding:2px 3px;margin-left:5px;
@@ -114,7 +113,6 @@ transition:transform .17s cubic-bezier(.3,1.4,.5,1)}
 color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;
 flex-shrink:0;text-shadow:none}
 .prof .nm{font-size:calc(11px * var(--fz));font-weight:700;letter-spacing:-0.08px}
-.prof .sys{margin-right:5px}
 
 /* 프로필 드롭다운 */
 .pmenu{position:fixed;top:44px;right:16px;width:340px;z-index:950;border-radius:20px;corner-shape:squircle;padding:6px;
@@ -731,12 +729,12 @@ body.compact .mlist{width:auto;max-height:42%;border-right:none;border-bottom:.5
   body:not(.compact) .greet p{font-size:13px;margin-top:3px}
   body:not(.compact) .hgrid{gap:12px}
 }
-body.compact{touch-action:auto;--dockH:84px}
+body.compact{touch-action:auto;--dockH:94px}
 body.compact .status{position:sticky;top:0;padding:0 12px 0 14px;white-space:nowrap;
 background:var(--pageBg);z-index:900}
 body.compact .dots,body.compact .dockzone,body.compact .homebar{display:none}
 body.phone .status{font-size:calc(10.5px * var(--fz))}
-body.phone .status .sys,body.phone .prof .nm{font-size:calc(9px * var(--fz))}
+body.phone .prof .nm{font-size:calc(9px * var(--fz))}
 body.phone .prof .av{width:20px;height:20px}
 body.compact #tile4{display:none}
 /* 홈은 고정 상자 안에서 스크롤하지 않고 문서 자체가 스크롤된다 — 앱 웹뷰가 iframe 높이를 내용에 맞추는 경우에도 전부 보인다 */
@@ -780,9 +778,10 @@ body.compact .ap .nm{font-size:calc(9.5px * var(--fz));max-width:86px}
 body.phone .ap .nm{font-size:calc(8.5px * var(--fz));max-width:84px}
 /* Dock: 탭 바처럼 항상 보이고, 항목이 많으면 가로로 넘긴다 */
 /* Dock도 흐름 안에서 아래에 달라붙는다 — 스크롤되는 환경에서는 고정처럼, 아니면 문서 맨 아래에 */
-body.compact .dock{position:sticky;left:auto;bottom:calc(10px + env(safe-area-inset-bottom,0px));
-transform:none;margin:6px auto calc(10px + env(safe-area-inset-bottom,0px));width:max-content;
-gap:10px;padding:6px 8px;max-width:calc(100vw - 16px);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+/* --vvb: 앱 웹뷰의 하단 바가 뷰포트를 가리는 높이(JS가 visualViewport로 계산) — 그만큼 Dock을 더 올린다 */
+body.compact .dock{position:sticky;left:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));
+transform:none;margin:6px auto calc(16px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));width:max-content;
+gap:10px;padding:10px 8px 12px;max-width:calc(100vw - 16px);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
 body.compact.dockhide .dock{transform:none}
 body.compact .dock::-webkit-scrollbar{display:none}
 body.compact .dk{width:44px;height:44px;font-size:10.5px;flex-shrink:0}
@@ -790,9 +789,9 @@ body.phone .dock{gap:8px}
 body.phone .dk{width:40px;height:40px;font-size:9.5px}
 body.compact .dk .tip{display:none}
 body.compact .dsep{height:28px}
-body.compact .dots{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+body.compact .dots{bottom:calc(82px + env(safe-area-inset-bottom,0px) + var(--vvb,0px))}
 body.compact .homebar{display:none}
-body.compact .toast{bottom:calc(92px + env(safe-area-inset-bottom,0px));max-width:calc(100vw - 32px);text-align:center}
+body.compact .toast{bottom:calc(98px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));max-width:calc(100vw - 32px);text-align:center}
 /* 창: 전체 화면 시트 — 이동·크기 조정·최소화 없이 닫기만 */
 body.compact .win{border-radius:0;animation:sheetIn .28s cubic-bezier(.2,.9,.3,1)}
 @keyframes sheetIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
@@ -829,6 +828,69 @@ body.compact .nz input{min-width:0;flex:1 1 100%}
 body.compact .pmenu{right:8px;top:42px;width:min(340px,calc(100vw - 16px))}
 body.compact .cmenu{min-width:200px}
 body.compact .cmenu button{padding:10px 12px;font-size:calc(13.5px * var(--fz))}
+
+/* ══ AI 칼 — 우측 하단에 떠 있는 챗봇 버튼과 위로 펼쳐지는 대화창 ══ */
+.kalfab{position:fixed;right:22px;bottom:calc(22px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));z-index:860;
+width:60px;height:60px;padding:0;background:none;cursor:pointer;
+filter:drop-shadow(0 10px 22px rgba(14,22,30,.30)) drop-shadow(0 2px 5px rgba(14,22,30,.18));
+transition:transform .18s cubic-bezier(.3,1.4,.5,1)}
+.kalfab:hover{transform:translateY(-3px) scale(1.06)}
+.kalfab:active{transform:scale(.95)}
+.kalfab:focus-visible{outline:2px solid var(--red);outline-offset:4px;border-radius:30%}
+.kalfab .kf{position:absolute;inset:0;border-radius:23%;background:#1C1F27 center/100% 100% no-repeat;
+transition:transform .22s,opacity .22s}
+.kalfab .kx{position:absolute;inset:0;border-radius:50%;background:#1C1F27;color:#fff;display:flex;align-items:center;justify-content:center;
+opacity:0;transform:rotate(-90deg) scale(.6);transition:transform .22s,opacity .22s}
+.kalfab .kx .ic{width:22px;height:22px;stroke-width:2.4}
+.kalfab.on .kf{opacity:0;transform:rotate(90deg) scale(.6)}
+.kalfab.on .kx{opacity:1;transform:none}
+.kalfab .kdot{position:absolute;top:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:#34C759;
+border:2.5px solid var(--pageBg);transition:opacity .2s}
+.kalfab.on .kdot{opacity:0}
+.kalfab .ktip{position:absolute;right:calc(100% + 12px);top:50%;transform:translateY(-50%) translateX(6px);white-space:nowrap;
+font-size:calc(10.5px * var(--fz));font-weight:700;color:#1D1D1F;background:rgba(255,255,255,.96);padding:6px 11px;border-radius:9px;
+box-shadow:0 4px 14px rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:opacity .15s,transform .15s}
+.kalfab:hover .ktip{opacity:1;transform:translateY(-50%)}
+.kalfab.on .ktip{display:none}
+
+.kal{position:fixed;right:22px;bottom:calc(96px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));z-index:860;
+width:min(400px,calc(100vw - 32px));height:min(600px,calc(100vh - var(--statusH) - 124px));
+border-radius:22px;corner-shape:squircle;overflow:hidden;background:#fff;color:var(--txt);
+box-shadow:0 26px 70px rgba(0,0,0,.34),0 0 0 .5px rgba(0,0,0,.18);display:flex;flex-direction:column;
+transform-origin:calc(100% - 30px) calc(100% + 40px);transform:translateY(14px) scale(.55);opacity:0;pointer-events:none;
+transition:transform .34s cubic-bezier(.22,.9,.25,1),opacity .2s ease-out}
+.kal.show{transform:none;opacity:1;pointer-events:auto}
+.kal .kh{height:60px;flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 10px 0 14px;background:#1C1F27;color:#fff}
+.kal .kh .kav{width:36px;height:36px;border-radius:23%;background:#2A2F3B center/100% 100% no-repeat;flex-shrink:0}
+.kal .kh .kt{margin-right:auto;min-width:0}
+.kal .kh .kn{font-size:calc(12.5px * var(--fz));font-weight:800;line-height:1.15;letter-spacing:-0.1px}
+.kal .kh .ks{font-size:calc(9.5px * var(--fz));opacity:.72;display:flex;align-items:center;gap:5px;margin-top:2px}
+.kal .kh .ks i{width:7px;height:7px;border-radius:50%;background:#34C759;display:inline-block}
+.kal .kh button{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;opacity:.8;flex-shrink:0}
+.kal .kh button:hover{background:rgba(255,255,255,.14);opacity:1}
+.kal .kh button .ic{width:17px;height:17px}
+.kal .chatwrap{flex:1;min-height:0}
+.kal .chips{display:flex;gap:6px;flex-wrap:wrap;padding:2px 14px 10px;background:#FAFAFB;flex-shrink:0}
+.kal .chips button{font-size:calc(10.5px * var(--fz));font-weight:600;padding:5px 11px;border-radius:99px;
+border:1px solid var(--line);background:#fff;color:var(--txt);transition:border-color .15s,color .15s}
+.kal .chips button:hover{border-color:var(--red);color:var(--red)}
+.kal .inp input{flex:1;min-width:0;background:#F2F2F5;border:none;border-radius:99px;padding:9px 14px;font:inherit;
+font-size:calc(11.5px * var(--fz));color:var(--ink);outline:none;transition:background .15s,box-shadow .15s}
+.kal .inp input::placeholder{color:var(--txt3)}
+.kal .inp input:focus{background:#ECECF1;box-shadow:0 0 0 2px rgba(232,26,59,.22)}
+.kal .inp .go{cursor:pointer;flex-shrink:0;transition:transform .15s,opacity .15s}
+.kal .inp .go:hover{transform:scale(1.08)}
+.kal .inp .go.off{opacity:.35;pointer-events:none}
+.msg.typing{display:flex;gap:4px;align-items:center;padding:12px 14px}
+.msg.typing i{width:6px;height:6px;border-radius:50%;background:var(--txt3);animation:kdots 1s infinite}
+.msg.typing i:nth-child(2){animation-delay:.16s}.msg.typing i:nth-child(3){animation-delay:.32s}
+@keyframes kdots{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+/* 좁은 화면: Dock 위쪽에 버튼을 두고, 대화창은 좌우를 채운다 */
+body.compact .kalfab{right:14px;bottom:calc(var(--dockH) + 14px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));width:54px;height:54px}
+body.compact .kalfab .ktip{display:none}
+body.compact .kal{right:10px;bottom:calc(var(--dockH) + 78px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));
+width:min(420px,calc(100vw - 20px));height:min(560px,calc(100vh - var(--statusH) - var(--dockH) - 96px));transform-origin:calc(100% - 27px) calc(100% + 40px)}
+body.phone .kal{left:10px;width:auto}
 </style>
 </head>
 <body>
@@ -843,8 +905,7 @@ body.compact .cmenu button{padding:10px 12px;font-size:calc(13.5px * var(--fz))}
     <button class="sact" id="resetLayout" title="아이콘·위젯 배치를 기본값으로">
       <svg class="ic" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
       배치 초기화</button>
-    <button class="prof" id="profBtn" aria-haspopup="true" aria-expanded="false" aria-label="SH-Office · 윤길배 계정 메뉴">
-      <span class="sys">SH-Office</span>
+    <button class="prof" id="profBtn" aria-haspopup="true" aria-expanded="false" aria-label="윤길배 계정 메뉴">
       <span class="av">윤길</span><span class="nm">윤길배</span>
     </button>
   </div>
@@ -937,6 +998,34 @@ body.compact .cmenu button{padding:10px 12px;font-size:calc(13.5px * var(--fz))}
 <div class="toast" id="toast"></div>
 <div class="cmenu" id="cmenu"></div>
 
+<!-- AI 칼 — 우측 하단 플로팅 챗봇 -->
+<div class="kal" id="kal" role="dialog" aria-label="AI Assistant 칼" aria-hidden="true">
+  <div class="kh">
+    <div class="kav" id="kalAv"></div>
+    <div class="kt"><div class="kn">AI Assistant 칼</div><div class="ks"><i></i>Claude 기반 · 지금 응답 가능</div></div>
+    <button data-kact="clear" title="대화 지우기"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
+    <button data-kact="close" title="접기"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+  </div>
+  <div class="chatwrap">
+    <div class="chat" id="kalChat"></div>
+    <div class="chips" id="kalChips">
+      <button data-q="오늘 마감 일정 알려줘">오늘 마감</button>
+      <button data-q="리뷰 대기 조서 정리해줘">리뷰 대기 조서</button>
+      <button data-q="알파테크 매출 절사 이슈 요약해줘">알파테크 절사 이슈</button>
+    </div>
+    <form class="inp" id="kalForm" autocomplete="off">
+      <input id="kalIn" type="text" placeholder="칼에게 물어보기…" maxlength="300">
+      <button type="submit" class="go off" id="kalGo" aria-label="보내기"><svg class="ic" style="width:15px;height:15px" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+    </form>
+  </div>
+</div>
+<button class="kalfab" id="kalfab" aria-label="AI Assistant 칼 열기" aria-expanded="false" aria-controls="kal">
+  <span class="kf" id="kalFace"></span>
+  <span class="kx"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+  <span class="kdot"></span>
+  <span class="ktip">AI 칼에게 물어보기</span>
+</button>
+
 <script>
 /* 실행 중 오류를 기록해 '화면 진단'에서 볼 수 있게 */
 let lastErr='';
@@ -945,7 +1034,7 @@ addEventListener('unhandledrejection',e=>{ lastErr=String(e.reason); });
 /* ══════════ 사용자 · 테마 ══════════ */
 const USER={id:'yoon.gb', name:'윤길배', title:'대표이사', firm:'성현회계법인',
             mail:'yoon.gb@shcpa.kr', init:'윤길'};
-const LKEY='sh-portal:'+USER.id+':v6';
+const LKEY='sh-portal:'+USER.id+':v7';
 /* 저장소가 막힌 환경(샌드박스 iframe·앱 웹뷰)에서도 페이지가 죽지 않도록 */
 const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
               set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
@@ -1358,6 +1447,15 @@ function syncZoom(){
 }
 const VW=()=>innerWidth/Z, VH=()=>innerHeight/Z;    /* 배율을 뺀 실제 레이아웃 폭·높이 */
 syncZoom();
+/* 앱 웹뷰의 하단 바가 레이아웃 뷰포트를 가리면(클로드 앱 등) 그 높이(--vvb)만큼 Dock·플로팅 버튼을 올린다.
+   키보드가 올라온 경우까지 따라가지 않도록 48px에서 자른다 */
+function syncVvb(){
+  const vv=window.visualViewport; let g=0;
+  if(vv){ g=innerHeight-(vv.height+vv.offsetTop); g=Math.max(0,Math.min(48,Math.round(g/(Z||1)))); }
+  document.documentElement.style.setProperty('--vvb',g+'px');
+}
+syncVvb();
+if(window.visualViewport){ visualViewport.addEventListener('resize',syncVvb); visualViewport.addEventListener('scroll',syncVvb); }
 /* ── 화면 모드: compact(≤1024px 폭 또는 ≤600px 높이, 또는 휴대폰·태블릿) · phone(≤560px 폭) ── */
 let compact=false, phone=false, MC=4;
 function syncMode(){
@@ -1409,12 +1507,12 @@ const LAYOUT_DEFAULT=[
   {k:'z',id:'adv',   r:2,c:7, rs:1,cs:2},
   {k:'z',id:'admin', r:2,c:9, rs:1,cs:2},
   ...row('a',1,5,['aud','rev','k1118','fin']),
-  ...row('a',1,9,['ai']),
+  ...row('a',1,9,['rag']),
   ...row('a',2,5,['tax']),
   ...row('a',2,7,['ins']),
   ...row('a',2,9,['cal','notice'])
 ];
-const DOCK_DEFAULT=['aud','ai','rev','cal','memo'];
+const DOCK_DEFAULT=['aud','rev','cal','memo'];
 const DOCK_MAX=10;
 const WG_DEF_COLS={dday:2,aqi:2,notice:4,proj:4,memo:2};   /* 축소 비율 기준 */
 
@@ -1892,6 +1990,7 @@ function focusTop(){
 }
 function openApp(id,origin){
   const a=APPS[id]; if(!a) return;
+  if(id==='ai'){ openKal(); return; }   /* 칼은 우측 하단 플로팅 챗봇으로 연다 */
   if(wins.has(id)){
     const w=wins.get(id);
     if(w.state==='min'){ w.el.style.display='flex'; w.el.classList.remove('min'); w.state='normal'; }
@@ -2470,7 +2569,7 @@ document.addEventListener('click',e=>{
   }
   if(!e.target.closest('#pmenu,#profBtn')) menu(false);
 });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ menu(false); closeSpot(); closeLib(); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ menu(false); closeSpot(); closeLib(); closeKal(); } });
 
 /* ══════════ 메모 관리 창 ══════════ */
 let memoCur=null;
@@ -2655,9 +2754,66 @@ document.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&e.key==='w'){ e.preventDefault(); closeApp(act[0]); }
   if((e.metaKey||e.ctrlKey)&&e.key==='m'){ e.preventDefault(); minApp(act[0]); }
 });
+/* ══════════ AI 칼 — 플로팅 챗봇 ══════════ */
+const kal=document.getElementById('kal'), kalfab=document.getElementById('kalfab'), kalChat=document.getElementById('kalChat'),
+      kalIn=document.getElementById('kalIn'), kalGo=document.getElementById('kalGo');
+document.getElementById('kalFace').style.backgroundImage=`url(${ICONS.robot})`;
+document.getElementById('kalAv').style.backgroundImage=`url(${ICONS.robot})`;
+const KAL_SEED=[
+  ['ai','안녕하세요, 대표이사님. 오늘 <b>알파테크</b> 현장수행이 72%까지 올라왔고 리뷰 대기 조서가 14건 쌓였습니다. 무엇을 도와드릴까요?']
+];
+/* 질문 키워드별 준비된 답변 — 프로토타입용 */
+const KAL_ANS=[
+  [/절사|매출/, '표본 12건 중 <b>3건</b>이 12/28~12/31 거래에 집중되어 있습니다.<br>· 인도조건 확인 필요 2건<br>· 검수확인서 미비 1건<br><b>권고:</b> K-IFRS 1115호 통제이전 시점 기준으로 절사 절차를 기말 ±5영업일까지 확대.'],
+  [/리뷰|조서/, '리뷰 대기 조서 <b>14건</b>입니다.<br>· 알파테크 6건 (수익·재고)<br>· 베타홀딩스 5건 (지분법)<br>· 감마물산 3건 (재고 평가)<br>가장 오래된 건은 3/29 제출분입니다. 리뷰함을 열어 드릴까요?'],
+  [/마감|일정|오늘/, '오늘 마감 3건입니다.<br>· <b>D-0</b> 델타상사 세무조정 검토<br>· <b>D-0</b> 알파테크 재고실사 조서<br>· <b>D-1</b> 감사위원회 보고 자료<br>일정 앱에서 전체 주간 일정을 볼 수 있습니다.'],
+  [/isqm|목차|보고서/i, '1. 품질관리 목표와 위험 평가<br>2. 거버넌스와 리더십<br>3. 관련 윤리적 요구사항<br>4. 업무 수임 및 유지<br>5. 업무의 수행<br>6. 자원 / 정보와 의사소통<br>7. 모니터링 및 개선 절차<br>초안을 리뷰함에 저장할까요?'],
+  [/1118|영업/, 'K-IFRS 1118호 기준으로 알파테크 247개 계정 중 <b>18개</b>가 재분류 대상입니다. 영업이익은 +3.2% 변동합니다. 분석기에서 판단 근거를 확인할 수 있어요.'],
+  [/안녕|고마|감사/, '네, 대표이사님. 언제든 불러 주세요.']
+];
+let kalOpen=false;
+function kalPush(role,html){
+  const d=document.createElement('div'); d.className='msg '+role; d.innerHTML=html; kalChat.appendChild(d);
+  kalChat.scrollTop=kalChat.scrollHeight; return d;
+}
+function kalReset(){ kalChat.innerHTML=''; KAL_SEED.forEach(([r,t])=>kalPush(r,t)); }
+kalReset();
+function openKal(){
+  if(kalOpen) return; kalOpen=true;
+  kal.classList.add('show'); kal.setAttribute('aria-hidden','false');
+  kalfab.classList.add('on'); kalfab.setAttribute('aria-expanded','true'); kalfab.setAttribute('aria-label','AI Assistant 칼 접기');
+  closeCmenu(); menu(false);
+  kalChat.scrollTop=kalChat.scrollHeight;
+  if(!handheld) setTimeout(()=>kalIn.focus(),340);
+}
+function closeKal(){
+  if(!kalOpen) return; kalOpen=false;
+  kal.classList.remove('show'); kal.setAttribute('aria-hidden','true');
+  kalfab.classList.remove('on'); kalfab.setAttribute('aria-expanded','false'); kalfab.setAttribute('aria-label','AI Assistant 칼 열기');
+  kalIn.blur();
+}
+function toggleKal(){ kalOpen?closeKal():openKal(); }
+let kalBusy=false;
+function kalSend(text){
+  text=(text||'').trim(); if(!text||kalBusy) return;
+  kalPush('me',text.replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])));
+  kalIn.value=''; kalGo.classList.add('off'); kalBusy=true;
+  const typing=kalPush('ai','<i></i><i></i><i></i>'); typing.classList.add('typing');
+  const hit=KAL_ANS.find(([re])=>re.test(text));
+  const ans=hit?hit[1]:`<b>“${text.slice(0,24)}${text.length>24?'…':''}”</b>에 대해 찾아보고 있어요. 관련 조서·공지·프로젝트를 모아 정리해 드릴게요. 우선 리뷰함과 프로젝트 현황을 확인해 보시겠어요?`;
+  setTimeout(()=>{ typing.classList.remove('typing'); typing.innerHTML=ans; kalChat.scrollTop=kalChat.scrollHeight; kalBusy=false; },700+Math.min(900,text.length*25));
+}
+kalfab.addEventListener('click',toggleKal);
+kal.addEventListener('click',e=>{
+  const b=e.target.closest('[data-kact]'); if(b){ b.dataset.kact==='close'?closeKal():kalReset(); return; }
+  const c=e.target.closest('[data-q]'); if(c){ kalSend(c.dataset.q); kalIn.focus(); }
+});
+document.getElementById('kalForm').addEventListener('submit',e=>{ e.preventDefault(); kalSend(kalIn.value); });
+kalIn.addEventListener('input',()=>kalGo.classList.toggle('off',!kalIn.value.trim()));
+
 addEventListener('resize',()=>{
   const wasCompact=compact;
-  syncZoom();
+  syncZoom(); syncVvb();
   if(syncMode()){
     renderGrid();
     if(compact){ wins.forEach(w=>{ if(w.state!=='min') fillArea(w); }); }
