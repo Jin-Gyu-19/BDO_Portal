@@ -1218,10 +1218,25 @@ const COLS=10, ROWS=5, GAP=16;
 const hgrid=document.getElementById('hgrid'), dock=document.getElementById('dock');
 hgrid.style.setProperty('--cols',COLS);
 hgrid.style.setProperty('--rows',ROWS);
-/* ── 화면 모드: compact(≤1024px 폭 또는 ≤600px 높이) · phone(≤560px 폭) ── */
+/* ── 실제 휴대폰·태블릿 판정: 터치 기기이고 화면 짧은 변이 900px 이하 ──
+   뷰어가 페이지를 넓게 그린 뒤 축소해 보여 주는 경우(innerWidth ≫ 기기 폭)에는
+   html zoom으로 되돌려, 데스크톱 창을 그 폭으로 줄였을 때와 같은 배치가 나오게 한다 */
+const handheld=(navigator.maxTouchPoints>0 || matchMedia('(pointer:coarse)').matches)
+  && Math.min(screen.width,screen.height)<=900;
+const devW=()=>{ const a=Math.min(screen.width,screen.height), b=Math.max(screen.width,screen.height);
+  return innerWidth>innerHeight?b:a; };
+let Z=1;
+function syncZoom(){
+  let z=1;
+  if(handheld){ const dw=devW(); if(dw>0 && innerWidth>dw*1.08) z=Math.round(innerWidth/dw*1000)/1000; }
+  if(z!==Z){ Z=z; document.documentElement.style.zoom=z===1?'':String(z); }
+}
+const VW=()=>innerWidth/Z, VH=()=>innerHeight/Z;    /* 배율을 뺀 실제 레이아웃 폭·높이 */
+syncZoom();
+/* ── 화면 모드: compact(≤1024px 폭 또는 ≤600px 높이, 또는 휴대폰·태블릿) · phone(≤560px 폭) ── */
 let compact=false, phone=false, MC=4;
 function syncMode(){
-  const c=innerWidth<=1024 || innerHeight<=600, ph=innerWidth<=560;
+  const c=handheld || VW()<=1024 || VH()<=600, ph=VW()<=560;
   const changed=c!==compact || ph!==phone;
   compact=c; phone=ph; MC=ph?4:6;
   document.body.classList.toggle('compact',compact);
@@ -1664,10 +1679,10 @@ const MIN_W=320, MIN_H=220, EDGE=10;
 /* 좁은 화면이면 창이 상태 표시줄과 Dock 사이를 꽉 채운다 */
 const STATUS_H=38;
 const area=()=>compact
-  ? {x:0, y:STATUS_H, w:innerWidth, h:innerHeight-STATUS_H-84}
-  : {x:8, y:STATUS_H+6, w:innerWidth-16, h:innerHeight-STATUS_H-6-88};
+  ? {x:0, y:STATUS_H, w:VW(), h:VH()-STATUS_H-84}
+  : {x:8, y:STATUS_H+6, w:VW()-16, h:VH()-STATUS_H-6-88};
 /* 최대화 영역: 상태 표시줄(시간·날짜·프로필)만 남기고 화면 전부 */
-const fullArea=()=>({x:0, y:STATUS_H, w:innerWidth, h:innerHeight-STATUS_H});
+const fullArea=()=>({x:0, y:STATUS_H, w:VW(), h:VH()-STATUS_H});
 
 function syncHome(){
   const open=[...wins.values()].some(w=>w.state!=='min');
@@ -1851,7 +1866,7 @@ function bindWindow(id,el){
       if(ev.clientY<=ar2.y+6) zone='max';
       else if(ev.clientX<=EDGE)
         zone = ev.clientY<ar2.y+CN ? 'q1' : ev.clientY>ar2.y+ar2.h-CN ? 'q3' : 'left';
-      else if(ev.clientX>=innerWidth-EDGE)
+      else if(ev.clientX>=VW()-EDGE)
         zone = ev.clientY<ar2.y+CN ? 'q2' : ev.clientY>ar2.y+ar2.h-CN ? 'q4' : 'right';
       const r=zone&&zoneRect(zone);
       if(r){ Object.assign(snapEl.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'});
@@ -2181,8 +2196,9 @@ function closeCmenu(){ cmenu.classList.remove('on'); cmTarget=null; }
 function openCmenu(x,y,html,target){
   cmTarget=target; cmenu.innerHTML=html; cmenu.classList.add('on');
   const w=cmenu.offsetWidth, h=cmenu.offsetHeight;
-  cmenu.style.left=Math.min(x,innerWidth-w-8)+'px';
-  cmenu.style.top=Math.min(y,innerHeight-h-8)+'px';
+  x/=Z; y/=Z;                                 /* 포인터 좌표는 배율이 곱해져 있다 */
+  cmenu.style.left=Math.min(x,VW()-w-8)+'px';
+  cmenu.style.top=Math.min(y,VH()-h-8)+'px';
 }
 const CM_ICON={
   open:'<svg class="ic" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9"/><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg>',
@@ -2278,8 +2294,8 @@ function hideStickies(){ stickiesOn=false; stk.classList.remove('on'); markDock(
 function toggleStickies(){ stickiesOn?hideStickies():showStickies(); }
 function paintMemoWidget(){ document.querySelectorAll('.wg[data-id="memo"] .mlines').forEach(el=>el.innerHTML=memoLines()); }
 function stickyPos(m,i){
-  if(!Number.isFinite(m.x)||!Number.isFinite(m.y)){ m.x=Math.max(16,innerWidth-300-i*34); m.y=70+i*46; }
-  m.x=Math.min(Math.max(-40,m.x),Math.max(0,innerWidth-90)); m.y=Math.min(Math.max(0,m.y),Math.max(0,innerHeight-STATUS_H-50));
+  if(!Number.isFinite(m.x)||!Number.isFinite(m.y)){ m.x=Math.max(16,VW()-300-i*34); m.y=70+i*46; }
+  m.x=Math.min(Math.max(-40,m.x),Math.max(0,VW()-90)); m.y=Math.min(Math.max(0,m.y),Math.max(0,VH()-STATUS_H-50));
 }
 function paintStickies(){
   const open=openMemos();
@@ -2338,7 +2354,7 @@ sboard.addEventListener('pointerdown',e=>{
   const bar=e.target.closest('.sbar'); if(!bar||e.target.closest('button')||compact) return;
   e.preventDefault(); bar.setPointerCapture(e.pointerId);
   const sx=e.clientX-m.x, sy=e.clientY-m.y;
-  const mv=ev=>{ m.x=Math.max(-40,Math.min(ev.clientX-sx, innerWidth-90)); m.y=Math.max(0,Math.min(ev.clientY-sy, innerHeight-STATUS_H-50));
+  const mv=ev=>{ m.x=Math.max(-40,Math.min(ev.clientX-sx, VW()-90)); m.y=Math.max(0,Math.min(ev.clientY-sy, VH()-STATUS_H-50));
     el.style.left=m.x+'px'; el.style.top=m.y+'px'; };
   const up=()=>{ bar.releasePointerCapture(e.pointerId); bar.removeEventListener('pointermove',mv); bar.removeEventListener('pointerup',up); saveMemos(); };
   bar.addEventListener('pointermove',mv); bar.addEventListener('pointerup',up);
@@ -2371,6 +2387,7 @@ document.addEventListener('keydown',e=>{
 });
 addEventListener('resize',()=>{
   const wasCompact=compact;
+  syncZoom();
   if(syncMode()){
     renderGrid();
     if(compact){ wins.forEach(w=>{ if(w.state!=='min') fillArea(w); }); }
