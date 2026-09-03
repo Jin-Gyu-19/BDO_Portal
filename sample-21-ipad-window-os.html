@@ -8,7 +8,7 @@
 <style>
 :root{--red:#E81A3B;--slate:#5B6E7F;--blue:#0062B8;--ok:#1F9D61;--amber:#C77414;
 --ink:#1C1C1E;--txt:#3A3A3C;--txt2:#6C6C70;--txt3:#AEAEB2;--line:#E4E4E9;--line2:#F0F0F3;
---dockH:96px;--statusH:38px;--fz:1.5;   /* 글자 배율 */
+--dockH:96px;--statusH:42px;--fz:1.5;   /* 글자 배율 */
 /* 아이콘 모양 — 정사각형에 모서리만 둥글게 (반지름 23%) */
 --sq:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='23' ry='23' fill='%23000'/%3E%3C/svg%3E");
 --sqmask:var(--sq) center/100% 100% no-repeat}
@@ -88,17 +88,17 @@ transition:transform .35s}
 
 /* ══ 상태 표시줄 ══ */
 .status{position:fixed;top:0;left:0;right:0;height:var(--statusH);display:flex;align-items:center;
-padding:0 18px 0 26px;font-size:calc(12.5px * var(--fz));font-weight:700;z-index:900;color:var(--fg);
+padding:0 18px 0 46px;font-size:calc(12.5px * var(--fz));font-weight:700;z-index:900;color:var(--fg);
 text-shadow:var(--tshadow);pointer-events:none}
 .status .sright{margin-left:auto;display:flex;align-items:center;gap:9px;pointer-events:auto}
 
 /* 왼쪽 브랜드 — BDO 로고 + Portal */
 .status .brand{display:flex;align-items:center;gap:9px;pointer-events:none}
-.status .brand img{height:20px;width:auto;display:block;flex-shrink:0}
-.status .brand span{font-size:calc(13px * var(--fz));font-weight:700;letter-spacing:-0.2px}
-body[data-theme="dark"] .status .brand img{background:#fff;padding:2px 6px;border-radius:5px;height:24px}
-body.phone .status .brand img{height:17px}
-body.phone .status .brand span{font-size:calc(11px * var(--fz))}
+.status .brand img{height:27px;width:auto;display:block;flex-shrink:0}
+.status .brand span{font-size:calc(11.5px * var(--fz));font-weight:700;letter-spacing:-0.2px}
+body[data-theme="dark"] .status .brand img{background:#fff;padding:3px 7px;border-radius:6px;height:32px}
+body.phone .status .brand img{height:21px}
+body.phone .status .brand span{font-size:calc(10px * var(--fz))}
 
 /* 상태 표시줄 (조직명 + 프로필만) */
 .status .sys{font-size:calc(11px * var(--fz));font-weight:700;opacity:.88}
@@ -732,7 +732,7 @@ body.compact .mlist{width:auto;max-height:42%;border-right:none;border-bottom:.5
   body:not(.compact) .hgrid{gap:12px}
 }
 body.compact{touch-action:auto;--dockH:84px}
-body.compact .status{position:sticky;top:0;padding:0 12px 0 16px;white-space:nowrap;
+body.compact .status{position:sticky;top:0;padding:0 12px 0 14px;white-space:nowrap;
 background:var(--pageBg);z-index:900}
 body.compact .dots,body.compact .dockzone,body.compact .homebar{display:none}
 body.phone .status{font-size:calc(10.5px * var(--fz))}
@@ -1834,7 +1834,7 @@ const snapEl=document.getElementById('snap');
 const homeEl=document.getElementById('home');
 const MIN_W=320, MIN_H=220, EDGE=26;
 /* 좁은 화면이면 창이 상태 표시줄과 Dock 사이를 꽉 채운다 */
-const STATUS_H=38;
+const STATUS_H=42;
 const area=()=>compact
   ? {x:0, y:STATUS_H, w:VW(), h:VH()-STATUS_H-84}
   : {x:8, y:STATUS_H+6, w:VW()-16, h:VH()-STATUS_H-6-88};
