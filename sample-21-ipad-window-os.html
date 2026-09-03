@@ -24,8 +24,8 @@ button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
 
 /* ══ 배경 테마 토큰 (기본: 화이트) ══ */
 body{
---pageBg:#E9EBEE;
---wall:#E9EBEE;
+--pageBg:#F2F3F5;
+--wall:#F2F3F5;
 --blob1:transparent;--blob2:transparent;--blob3:transparent;--bs:1;
 --fg:#1C1C1E;--tshadow:none;
 --wgBg:rgba(255,255,255,.86);--wgBorder:rgba(20,30,45,.08);--wgShadow:0 8px 24px rgba(20,30,45,.09);
@@ -97,7 +97,7 @@ transition:transform .17s cubic-bezier(.3,1.4,.5,1)}
 .prof:active{transform:scale(.97)}
 .prof:focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:8px}
 .prof .av{width:24px;height:24px;border-radius:50%;background:linear-gradient(145deg,#FF5A72,var(--red));
-color:#fff;display:flex;align-items:center;justify-content:center;font-size:calc(8px * var(--fz));font-weight:800;
+color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;
 flex-shrink:0;text-shadow:none}
 .prof .nm{font-size:calc(11px * var(--fz));font-weight:700;letter-spacing:-0.08px}
 .prof .sys{margin-right:5px}
@@ -112,7 +112,7 @@ transition:opacity .16s ease,transform .16s cubic-bezier(.2,.9,.3,1.1)}
 .pmenu .card{display:flex;align-items:center;gap:11px;padding:11px 11px 12px;border-bottom:1px solid var(--menuLine);
 margin-bottom:5px}
 .pmenu .card .av{width:38px;height:38px;border-radius:50%;background:linear-gradient(145deg,#FF5A72,var(--red));
-color:#fff;display:flex;align-items:center;justify-content:center;font-size:calc(12px * var(--fz));font-weight:800;flex-shrink:0}
+color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
 .pmenu .card .n{font-size:calc(13.5px * var(--fz));font-weight:800;letter-spacing:-0.12px}
 .pmenu .card .m{font-size:calc(10.5px * var(--fz));opacity:.6;margin-top:2px}
 .pmenu .mi{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border-radius:9px;
@@ -144,11 +144,11 @@ box-shadow:0 10px 30px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:o
 padding:14px 46px 0;z-index:10;transition:transform .38s cubic-bezier(.32,.72,0,1),opacity .3s,filter .38s}
 .home.pushed{transform:scale(.968);opacity:.62;filter:blur(1.2px)}
 .greet{flex-shrink:0}
-.greet h1{font-size:calc(38px * var(--fz));font-weight:700;letter-spacing:-0.64px;text-shadow:var(--tshadow);
+.greet h1{font-size:38px;font-weight:700;letter-spacing:-0.64px;text-shadow:var(--tshadow);
 line-height:1.18;opacity:.74}
 .greet h1 em{font-style:normal;font-weight:900;opacity:1;letter-spacing:-0.76px}
 .greet h1 em .role{font-weight:800;font-size:.82em;letter-spacing:-0.32px;opacity:.86;margin-left:2px}
-.greet p{font-size:calc(15px * var(--fz));opacity:.66;margin-top:7px;letter-spacing:-0.08px}
+.greet p{font-size:15px;opacity:.66;margin-top:7px;letter-spacing:-0.08px}
 
 /* 홈 격자 — 아이콘과 위젯이 같은 칸을 쓴다 (경계 없음, 빈 칸은 빈 칸으로) */
 .hgrid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(var(--cols),1fr);
@@ -201,8 +201,8 @@ opacity:0;transition:opacity .15s;cursor:nwse-resize;touch-action:none}
 background:var(--rszBg);opacity:0;transition:opacity .15s}
 .wg.rz .szl{opacity:1}
 .wg.rz{transform:none;outline:2px solid var(--red);outline-offset:-2px}
-.wg .hd{display:flex;align-items:center;gap:7px;font-size:calc(10px * var(--fz));font-weight:800;letter-spacing:1.1px;opacity:.62;text-transform:uppercase}
-.wg .hd .sq{width:15px;height:15px;border-radius:4.5px;display:flex;align-items:center;justify-content:center;font-size:calc(6.5px * var(--fz));font-weight:900}
+.wg .hd{display:flex;align-items:center;gap:7px;font-size:calc(13px * var(--fz));font-weight:800;letter-spacing:-0.1px;opacity:.85}
+.wg .hd .sq{width:17px;height:17px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:7.5px;font-weight:900}
 .wg.deadline{background:linear-gradient(150deg,#3A4956,#1A2530);color:#fff;
 border-color:rgba(255,255,255,.13);box-shadow:0 10px 28px rgba(16,24,32,.24)}
 .wg.deadline .big{color:#FFB454}
@@ -216,7 +216,7 @@ border-color:rgba(255,255,255,.13);box-shadow:0 10px 28px rgba(16,24,32,.24)}
 .wg .cap b{font-weight:800;opacity:1}
 .plist{margin-top:12px;display:flex;flex-direction:column;gap:11px}
 .pitem{display:grid;grid-template-columns:26px 1fr 38px;gap:10px;align-items:center}
-.pitem .av{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:calc(10px * var(--fz));font-weight:800}
+.pitem .av{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
 .pitem .t{font-size:calc(11.5px * var(--fz));font-weight:700;letter-spacing:-0.08px}
 .pitem .s{font-size:calc(9.5px * var(--fz));opacity:.6;margin-top:2px}
 .pitem .pc{font-size:calc(11px * var(--fz));font-weight:800;text-align:right}
@@ -268,10 +268,10 @@ transition:transform .16s cubic-bezier(.3,1.4,.5,1);background:none;min-width:0}
 .ap .ish{position:relative;width:60px;height:60px;
 filter:drop-shadow(0 6px 12px rgba(14,22,30,.2)) drop-shadow(0 1.5px 3px rgba(14,22,30,.14))}
 .ap .icon{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;
-font-weight:800;font-size:calc(13.5px * var(--fz));letter-spacing:-0.2px;color:#fff;
+font-weight:800;font-size:13.5px;letter-spacing:-0.2px;color:#fff;
 background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,0) 54%),var(--g,#8A9099);
 -webkit-mask:var(--sqmask);mask:var(--sqmask)}
-.ap .icon small{font-size:calc(8px * var(--fz));font-weight:700;opacity:.85;margin-top:2px}
+.ap .icon small{font-size:8px;font-weight:700;opacity:.85;margin-top:2px}
 .ap .ish .bd{position:absolute;top:-7px;right:-8px;min-width:26px;height:26px;border-radius:13px;background:var(--red);
 color:#fff;font-size:calc(10.5px * var(--fz));font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 6px;
 border:1.5px solid rgba(255,255,255,.4);z-index:2}
@@ -330,7 +330,7 @@ body.compact .dockzone{height:28px}
 body.compact.dockhide .homebar{display:block;opacity:1;z-index:795;background:rgba(255,255,255,.85);box-shadow:0 1px 4px rgba(0,0,0,.25)}
 body.dockhide .dockzone{display:block}
 .dk{width:50px;height:50px;display:flex;align-items:center;justify-content:center;
-color:#fff;font-size:calc(11.5px * var(--fz));font-weight:800;letter-spacing:-0.12px;position:relative;cursor:pointer;background:none;
+color:#fff;font-size:11.5px;font-weight:800;letter-spacing:-0.12px;position:relative;cursor:pointer;background:none;
 filter:drop-shadow(0 5px 10px rgba(14,22,30,.22)) drop-shadow(0 1.5px 3px rgba(14,22,30,.16));
 transition:transform .17s cubic-bezier(.3,1.4,.5,1)}
 .dk .dksurf{position:absolute;inset:0;
@@ -340,7 +340,7 @@ background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0) 54%)
 line-height:1.1}
 .dk:hover{transform:translateY(-8px) scale(1.1)}
 .dk:active{transform:translateY(-2px) scale(.96)}
-.dk .dkl small{font-size:calc(7.5px * var(--fz));font-weight:700;opacity:.85;margin-top:1px;display:block}
+.dk .dkl small{font-size:7.5px;font-weight:700;opacity:.85;margin-top:1px;display:block}
 .dk .run{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;
 background:rgba(255,255,255,.92);opacity:0;transition:opacity .2s}
 .dk.on .run{opacity:1}
@@ -379,7 +379,7 @@ border-radius:6px;padding:2px 7px}
 text-align:left;color:var(--fg)}
 .sres:hover,.sres.sel{background:var(--menuHov)}
 .sres .si{width:34px;height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
-font-size:calc(10.5px * var(--fz));font-weight:800;color:#fff;
+font-size:10.5px;font-weight:800;color:#fff;
 background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,0) 54%),var(--g,#8A9099);
 -webkit-mask:var(--sqmask);mask:var(--sqmask)}
 .sres .st{font-size:calc(13.5px * var(--fz));font-weight:700;letter-spacing:-0.12px}
@@ -401,7 +401,7 @@ border:1px solid var(--btnBorder);border-radius:99px;padding:7px 12px;width:260p
 .libhd kbd{font:inherit;font-size:calc(10.5px * var(--fz));font-weight:700;opacity:.45;border:1px solid var(--menuLine);border-radius:6px;padding:2px 7px}
 .libbody{overflow-y:auto;padding:8px 22px 22px}
 .lsec{margin-top:16px}
-.lsec h3{display:flex;align-items:center;gap:7px;font-size:calc(11px * var(--fz));font-weight:800;letter-spacing:1px;opacity:.55;
+.lsec h3{display:flex;align-items:center;gap:7px;font-size:calc(12.5px * var(--fz));font-weight:800;letter-spacing:1px;opacity:.55;
 text-transform:uppercase;margin-bottom:10px}
 .lsec h3 i{width:7px;height:7px;border-radius:50%;display:block}
 .lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
@@ -410,7 +410,7 @@ border:1px solid transparent;transition:background .15s,border-color .15s}
 .lcard:hover{background:var(--menuHov);border-color:var(--menuLine)}
 .lcard.soon .lic{opacity:.45}
 .lcard .lic{width:40px;height:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
-font-size:calc(11px * var(--fz));font-weight:800;color:#fff;
+font-size:11px;font-weight:800;color:#fff;
 background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,0) 54%),var(--g,#8A9099);
 -webkit-mask:var(--sqmask);mask:var(--sqmask);transition:transform .15s}
 .lcard .lic:hover{transform:scale(1.08)}
@@ -427,7 +427,7 @@ border:1px solid var(--btnBorder);background:var(--btnBg);color:var(--fg);opacit
 .libtabs{display:flex;gap:2px;background:var(--btnBg);border-radius:99px;padding:3px;margin-left:8px;flex-shrink:0}
 .libtabs button{font-size:calc(12px * var(--fz));font-weight:700;padding:5px 13px;border-radius:99px;color:var(--fg);opacity:.6;white-space:nowrap}
 .libtabs button.on{background:var(--menuBg);opacity:1;box-shadow:0 1px 4px rgba(14,22,30,.12)}
-.wcard .lic{font-size:calc(14px * var(--fz))}
+.wcard .lic{font-size:14px}
 .lsize{font-size:calc(9.5px * var(--fz));font-weight:800;opacity:.5;margin-left:5px}
 /* 구역 편집 행 */
 .zrow{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:14px;border:1px solid transparent}
@@ -493,7 +493,7 @@ border-bottom:.5px solid var(--line);user-select:none}
 .wtb .tt{display:flex;align-items:center;gap:8px;padding-left:13px;margin-right:auto;pointer-events:none;
 min-width:0;overflow:hidden;white-space:nowrap}
 .wtb .tt .mk{width:18px;height:18px;-webkit-mask:var(--sqmask);mask:var(--sqmask);display:flex;align-items:center;justify-content:center;
-font-size:calc(6.5px * var(--fz));font-weight:900;color:#fff;flex-shrink:0}
+font-size:6.5px;font-weight:900;color:#fff;flex-shrink:0}
 .wtb .tt .n{font-size:calc(12.5px * var(--fz));font-weight:700;color:var(--ink);letter-spacing:-0.12px;
 overflow:hidden;text-overflow:ellipsis}
 .wtb .tt .s{font-size:calc(10.5px * var(--fz));color:var(--txt3);font-weight:600;flex-shrink:0}
@@ -522,7 +522,7 @@ border-left:.5px solid transparent;transition:background .12s,color .12s}
 
 /* ══ 창 내부 공용 UI ══ */
 .pad{padding:20px 22px 26px}
-.h1{font-size:calc(19px * var(--fz));font-weight:800;color:var(--ink);letter-spacing:-0.32px}
+.h1{font-size:calc(21px * var(--fz));font-weight:800;color:var(--ink);letter-spacing:-0.32px}
 .h1 span{color:var(--red)}
 .hsub{font-size:calc(11.5px * var(--fz));color:var(--txt2);margin:5px 0 16px}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin-bottom:18px}
@@ -533,14 +533,14 @@ border-left:.5px solid transparent;transition:background .12s,color .12s}
 .kpi .v small{font-size:calc(10.5px * var(--fz));color:var(--txt3);font-weight:600;margin-left:2px;letter-spacing:0}
 .kpi.w .v{color:var(--red)}
 .sh{display:flex;align-items:center;margin-bottom:9px}
-.sh h3{font-size:calc(12px * var(--fz));font-weight:700;color:var(--ink);letter-spacing:-0.12px}
+.sh h3{font-size:calc(14.5px * var(--fz));font-weight:700;color:var(--ink);letter-spacing:-0.12px}
 .sh a{margin-left:auto;font-size:calc(10.5px * var(--fz));color:var(--blue);font-weight:600;text-decoration:none}
 .rows{border:.5px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:16px}
 .rows .r{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:10px 13px;
 border-bottom:.5px solid var(--line2)}
 .rows .r:last-child{border-bottom:none}
 .rows .r:hover{background:#FAFAFC}
-.r .av{width:28px;height:28px;border-radius:9px;color:#fff;font-size:calc(10.5px * var(--fz));font-weight:800;
+.r .av{width:28px;height:28px;border-radius:9px;color:#fff;font-size:10.5px;font-weight:800;
 display:flex;align-items:center;justify-content:center}
 .r .t{font-size:calc(12px * var(--fz));font-weight:700;color:var(--ink);letter-spacing:-0.08px}
 .r .m{font-size:calc(10px * var(--fz));color:var(--txt3);margin-top:2px}
@@ -566,7 +566,7 @@ padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:16px}
 .empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
 color:var(--txt3);padding:40px}
 .empty .bigicon{width:64px;height:64px;-webkit-mask:var(--sqmask);mask:var(--sqmask);display:flex;align-items:center;justify-content:center;
-font-size:calc(15px * var(--fz));font-weight:800;color:#fff;opacity:.6}
+font-size:15px;font-weight:800;color:#fff;opacity:.6}
 .empty .t{font-size:calc(14px * var(--fz));font-weight:700;color:var(--txt2)}
 .empty .d{font-size:calc(11.5px * var(--fz));text-align:center;line-height:1.6;max-width:280px}
 /* 설정 창 */
@@ -578,7 +578,7 @@ display:flex;flex-direction:column;gap:2px;transition:border-color .15s,box-shad
 .thc .pv{height:56px;border-radius:10px;corner-shape:squircle;margin-bottom:7px;border:.5px solid rgba(0,0,0,.08)}
 .thc .tn2{font-size:calc(12.5px * var(--fz));font-weight:700;color:var(--ink)}
 .thc .td{font-size:calc(10.5px * var(--fz));color:var(--txt3)}
-.pv.gray,.sw.gray{background:#E9EBEE}
+.pv.gray,.sw.gray{background:#F2F3F5;border:.5px solid rgba(0,0,0,.08)}
 .pv.light,.sw.light{background:radial-gradient(70% 90% at 20% 0%,rgba(232,26,59,.34),rgba(232,26,59,0) 62%),
 radial-gradient(70% 90% at 95% 40%,rgba(0,98,184,.3),rgba(0,98,184,0) 62%),linear-gradient(150deg,#FFFFFF,#E3EAF1)}
 .pv.soft,.sw.soft{background:radial-gradient(70% 90% at 20% 0%,rgba(232,26,59,.12),rgba(232,26,59,0) 62%),
@@ -594,34 +594,43 @@ background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 .swt.off{background:#E1E1E6}
 .swt.off::after{right:auto;left:2px}
 
-/* 메모 */
-.memo{display:flex;height:100%;min-height:0}
-.mlist{width:300px;flex-shrink:0;border-right:.5px solid var(--line);display:flex;flex-direction:column;background:#FAFAFB;min-height:0}
-.mhd{display:flex;align-items:center;gap:8px;padding:12px 12px 10px 16px;border-bottom:.5px solid var(--line)}
-.mhd b{font-size:calc(13px * var(--fz));color:var(--ink);font-weight:800}
-.mhd .mcnt{font-size:calc(10.5px * var(--fz));color:var(--txt3);font-weight:700}
-.mnew{margin-left:auto;font-size:calc(10.5px * var(--fz));font-weight:700;color:#fff;background:var(--red);padding:6px 11px;border-radius:99px}
-.mitems{overflow-y:auto;flex:1;padding:6px}
-.mi2{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:12px;color:var(--txt)}
-.mi2:hover{background:#F1F2F5}
-.mi2.on{background:#fff;box-shadow:inset 3px 0 0 var(--red),0 1px 4px rgba(0,0,0,.06)}
-.mi2 .mt{display:block;font-size:calc(12px * var(--fz));font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mi2 .ms{display:block;font-size:calc(10px * var(--fz));color:var(--txt3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mi2 .ms .tn{color:var(--txt2);font-weight:700;margin-right:4px}
-.medit{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0}
-.mtool{display:flex;align-items:center;padding:10px 16px;border-bottom:.5px solid var(--line2);font-size:calc(10.5px * var(--fz));color:var(--txt3)}
-.mdel{margin-left:auto;font-size:calc(10.5px * var(--fz));font-weight:700;color:var(--red);padding:5px 10px;border-radius:8px}
-.mdel:hover{background:#FDECEF}
-.mdel[disabled]{opacity:.35;pointer-events:none}
-.medit textarea{flex:1;border:none;outline:none;resize:none;padding:18px 20px 24px;font:inherit;font-size:calc(13px * var(--fz));
-line-height:1.7;color:var(--ink);background:#fff;min-height:0}
-.medit textarea::placeholder{color:var(--txt3)}
-.mempty{padding:20px 14px;text-align:center;font-size:calc(11px * var(--fz));color:var(--txt3)}
-.wg .mlines{margin-top:9px;display:flex;flex-direction:column;gap:2px}
-.wg .mlines .drow .dd{min-width:44px;opacity:.6}
-.wg .mempty{padding:14px 0;text-align:left;color:inherit;opacity:.6}
-body.compact .memo{flex-direction:column}
-body.compact .mlist{width:auto;max-height:38%;border-right:none;border-bottom:.5px solid var(--line)}
+/* 스티커 메모 — 배경 위에 붙는 포스트잇. 창 뒤, 홈 위 */
+.stickies{position:fixed;inset:var(--statusH) 0 0 0;z-index:50;display:none;pointer-events:none}
+.stickies.on{display:block}
+.stool{display:none}
+.stky{position:absolute;width:264px;min-height:224px;display:flex;flex-direction:column;pointer-events:auto;
+background:var(--sc,#FFF59D);color:#3A3100;border-radius:3px 3px 18px 3px;
+box-shadow:0 12px 26px rgba(60,45,0,.18),0 2px 4px rgba(0,0,0,.08);transform:rotate(var(--rot,0deg));
+transition:box-shadow .15s,transform .15s}
+.stky.top{box-shadow:0 20px 44px rgba(60,45,0,.26),0 2px 6px rgba(0,0,0,.1)}
+.stky::after{content:'';position:absolute;right:0;bottom:0;width:30px;height:30px;border-radius:0 0 18px 0;
+background:linear-gradient(135deg,transparent 50%,rgba(0,0,0,.06) 50%,rgba(0,0,0,.15));pointer-events:none}
+.sbar{height:32px;display:flex;align-items:center;gap:5px;padding:0 6px 0 6px;background:rgba(0,0,0,.07);cursor:grab;
+border-radius:3px 3px 0 0;user-select:none;flex-shrink:0}
+.sbar:active{cursor:grabbing}
+.sbar .sb{width:26px;height:26px;border-radius:8px;font-size:18px;font-weight:800;color:rgba(0,0,0,.5);
+display:flex;align-items:center;justify-content:center;line-height:1}
+.sbar .sb:hover{background:rgba(0,0,0,.1);color:#000}
+.sbar .scol{display:flex;gap:5px;margin-left:auto;margin-right:2px}
+.sbar .scol button{width:13px;height:13px;border-radius:50%;border:1.5px solid rgba(0,0,0,.15);padding:0}
+.sbar .scol button.on{border-color:rgba(0,0,0,.65)}
+.stxt{flex:1;border:none;outline:none;resize:none;background:none;padding:12px 15px 6px;font:inherit;
+font-size:calc(12.5px * var(--fz));line-height:1.6;color:inherit;min-height:120px}
+.stxt::placeholder{color:rgba(0,0,0,.35)}
+.sft{display:flex;align-items:center;padding:2px 14px 9px;font-size:calc(9.5px * var(--fz));color:rgba(0,0,0,.45)}
+.sft button{margin-left:auto;font-size:calc(9.5px * var(--fz));font-weight:700;color:rgba(0,0,0,.5);padding:3px 8px;border-radius:6px}
+.sft button:hover{background:rgba(0,0,0,.08);color:#B3261E}
+body[data-theme="dark"] .stky{box-shadow:0 12px 26px rgba(0,0,0,.4)}
+/* 좁은 화면: 반투명 판 위에 세로로 쌓인 메모 목록 */
+body.compact .stickies.on{pointer-events:auto;background:rgba(20,24,30,.3);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+overflow-y:auto;padding:12px 12px 110px}
+body.compact .stool{display:flex;align-items:center;gap:8px;padding:4px 4px 12px;color:#fff;font-size:calc(12px * var(--fz));font-weight:800}
+body.compact .stool .tn{opacity:.7;font-weight:700}
+body.compact .stool button{font-size:calc(10.5px * var(--fz));font-weight:700;padding:6px 12px;border-radius:99px;background:rgba(255,255,255,.18);color:#fff}
+body.compact .stool button:first-of-type{margin-left:auto;background:#fff;color:#1C1C1E}
+body.compact .stky{position:static;width:auto;margin:0 0 12px;transform:none;min-height:0}
+body.compact .stxt{min-height:80px}
+body.compact .sbar{cursor:default}
 /* 채팅 */
 .chatwrap{display:flex;flex-direction:column;height:100%}
 .chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:#FAFAFB}
@@ -661,8 +670,8 @@ body.compact .mlist{width:auto;max-height:38%;border-right:none;border-bottom:.5
 /* 넓지만 낮은 화면(노트북)에서는 인사말을 줄여 격자 칸 높이를 확보한다 */
 @media (max-height:840px){
   body:not(.compact) .home{padding-top:6px;gap:6px}
-  body:not(.compact) .greet h1{font-size:calc(24px * var(--fz));letter-spacing:-0.4px;line-height:1.15}
-  body:not(.compact) .greet p{display:none}
+  body:not(.compact) .greet h1{font-size:30px;letter-spacing:-0.4px;line-height:1.15}
+  body:not(.compact) .greet p{font-size:13px;margin-top:3px}
   body:not(.compact) .hgrid{gap:12px}
 }
 body.compact{touch-action:auto;--dockH:84px}
@@ -676,10 +685,10 @@ overscroll-behavior:contain;scrollbar-width:none}
 body.compact .home::-webkit-scrollbar{display:none}
 body.compact .home.pushed{transform:none;filter:none}
 body.compact .greet{padding:4px 2px 2px}
-body.compact .greet h1{font-size:calc(21px * var(--fz));letter-spacing:-0.4px;line-height:1.22;word-break:keep-all}
+body.compact .greet h1{font-size:26px;letter-spacing:-0.4px;line-height:1.22;word-break:keep-all}
 body.compact .greet h1 em{letter-spacing:-0.44px}
 body.compact .greet h1 em .role{font-size:.8em}
-body.compact .greet p{font-size:calc(12px * var(--fz));margin-top:4px;line-height:1.5}
+body.compact .greet p{font-size:12.5px;margin-top:4px;line-height:1.5}
 body.phone .greet p{display:none}
 body.compact .hgrid{flex:none;display:grid;grid-template-columns:repeat(var(--mc),1fr);grid-template-rows:none;
 grid-auto-rows:auto;grid-auto-flow:row dense;gap:12px 10px;padding:8px 0 6px;align-items:stretch}
@@ -706,16 +715,16 @@ body.compact .mzapps:empty::after{content:'앱 없음 — 홈에 추가에서 �
 body.compact .hgrid .ap{padding:4px 2px;gap:5px;border-radius:14px;margin-top:0;align-self:start}
 body.compact .ap:hover{transform:none}
 body.compact .ap .ish{width:54px;height:54px}
-body.compact .ap .icon{font-size:calc(12.5px * var(--fz))}
+body.compact .ap .icon{font-size:12.5px}
 body.compact .ap .nm{font-size:calc(9.5px * var(--fz));max-width:86px}
 body.phone .ap .nm{font-size:calc(8.5px * var(--fz));max-width:84px}
 /* Dock: 탭 바처럼 항상 보이고, 항목이 많으면 가로로 넘긴다 */
 body.compact .dock{bottom:calc(12px + env(safe-area-inset-bottom,0px));gap:10px;padding:6px 8px;
 max-width:calc(100vw - 16px);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
 body.compact .dock::-webkit-scrollbar{display:none}
-body.compact .dk{width:44px;height:44px;font-size:calc(10.5px * var(--fz));flex-shrink:0}
+body.compact .dk{width:44px;height:44px;font-size:10.5px;flex-shrink:0}
 body.phone .dock{gap:8px}
-body.phone .dk{width:40px;height:40px;font-size:calc(9.5px * var(--fz))}
+body.phone .dk{width:40px;height:40px;font-size:9.5px}
 body.compact .dk .tip{display:none}
 body.compact .dsep{height:28px}
 body.compact .dots{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
@@ -856,6 +865,12 @@ body.compact .cmenu button{padding:10px 12px;font-size:calc(13.5px * var(--fz))}
   <button class="mi out" data-mact="logout">
     <svg class="ic" viewBox="0 0 24 24"><path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>로그아웃</button>
 </div>
+<!-- 스티커 메모 (포스트잇) -->
+<div class="stickies" id="stickies">
+  <div class="stool"><b>메모</b><span class="tn" id="stCnt"></span>
+    <button data-sact="new">+ 새 메모</button><button data-sact="hide">닫기</button></div>
+  <div class="sboard" id="sboard"></div>
+</div>
 <div class="toast" id="toast"></div>
 <div class="cmenu" id="cmenu"></div>
 
@@ -867,16 +882,16 @@ const LKEY='sh-portal:'+USER.id+':v5';
 /* ══════════ 메모 (계정별로 이 브라우저에 자동 저장) ══════════ */
 const MKEY='sh-portal:memo:'+USER.id;
 const MEMO_SEED=[
-  {id:'m1', t:'알파테크 매출 절사 테스트\n12/28~31 표본 3건 — 인도조건 확인 필요, 검수확인서 1건 미비', ts:Date.now()-3600e3*5},
-  {id:'m2', t:'4/15 파트너 월례회의 안건\n- ISQM1 보고서 진행 상황\n- 상반기 필수 교육 이수율\n- 신규 수임 검토 2건', ts:Date.now()-86400e3*2},
-  {id:'m3', t:'감마물산 현장 종료 전 확인\n재고 실사 차이 조정, 우발부채 질문서 회신', ts:Date.now()-86400e3*4}
+  {id:'m1', t:'알파테크 매출 절사 테스트\n12/28~31 표본 3건 — 인도조건 확인 필요, 검수확인서 1건 미비', ts:Date.now()-3600e3*5, c:'y'},
+  {id:'m2', t:'4/15 파트너 월례회의 안건\n- ISQM1 보고서 진행 상황\n- 상반기 필수 교육 이수율\n- 신규 수임 검토 2건', ts:Date.now()-86400e3*2, c:'b'},
+  {id:'m3', t:'감마물산 현장 종료 전 확인\n재고 실사 차이 조정, 우발부채 질문서 회신', ts:Date.now()-86400e3*4, c:'p'}
 ];
-let memos=[], memoCur=null;
+let memos=[];
 function loadMemos(){
   try{ const o=JSON.parse(localStorage.getItem(MKEY)||'null');
-    if(Array.isArray(o)) memos=o.filter(m=>m&&typeof m.id==='string'&&typeof m.t==='string'&&Number.isFinite(m.ts)).slice(0,300); }catch(e){}
+    if(Array.isArray(o)) memos=o.filter(m=>m&&typeof m.id==='string'&&typeof m.t==='string'&&Number.isFinite(m.ts))
+      .map(m=>({id:m.id,t:m.t,ts:m.ts,c:m.c,x:m.x,y:m.y,z:m.z,open:m.open!==false})).slice(0,300); }catch(e){}
   if(!memos.length && localStorage.getItem(MKEY)===null) memos=MEMO_SEED.map(m=>({...m}));
-  memoCur=memos[0]?memos[0].id:null;
 }
 function saveMemos(){ try{ localStorage.setItem(MKEY,JSON.stringify(memos)); }catch(e){} }
 const esc=t=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -888,7 +903,7 @@ const fmtMemoTs=ts=>{ const d=new Date(ts), now=new Date();
 const sortedMemos=()=>[...memos].sort((a,b)=>b.ts-a.ts);
 function memoLines(){
   const ms=sortedMemos().slice(0,5);
-  if(!ms.length) return '<div class="mempty">메모가 없습니다. 눌러서 첫 메모를 적어 보세요</div>';
+  if(!ms.length) return '<div class="mempty">메모가 없습니다. 눌러서 첫 메모를 붙여 보세요</div>';
   return ms.map(m=>`<div class="drow"><span class="dd tn">${fmtMemoTs(m.ts)}</span><span class="t">${memoTitle(m)}</span></div>`).join('');
 }
 loadMemos();
@@ -1108,17 +1123,7 @@ const APPS = {
   efile:{name:'전자신고', sub:'홈택스 연동', short:'신고', bg:G.gray, soon:1, w:520, h:380},
   valu:{name:'가치평가', sub:'예정', short:'VAL', bg:G.gray, soon:1, w:520, h:380},
   hr:{name:'인사 · 근태', sub:'예정', short:'HR', bg:G.gray, soon:1, w:520, h:380},
-  memo:{name:'메모', sub:'내 메모 · 자동 저장', short:'메모', bg:G.memo, fg:'#5A3E05', w:760, h:520, body:()=>`
-    <div class="memo">
-      <aside class="mlist">
-        <div class="mhd"><b>메모</b><span class="mcnt tn" id="memoCnt"></span><button class="mnew" data-memo="new">+ 새 메모</button></div>
-        <div class="mitems" id="memoList"></div>
-      </aside>
-      <section class="medit">
-        <div class="mtool"><span id="memoMeta"></span><button class="mdel" data-memo="del">삭제</button></div>
-        <textarea id="memoText" placeholder="여기에 메모를 적으세요. 첫 줄이 제목이 됩니다." spellcheck="false"></textarea>
-      </section>
-    </div>`},
+  memo:{name:'메모', sub:'스티커 메모 · 자동 저장', short:'메모', bg:G.memo, fg:'#5A3E05'},
   settings:{name:'설정', sub:USER.firm, short:'설정', bg:G.set, w:640, h:560, body:()=>`
     <div class="pad">
       <div class="h1">설정<span>.</span></div>
@@ -1289,10 +1294,10 @@ function contentScale(id,cols){
 }
 
 const iconFace = id => id==='cal'
-  ? '<div style="font-size:calc(8px * var(--fz));font-weight:800;color:#E81A3B">4월</div><div class="tn" style="font-size:calc(22px * var(--fz));font-weight:800;line-height:1.05">5</div>'
+  ? '<div style="font-size:8px;font-weight:800;color:#E81A3B">4월</div><div class="tn" style="font-size:22px;font-weight:800;line-height:1.05">5</div>'
   : APPS[id].short+(id==='ai'?'<small>칼</small>':'');
 const dockFace = id => id==='cal'
-  ? '<span style="font-size:calc(7px * var(--fz));font-weight:800;color:#E81A3B">4월</span><span class="tn" style="font-size:calc(16px * var(--fz));line-height:1">5</span>'
+  ? '<span style="font-size:7px;font-weight:800;color:#E81A3B">4월</span><span class="tn" style="font-size:16px;line-height:1">5</span>'
   : APPS[id].short+(id==='ai'?'<small>칼</small>':'');
 
 function makeItem(o){
@@ -1669,7 +1674,7 @@ function syncHome(){
   homeEl.classList.toggle('pushed',open);
 }
 function markDock(){
-  document.querySelectorAll('[data-dock]').forEach(d=>d.classList.toggle('on', wins.has(d.dataset.dock)));
+  document.querySelectorAll('[data-dock]').forEach(d=>d.classList.toggle('on', d.dataset.dock==='memo'?stickiesOn:wins.has(d.dataset.dock)));
 }
 /* 최대화 시 Dock 감추기, 창이 2개 이상일 때 4분할 버튼 노출 */
 /* 창을 작업 영역에 꽉 채운다 (compact 전용, 이전 크기는 넓은 화면으로 돌아갈 때 복원) */
@@ -1700,6 +1705,7 @@ function focusTop(){
 }
 function openApp(id){
   const a=APPS[id]; if(!a) return;
+  if(id==='memo'){ toggleStickies(); return; }   /* 메모는 창이 아니라 스티커 */
   if(wins.has(id)){
     const w=wins.get(id);
     if(w.state==='min'){ w.el.style.display='flex'; w.el.classList.remove('min'); w.state='normal'; }
@@ -1731,7 +1737,6 @@ function openApp(id){
     ${['n','s','w','e','nw','ne','sw','se'].map(d=>`<div class="rs ${d}" data-rs="${d}"></div>`).join('')}`;
   document.body.appendChild(el);
   syncThemeUI();                              /* 설정 창의 배경 카드 선택 상태 반영 */
-  if(id==='memo') paintMemo();
   wins.set(id,{el,state:'normal',restore:null});
   if(compact) fillArea(wins.get(id));         /* 좁은 화면에서는 전체 화면 시트로 */
   bindWindow(id,el);
@@ -2262,47 +2267,81 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ menu(false); closeSpot(); closeLib(); } });
 
-/* ══════════ 메모 창 동작 ══════════ */
-function paintMemoWidget(){
-  document.querySelectorAll('.wg[data-id="memo"] .mlines').forEach(el=>el.innerHTML=memoLines());
+/* ══════════ 스티커 메모 동작 ══════════ */
+const STK_COLORS={y:'#FFF59D',p:'#FBC8D9',g:'#CFF0C8',b:'#CFE5FF',o:'#FFD9A8'};
+const stk=document.getElementById('stickies'), sboard=document.getElementById('sboard');
+let stickiesOn=false, stkZ=1;
+const stkRot=id=>{ let h=0; for(const ch of id) h=(h*31+ch.charCodeAt(0))>>>0; return ((h%5)-2)*0.5; };
+const openMemos=()=>sortedMemos().filter(m=>m.open!==false);
+function showStickies(){ stickiesOn=true; stk.classList.add('on'); paintStickies(); markDock(); if(!openMemos().length) newSticky(); }
+function hideStickies(){ stickiesOn=false; stk.classList.remove('on'); markDock(); }
+function toggleStickies(){ stickiesOn?hideStickies():showStickies(); }
+function paintMemoWidget(){ document.querySelectorAll('.wg[data-id="memo"] .mlines').forEach(el=>el.innerHTML=memoLines()); }
+function stickyPos(m,i){
+  if(!Number.isFinite(m.x)||!Number.isFinite(m.y)){ m.x=Math.max(16,innerWidth-300-i*34); m.y=70+i*46; }
+  m.x=Math.min(Math.max(-40,m.x),Math.max(0,innerWidth-90)); m.y=Math.min(Math.max(0,m.y),Math.max(0,innerHeight-STATUS_H-50));
 }
-function paintMemo(){
-  const list=document.getElementById('memoList'); if(!list) return;
-  const ta=document.getElementById('memoText'), meta=document.getElementById('memoMeta'), cnt=document.getElementById('memoCnt');
-  const ms=sortedMemos();
-  cnt.textContent=ms.length;
-  list.innerHTML=ms.length?ms.map(m=>`<button class="mi2${m.id===memoCur?' on':''}" data-mid="${m.id}">
-      <span class="mt">${memoTitle(m)}</span><span class="ms"><span class="tn">${fmtMemoTs(m.ts)}</span> ${memoBody(m)}</span></button>`).join('')
-    :'<div class="mempty">메모가 없습니다</div>';
-  const cur=memos.find(m=>m.id===memoCur);
-  if(ta.dataset.mid!==(cur?cur.id:'')){ ta.dataset.mid=cur?cur.id:''; ta.value=cur?cur.t:''; }
-  ta.disabled=!cur;
-  meta.textContent=cur?'마지막 수정 '+new Date(cur.ts).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  document.querySelector('.memo .mdel')?.toggleAttribute('disabled',!cur);
+function paintStickies(){
+  const open=openMemos();
+  document.getElementById('stCnt').textContent=open.length;
+  stkZ=Math.max(stkZ,...open.map(m=>m.z||1));
+  sboard.innerHTML='';
+  open.forEach((m,i)=>{
+    stickyPos(m,i);
+    const el=document.createElement('div'); el.className='stky'; el.dataset.sid=m.id;
+    el.style.cssText=`left:${m.x}px;top:${m.y}px;--sc:${STK_COLORS[m.c]||STK_COLORS.y};--rot:${stkRot(m.id)}deg;z-index:${m.z||1}`;
+    el.innerHTML=`<div class="sbar"><button class="sb" data-sact="new" title="새 메모">+</button>
+      <span class="scol">${Object.entries(STK_COLORS).map(([k,c])=>`<button data-scolor="${k}" class="${(m.c||'y')===k?'on':''}" style="background:${c}" title="색 바꾸기"></button>`).join('')}</span>
+      <button class="sb" data-sact="close" title="닫기 (메모는 남아요)">×</button></div>
+      <textarea class="stxt" placeholder="메모를 적으세요…" spellcheck="false">${esc(m.t)}</textarea>
+      <div class="sft"><span class="tn">${fmtMemoTs(m.ts)}</span><button data-sact="del">삭제</button></div>`;
+    sboard.appendChild(el);
+  });
 }
-function newMemo(){
-  const m={id:'m'+Date.now().toString(36), t:'', ts:Date.now()};
-  memos.unshift(m); memoCur=m.id; saveMemos(); paintMemo(); paintMemoWidget();
-  setTimeout(()=>document.getElementById('memoText')?.focus(),30);
+function newSticky(from){
+  const m={id:'m'+Date.now().toString(36), t:'', ts:Date.now(), c:from?(from.c||'y'):'y', open:true, z:++stkZ};
+  if(from&&Number.isFinite(from.x)){ m.x=from.x+30; m.y=from.y+30; }
+  memos.unshift(m); saveMemos(); paintStickies(); paintMemoWidget();
+  setTimeout(()=>sboard.querySelector(`[data-sid="${m.id}"] .stxt`)?.focus(),30);
 }
-function delMemo(){
-  const cur=memos.find(m=>m.id===memoCur); if(!cur) return;
-  memos=memos.filter(m=>m!==cur); memoCur=sortedMemos()[0]?.id||null;
-  saveMemos(); paintMemo(); paintMemoWidget(); toast('메모를 삭제했습니다');
-}
-let memoSaveT;
-document.addEventListener('input',e=>{
-  if(e.target.id!=='memoText') return;
-  const cur=memos.find(m=>m.id===memoCur); if(!cur) return;
-  cur.t=e.target.value; cur.ts=Date.now();
-  clearTimeout(memoSaveT);
-  memoSaveT=setTimeout(()=>{ saveMemos(); paintMemo(); paintMemoWidget(); },400);
+const stickyOf=el=>{ const n=el.closest('.stky'); return n?memos.find(m=>m.id===n.dataset.sid):null; };
+sboard.addEventListener('click',e=>{
+  const m=stickyOf(e.target); if(!m) return;
+  const c=e.target.closest('[data-scolor]');
+  if(c){ m.c=c.dataset.scolor; saveMemos(); paintStickies(); return; }
+  const a=e.target.closest('[data-sact]'); if(!a) return;
+  if(a.dataset.sact==='new') newSticky(m);
+  else if(a.dataset.sact==='close'){ m.open=false; saveMemos(); paintStickies(); if(!openMemos().length) hideStickies(); }
+  else if(a.dataset.sact==='del'){ memos=memos.filter(x=>x!==m); saveMemos(); paintStickies(); paintMemoWidget();
+    toast('메모를 삭제했습니다'); if(!openMemos().length) hideStickies(); }
 });
-document.addEventListener('click',e=>{
-  const a=e.target.closest('[data-memo]');
-  if(a){ a.dataset.memo==='new'?newMemo():delMemo(); return; }
-  const it=e.target.closest('[data-mid]');
-  if(it){ memoCur=it.dataset.mid; paintMemo(); }
+stk.addEventListener('click',e=>{
+  const a=e.target.closest('.stool [data-sact]');
+  if(a){ a.dataset.sact==='new'?newSticky():hideStickies(); return; }
+  if(compact && !e.target.closest('.stky,.stool')) hideStickies();
+});
+let stkSaveT;
+sboard.addEventListener('input',e=>{
+  if(!e.target.classList.contains('stxt')) return;
+  const m=stickyOf(e.target); if(!m) return;
+  m.t=e.target.value; m.ts=Date.now();
+  clearTimeout(stkSaveT);
+  stkSaveT=setTimeout(()=>{ saveMemos(); paintMemoWidget();
+    const t=e.target.closest('.stky')?.querySelector('.sft .tn'); if(t) t.textContent=fmtMemoTs(m.ts); },400);
+});
+/* 누르면 맨 앞으로, 윗줄을 잡고 끌면 이동 */
+sboard.addEventListener('pointerdown',e=>{
+  const el=e.target.closest('.stky'); if(!el) return;
+  const m=memos.find(x=>x.id===el.dataset.sid); if(!m) return;
+  m.z=++stkZ; el.style.zIndex=m.z;
+  sboard.querySelectorAll('.stky.top').forEach(n=>n.classList.remove('top')); el.classList.add('top');
+  const bar=e.target.closest('.sbar'); if(!bar||e.target.closest('button')||compact) return;
+  e.preventDefault(); bar.setPointerCapture(e.pointerId);
+  const sx=e.clientX-m.x, sy=e.clientY-m.y;
+  const mv=ev=>{ m.x=Math.max(-40,Math.min(ev.clientX-sx, innerWidth-90)); m.y=Math.max(0,Math.min(ev.clientY-sy, innerHeight-STATUS_H-50));
+    el.style.left=m.x+'px'; el.style.top=m.y+'px'; };
+  const up=()=>{ bar.releasePointerCapture(e.pointerId); bar.removeEventListener('pointermove',mv); bar.removeEventListener('pointerup',up); saveMemos(); };
+  bar.addEventListener('pointermove',mv); bar.addEventListener('pointerup',up);
 });
 
 /* ══════════ 이벤트 ══════════ */
@@ -2317,6 +2356,7 @@ document.addEventListener('click',e=>{
   }
 });
 document.addEventListener('keydown',e=>{
+  if(e.key==='Escape' && e.target.closest && e.target.closest('.stxt')){ e.target.blur(); return; }
   if((e.metaKey||e.ctrlKey)&&(e.key==='k'||e.key==='K')){
     e.preventDefault(); spotOpen()?closeSpot():openSpot(); return; }
   if(spotOpen()||libOpen()) return;            /* 검색·서랍 중에는 창 단축키를 막는다 */
