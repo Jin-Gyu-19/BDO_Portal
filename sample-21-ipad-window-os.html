@@ -729,7 +729,7 @@ body.compact .mlist{width:auto;max-height:42%;border-right:none;border-bottom:.5
   body:not(.compact) .greet p{font-size:13px;margin-top:3px}
   body:not(.compact) .hgrid{gap:12px}
 }
-body.compact{touch-action:auto;--dockH:94px}
+body.compact{touch-action:auto;--dockH:82px}
 body.compact .status{position:sticky;top:0;padding:0 12px 0 14px;white-space:nowrap;
 background:var(--pageBg);z-index:900}
 body.compact .dots,body.compact .dockzone,body.compact .homebar{display:none}
@@ -779,9 +779,15 @@ body.phone .ap .nm{font-size:calc(8.5px * var(--fz));max-width:84px}
 /* Dock: 탭 바처럼 항상 보이고, 항목이 많으면 가로로 넘긴다 */
 /* Dock도 흐름 안에서 아래에 달라붙는다 — 스크롤되는 환경에서는 고정처럼, 아니면 문서 맨 아래에 */
 /* --vvb: 앱 웹뷰의 하단 바가 뷰포트를 가리는 높이(JS가 visualViewport로 계산) — 그만큼 Dock을 더 올린다 */
-body.compact .dock{position:sticky;left:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));
-transform:none;margin:6px auto calc(16px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));width:max-content;
-gap:10px;padding:10px 8px 12px;max-width:calc(100vw - 16px);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+/* 화면 폭 전체를 차지하고 위쪽이 바탕색으로 서서히 번지는 띠 — 스크롤 중 아래로 지나가는 아이콘·글자가 Dock과 겹쳐 보이지 않는다 */
+body.compact .dock{position:sticky;left:0;bottom:0;
+transform:none;margin:6px 0 0;width:100%;max-width:none;
+gap:10px;padding:18px 8px calc(16px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));
+background:linear-gradient(to top,var(--pageBg) 0,var(--pageBg) calc(100% - 22px),transparent 100%);
+overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+/* 가운데 정렬하되 항목이 넘치면 왼쪽부터 가로로 넘길 수 있게 */
+body.compact .dock>:first-child{margin-left:auto}
+body.compact .dock>:last-child{margin-right:auto}
 body.compact.dockhide .dock{transform:none}
 body.compact .dock::-webkit-scrollbar{display:none}
 body.compact .dk{width:44px;height:44px;font-size:10.5px;flex-shrink:0}
@@ -886,9 +892,9 @@ font-size:calc(11.5px * var(--fz));color:var(--ink);outline:none;transition:back
 .msg.typing i:nth-child(2){animation-delay:.16s}.msg.typing i:nth-child(3){animation-delay:.32s}
 @keyframes kdots{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
 /* 좁은 화면: Dock 위쪽에 버튼을 두고, 대화창은 좌우를 채운다 */
-body.compact .kalfab{right:14px;bottom:calc(var(--dockH) + 14px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));width:54px;height:54px}
+body.compact .kalfab{right:14px;bottom:calc(var(--dockH) + 10px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));width:54px;height:54px}
 body.compact .kalfab .ktip{display:none}
-body.compact .kal{right:10px;bottom:calc(var(--dockH) + 78px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));
+body.compact .kal{right:10px;bottom:calc(var(--dockH) + 74px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));
 width:min(420px,calc(100vw - 20px));height:min(560px,calc(100vh - var(--statusH) - var(--dockH) - 96px));transform-origin:calc(100% - 27px) calc(100% + 40px)}
 body.phone .kal{left:10px;width:auto}
 </style>
