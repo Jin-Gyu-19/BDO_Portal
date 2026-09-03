@@ -922,13 +922,7 @@ font-size:calc(11.5px * var(--fz));color:var(--ink);outline:none;transition:back
 /* 좁은 화면: Dock 위쪽에 버튼을 두고, 대화창은 좌우를 채운다 */
 body.compact .kalfab{right:10px;bottom:calc(var(--dockH) + 6px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));width:76px;height:76px}
 body.compact .kalfab .kdot{top:14px}
-/* 숨기기: 버튼 위에 마우스를 올리면 왼쪽 위에 × 배지, 대화창 머리에도 숨기기 버튼. 숨기면 오른쪽 가장자리에 로봇이 빼꼼 남는다 */
-.kalfab .kh8{position:absolute;top:4px;left:0;width:24px;height:24px;border-radius:50%;background:#fff;color:#3A3A3C;
-box-shadow:0 2px 8px rgba(0,0,0,.22);display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.6);
-transition:opacity .15s,transform .15s;cursor:pointer}
-.kalfab .kh8 .ic{width:12px;height:12px;stroke-width:2.6}
-.kalfab:hover .kh8,.kalfab:focus-visible .kh8{opacity:1;transform:none}
-.kalfab.on .kh8{display:none}
+/* 숨기기: 버튼을 우클릭(터치는 길게 누르기)하면 메뉴에 숨기기, 대화창 머리에도 숨기기 버튼. 숨기면 오른쪽 가장자리에 로봇이 빼꼼 남는다 */
 body.kalhide .kalfab,body.kalhide .kal{display:none}
 .kalpeek{position:fixed;right:0;bottom:calc(34px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));z-index:860;
 width:38px;height:66px;padding:0;border-radius:18px 0 0 18px;background:#1C1F27;cursor:pointer;display:none;overflow:hidden;
@@ -1078,7 +1072,6 @@ body.phone .kal{left:10px;width:auto}
   <span class="kx"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
   <span class="kdot"></span>
   <span class="ktip">AI 칼에게 물어보기</span>
-  <span class="kh8" data-kact="hide" title="버튼 숨기기" role="button" aria-label="칼 버튼 숨기기"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></span>
 </button>
 <button class="kalpeek" id="kalpeek" aria-label="AI Assistant 칼 다시 보이기" title="AI 칼 다시 보이기"><span class="kp" id="kalPeekFace"></span></button>
 
@@ -2596,6 +2589,9 @@ cmenu.addEventListener('click',e=>{
   const act=b.dataset.cact, t=cmTarget; closeCmenu();
   if(act==='lib'){ setLibTab('app'); openLib(); return; }
   if(act==='reset'){ resetLayout(); return; }
+  if(act==='kalhide'){ setKalHidden(true); return; }
+  if(act==='kalclear'){ kalReset(); toast('칼과의 대화를 지웠습니다'); return; }
+  if(act==='kaltoggle'){ toggleKal(); return; }
   if(!t) return;
   if(act==='open'){ openApp(t.k==='w'?WIDGETS[t.id].open:t.id); return; }
   if(act==='rm'){ t.k==='a'?removeFromHome(t.id):t.k==='w'?removeWidget(t.id):removeZone(t.id); return; }
@@ -2905,7 +2901,25 @@ function kalSend(text){
   setTimeout(()=>{ typing.classList.remove('typing'); typing.innerHTML=ans; kalChat.scrollTop=kalChat.scrollHeight; kalBusy=false;
     kalLog.push({r:'ai',t:ans}); paintKalWidget(); },700+Math.min(900,text.length*25));
 }
-kalfab.addEventListener('click',e=>{ if(e.target.closest('.kh8')){ setKalHidden(true); return; } toggleKal(); });
+kalfab.addEventListener('click',toggleKal);
+/* 우클릭(터치는 0.5초 길게 누르기) → 메뉴: 열기/접기 · 대화 지우기 · 숨기기 */
+function kalMenu(x,y){
+  menu(false);
+  openCmenu(x,y,
+    cmBtn('kaltoggle', kalOpen?'대화창 접기':'AI 칼 열기','open')+
+    cmBtn('kalclear','대화 지우기','minus')+
+    '<div class="sep"></div>'+
+    cmBtn('kalhide','칼 버튼 숨기기','trash','danger'), null);
+}
+kalfab.addEventListener('contextmenu',e=>{ e.preventDefault(); kalMenu(e.clientX,e.clientY); });
+kalfab.addEventListener('pointerdown',e=>{
+  if(e.pointerType!=='touch') return;
+  const sx=e.clientX, sy=e.clientY;
+  let t=setTimeout(()=>{ t=null; kalMenu(sx,sy); },500);
+  const off=()=>{ if(t) clearTimeout(t); document.removeEventListener('pointermove',mv); document.removeEventListener('pointerup',off); document.removeEventListener('pointercancel',off); };
+  const mv=ev=>{ if(Math.abs(ev.clientX-sx)+Math.abs(ev.clientY-sy)>10) off(); };
+  document.addEventListener('pointermove',mv); document.addEventListener('pointerup',off); document.addEventListener('pointercancel',off);
+});
 kal.addEventListener('click',e=>{
   const b=e.target.closest('[data-kact]');
   if(b){ const k=b.dataset.kact; k==='close'?closeKal():k==='hide'?setKalHidden(true):kalReset(); return; }
