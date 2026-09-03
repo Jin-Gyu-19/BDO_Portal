@@ -73,6 +73,7 @@ body[data-theme="dark"]{
 --slotB:rgba(255,255,255,.5);--slotBg:rgba(255,255,255,.12);
 --dockSlotB:rgba(255,255,255,.85);--dockSlotBg:rgba(0,0,0,.22);
 --btnBg:rgba(255,255,255,.14);--btnBorder:rgba(255,255,255,.2);--btnFg:rgba(255,255,255,.72);
+--dkBtn:#2C3442;--dkBtnFg:#F2F4F7;
 --rszBg:rgba(255,255,255,.2);
 --menuBg:rgba(26,31,38,.78);--menuBorder:rgba(255,255,255,.14);--menuShadow:0 24px 54px rgba(0,0,0,.5);
 --menuHov:rgba(255,255,255,.09);--menuLine:rgba(255,255,255,.1);
@@ -358,11 +359,11 @@ font-weight:600;color:#1D1D1F;background:rgba(255,255,255,.95);padding:4px 10px;
 box-shadow:0 4px 14px rgba(0,0,0,.22);opacity:0;pointer-events:none;transition:opacity .15s}
 .dk:hover .tip{opacity:1}
 .dsep{width:1px;height:34px;background:var(--fg);opacity:.16;border-radius:1px}
-/* Dock 맨 앞 검색 버튼 */
-.dk.dsearch{color:var(--fg);filter:none}
-.dk.dsearch .dksurf{background:var(--btnBg);border:1px solid var(--btnBorder);
+/* Dock 맨 앞 검색·홈에 추가 버튼 — 앱 아이콘처럼 불투명한 판으로 떠 있어야 뒤 내용이 비치지 않는다 */
+.dk.dsearch{color:var(--dkBtnFg,#3A3A3C)}
+.dk.dsearch .dksurf{background:var(--dkBtn,#FFFFFF);border:none;
 -webkit-mask:var(--sqmask);mask:var(--sqmask)}
-.dk.dsearch .ic{width:21px;height:21px;position:relative;z-index:1;stroke-width:2.1;opacity:.75}
+.dk.dsearch .ic{width:21px;height:21px;position:relative;z-index:1;stroke-width:2.1;opacity:.85}
 .dk.dsearch:hover .ic{opacity:1}
 
 /* 스포트라이트 검색 */
