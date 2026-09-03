@@ -924,14 +924,19 @@ body.compact .kalfab{right:10px;bottom:calc(var(--dockH) + 6px + env(safe-area-i
 body.compact .kalfab .kdot{top:14px}
 /* 숨기기: 버튼을 우클릭(터치는 길게 누르기)하면 메뉴에 숨기기, 대화창 머리에도 숨기기 버튼. 숨기면 오른쪽 가장자리에 로봇이 빼꼼 남는다 */
 body.kalhide .kalfab,body.kalhide .kal{display:none}
-.kalpeek{position:fixed;right:0;bottom:calc(34px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));z-index:860;
-width:38px;height:66px;padding:0;border-radius:18px 0 0 18px;background:#1C1F27;cursor:pointer;display:none;overflow:hidden;
-box-shadow:0 8px 22px rgba(14,22,30,.3);transition:width .18s cubic-bezier(.3,1.3,.5,1)}
-.kalpeek .kp{position:absolute;top:50%;left:6px;width:56px;height:48px;transform:translateY(-50%);background:center/contain no-repeat}
-.kalpeek:hover{width:50px}
-.kalpeek:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+/* 숨긴 버튼: 로봇이 제자리 높이에서 오른쪽 화면 밖으로 8/10쯤 밀려나 2/10만 보인다. 누르면 제자리로 돌아온다 */
+.kalpeek{position:fixed;--pw:88px;right:calc(var(--pw) * -.8);bottom:calc(22px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));z-index:860;
+width:var(--pw);height:var(--pw);padding:0;background:none;cursor:pointer;display:none;
+filter:drop-shadow(0 10px 22px rgba(14,22,30,.30)) drop-shadow(0 2px 5px rgba(14,22,30,.18));
+transition:right .2s cubic-bezier(.3,1.2,.5,1)}
+.kalpeek .kp{position:absolute;inset:0;background:center/contain no-repeat}
+.kalpeek:hover{right:calc(var(--pw) * -.6)}
+.kalpeek:focus-visible{outline:2px solid var(--red);outline-offset:2px;border-radius:30%}
 body.kalhide .kalpeek{display:block}
-body.compact .kalpeek{bottom:calc(var(--dockH) + 14px + env(safe-area-inset-bottom,0px) + var(--vvb,0px))}
+body.compact .kalpeek{--pw:76px;right:calc(var(--pw) * -.8);bottom:calc(var(--dockH) + 6px + env(safe-area-inset-bottom,0px) + var(--vvb,0px))}
+/* 되돌아올 때 오른쪽에서 미끄러져 들어온다 */
+@keyframes kalArrive{from{transform:translateX(70%);opacity:.6}to{transform:none;opacity:1}}
+.kalfab.arrive{animation:kalArrive .32s cubic-bezier(.22,.9,.25,1)}
 body.compact .kalfab .ktip{display:none}
 body.compact .kal{right:10px;bottom:calc(var(--dockH) + 94px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));
 width:min(420px,calc(100vw - 20px));height:min(560px,calc(100vh - var(--statusH) - var(--dockH) - 116px));transform-origin:calc(100% - 27px) calc(100% + 40px)}
@@ -2849,9 +2854,13 @@ function setKalHidden(h,quiet){
   if(h) closeKal();
   document.body.classList.toggle('kalhide',h); store.set(KKEY,h?'1':'0');
   const mi=document.getElementById('kalMi'); if(mi) mi.textContent=h?'AI 칼 버튼 보이기':'AI 칼 버튼 숨기기';
-  if(!quiet) toast(h?'칼을 숨겼습니다 · 오른쪽 가장자리의 로봇을 누르면 다시 나타납니다':'칼이 다시 나타났습니다');
+  if(!quiet) toast(h?'칼을 숨겼습니다 · 오른쪽 가장자리에 살짝 보이는 로봇을 누르면 제자리로 돌아옵니다':'칼이 다시 나타났습니다');
 }
-document.getElementById('kalpeek').addEventListener('click',()=>{ setKalHidden(false,true); openKal(); });
+document.getElementById('kalpeek').addEventListener('click',()=>{   /* 제자리로만 돌아온다 (대화창은 열지 않음) */
+  setKalHidden(false,true);
+  kalfab.classList.remove('arrive'); void kalfab.offsetWidth; kalfab.classList.add('arrive');
+  setTimeout(()=>kalfab.classList.remove('arrive'),350);
+});
 const KAL_SEED=[
   ['ai','안녕하세요, 대표이사님. 오늘 <b>알파테크</b> 현장수행이 72%까지 올라왔고 리뷰 대기 조서가 14건 쌓였습니다. 무엇을 도와드릴까요?']
 ];
