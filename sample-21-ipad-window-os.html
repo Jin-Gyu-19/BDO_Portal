@@ -838,7 +838,7 @@ body.compact .cmenu button{padding:10px 12px;font-size:calc(13.5px * var(--fz))}
 
 /* ══ AI 칼 — 우측 하단에 떠 있는 챗봇 버튼과 위로 펼쳐지는 대화창 ══ */
 .kalfab{position:fixed;right:22px;bottom:calc(22px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));z-index:860;
-width:76px;height:76px;padding:0;background:none;cursor:pointer;
+width:88px;height:88px;padding:0;background:none;cursor:pointer;
 filter:drop-shadow(0 10px 22px rgba(14,22,30,.30)) drop-shadow(0 2px 5px rgba(14,22,30,.18));
 transition:transform .18s cubic-bezier(.3,1.4,.5,1)}
 .kalfab:hover{transform:translateY(-3px) scale(1.06)}
@@ -846,12 +846,12 @@ transition:transform .18s cubic-bezier(.3,1.4,.5,1)}
 .kalfab:focus-visible{outline:2px solid var(--red);outline-offset:4px;border-radius:30%}
 .kalfab .kf{position:absolute;inset:0;background:transparent center/contain no-repeat;
 transition:transform .22s,opacity .22s}
-.kalfab .kx{position:absolute;inset:8px;border-radius:50%;background:#1C1F27;color:#fff;display:flex;align-items:center;justify-content:center;
+.kalfab .kx{position:absolute;inset:12px;border-radius:50%;background:#1C1F27;color:#fff;display:flex;align-items:center;justify-content:center;
 opacity:0;transform:rotate(-90deg) scale(.6);transition:transform .22s,opacity .22s}
 .kalfab .kx .ic{width:22px;height:22px;stroke-width:2.4}
 .kalfab.on .kf{opacity:0;transform:rotate(90deg) scale(.6)}
 .kalfab.on .kx{opacity:1;transform:none}
-.kalfab .kdot{position:absolute;top:14px;right:0;width:14px;height:14px;border-radius:50%;background:#34C759;
+.kalfab .kdot{position:absolute;top:16px;right:2px;width:15px;height:15px;border-radius:50%;background:#34C759;
 border:2.5px solid var(--pageBg);transition:opacity .2s}
 .kalfab.on .kdot{opacity:0}
 .kalfab .ktip{position:absolute;right:calc(100% + 12px);top:50%;transform:translateY(-50%) translateX(6px);white-space:nowrap;
@@ -860,8 +860,8 @@ box-shadow:0 4px 14px rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:op
 .kalfab:hover .ktip{opacity:1;transform:translateY(-50%)}
 .kalfab.on .ktip{display:none}
 
-.kal{position:fixed;right:22px;bottom:calc(110px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));z-index:860;
-width:min(400px,calc(100vw - 32px));height:min(600px,calc(100vh - var(--statusH) - 138px));
+.kal{position:fixed;right:22px;bottom:calc(122px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));z-index:860;
+width:min(400px,calc(100vw - 32px));height:min(600px,calc(100vh - var(--statusH) - 150px));
 border-radius:22px;corner-shape:squircle;overflow:hidden;background:#fff;color:var(--txt);
 box-shadow:0 26px 70px rgba(0,0,0,.34),0 0 0 .5px rgba(0,0,0,.18);display:flex;flex-direction:column;
 transform-origin:calc(100% - 30px) calc(100% + 40px);transform:translateY(14px) scale(.55);opacity:0;pointer-events:none;
@@ -893,11 +893,11 @@ font-size:calc(11.5px * var(--fz));color:var(--ink);outline:none;transition:back
 .msg.typing i:nth-child(2){animation-delay:.16s}.msg.typing i:nth-child(3){animation-delay:.32s}
 @keyframes kdots{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
 /* 좁은 화면: Dock 위쪽에 버튼을 두고, 대화창은 좌우를 채운다 */
-body.compact .kalfab{right:12px;bottom:calc(var(--dockH) + 8px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));width:66px;height:66px}
-body.compact .kalfab .kdot{top:12px}
+body.compact .kalfab{right:10px;bottom:calc(var(--dockH) + 6px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));width:76px;height:76px}
+body.compact .kalfab .kdot{top:14px}
 body.compact .kalfab .ktip{display:none}
-body.compact .kal{right:10px;bottom:calc(var(--dockH) + 86px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));
-width:min(420px,calc(100vw - 20px));height:min(560px,calc(100vh - var(--statusH) - var(--dockH) - 108px));transform-origin:calc(100% - 27px) calc(100% + 40px)}
+body.compact .kal{right:10px;bottom:calc(var(--dockH) + 94px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));
+width:min(420px,calc(100vw - 20px));height:min(560px,calc(100vh - var(--statusH) - var(--dockH) - 116px));transform-origin:calc(100% - 27px) calc(100% + 40px)}
 body.phone .kal{left:10px;width:auto}
 </style>
 </head>
