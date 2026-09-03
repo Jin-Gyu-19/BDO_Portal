@@ -680,9 +680,11 @@ body.phone .status{font-size:calc(10.5px * var(--fz))}
 body.phone .status .sys,body.phone .prof .nm{font-size:calc(9px * var(--fz))}
 body.phone .prof .av{width:20px;height:20px}
 body.compact #tile4{display:none}
-body.compact .home{padding:4px 14px 24px;gap:8px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
-overscroll-behavior:contain;scrollbar-width:none}
-body.compact .home::-webkit-scrollbar{display:none}
+/* 홈은 고정 상자 안에서 스크롤하지 않고 문서 자체가 스크롤된다 — 앱 웹뷰가 iframe 높이를 내용에 맞추는 경우에도 전부 보인다 */
+html.compact,body.compact{height:auto;min-height:100%;overflow:visible}
+body.compact{overflow-x:hidden}
+body.compact .home{position:static;inset:auto;height:auto;min-height:calc(100vh - var(--statusH) - var(--dockH));
+padding:calc(var(--statusH) + 4px) 14px calc(var(--dockH) + 24px + env(safe-area-inset-bottom,0px));gap:8px;overflow:visible}
 body.compact .home.pushed{transform:none;filter:none}
 body.compact .greet{padding:4px 2px 2px}
 body.compact .greet h1{font-size:26px;letter-spacing:-0.4px;line-height:1.22;word-break:keep-all}
@@ -884,6 +886,9 @@ addEventListener('unhandledrejection',e=>{ lastErr=String(e.reason); });
 const USER={id:'yoon.gb', name:'윤길배', title:'대표이사', firm:'성현회계법인',
             mail:'yoon.gb@shcpa.kr', init:'윤길'};
 const LKEY='sh-portal:'+USER.id+':v5';
+/* 저장소가 막힌 환경(샌드박스 iframe·앱 웹뷰)에서도 페이지가 죽지 않도록 */
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
+              set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
 /* ══════════ 메모 (계정별로 이 브라우저에 자동 저장) ══════════ */
 const MKEY='sh-portal:memo:'+USER.id;
 const MEMO_SEED=[
@@ -893,12 +898,12 @@ const MEMO_SEED=[
 ];
 let memos=[];
 function loadMemos(){
-  try{ const o=JSON.parse(localStorage.getItem(MKEY)||'null');
+  try{ const o=JSON.parse(store.get(MKEY)||'null');
     if(Array.isArray(o)) memos=o.filter(m=>m&&typeof m.id==='string'&&typeof m.t==='string'&&Number.isFinite(m.ts))
       .map(m=>({id:m.id,t:m.t,ts:m.ts,c:m.c,x:m.x,y:m.y,z:m.z,open:m.open!==false})).slice(0,300); }catch(e){}
-  if(!memos.length && localStorage.getItem(MKEY)===null) memos=MEMO_SEED.map(m=>({...m}));
+  if(!memos.length && store.get(MKEY)===null) memos=MEMO_SEED.map(m=>({...m}));
 }
-function saveMemos(){ try{ localStorage.setItem(MKEY,JSON.stringify(memos)); }catch(e){} }
+function saveMemos(){ store.set(MKEY,JSON.stringify(memos)); }
 const esc=t=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const memoTitle=m=>esc((m.t.split('\n')[0].trim()||'새 메모').slice(0,60));
 const memoBody =m=>esc(m.t.split('\n').slice(1).join(' ').trim().slice(0,80));
@@ -1248,6 +1253,7 @@ function syncMode(){
   const changed=c!==compact || ph!==phone;
   compact=c; phone=ph; MC=ph?4:6;
   document.body.classList.toggle('compact',compact);
+  document.documentElement.classList.toggle('compact',compact);
   document.body.classList.toggle('phone',phone);
   hgrid.style.setProperty('--mc',MC);
   return changed;
@@ -1433,12 +1439,11 @@ const sameLayout=()=>JSON.stringify(layout)===JSON.stringify(LAYOUT_DEFAULT);
 const isDefault=()=>sameLayout() && dockOrder.join()===DOCK_DEFAULT.join();
 function saveLayout(){
   resetBtn.classList.toggle('show',!isDefault());
-  try{ localStorage.setItem(LKEY,JSON.stringify(
-    {user:USER.mail,layout,dock:dockOrder,theme,zones})); }catch(e){}
+  store.set(LKEY,JSON.stringify({user:USER.mail,layout,dock:dockOrder,theme,zones}));
 }
 function loadLayout(){
   try{
-    const raw=localStorage.getItem(LKEY); if(!raw) return;
+    const raw=store.get(LKEY); if(!raw) return;
     const o=JSON.parse(raw);
     if(o.zones && typeof o.zones==='object'){
       const z={};
