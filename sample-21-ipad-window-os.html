@@ -154,6 +154,7 @@ padding:14px 46px 0;z-index:10;transition:transform .38s cubic-bezier(.32,.72,0,
 line-height:1.18;opacity:.74}
 .greet h1 em{font-style:normal;font-weight:900;opacity:1;letter-spacing:-0.76px}
 .greet h1 em .role{font-weight:800;font-size:.82em;letter-spacing:-0.32px;opacity:.86;margin-left:2px}
+.greet h1 .tail{font-size:.82em}
 .greet p{font-size:15px;opacity:.66;margin-top:7px;letter-spacing:-0.08px}
 
 /* 홈 격자 — 아이콘과 위젯이 같은 칸을 쓴다 (경계 없음, 빈 칸은 빈 칸으로) */
@@ -201,8 +202,10 @@ opacity:0;transition:opacity .15s;cursor:nwse-resize;touch-action:none}
 background:var(--rszBg);opacity:0;transition:opacity .15s}
 .wg.rz .szl{opacity:1}
 .wg.rz{transform:none;outline:2px solid var(--red);outline-offset:-2px}
-.wg .hd{display:flex;align-items:center;gap:7px;font-size:calc(13px * var(--fz));font-weight:800;letter-spacing:-0.1px;opacity:.85}
-.wg .hd .sq{width:17px;height:17px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:7.5px;font-weight:900}
+.wg .hd{display:flex;align-items:center;gap:7px;font-size:calc(15px * var(--fz));font-weight:800;letter-spacing:-0.2px;opacity:.9;
+white-space:nowrap;overflow:hidden}
+.wg[data-c="1"] .hd .cnt,.wg[data-c="2"] .hd .cnt{display:none}   /* 좁은 위젯에서는 건수를 생략해 제목이 한 줄로 */
+.wg .hd .sq{width:19px;height:19px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:7.5px;font-weight:900}
 .wg.deadline{background:linear-gradient(150deg,#3A4956,#1A2530);color:#fff;
 border-color:rgba(255,255,255,.13);box-shadow:0 10px 28px rgba(16,24,32,.24)}
 .wg.deadline .big{color:#FFB454}
@@ -241,7 +244,7 @@ padding:2px 0;border-radius:5px;background:var(--chip);white-space:nowrap;overfl
 background:var(--zoneBg);border:1px solid var(--zoneBorder);cursor:grab;min-width:0;min-height:0;
 transition:background .3s,border-color .3s}
 .zone:active{cursor:grabbing}
-.zone .zl{position:absolute;left:16px;top:0;transform:translateY(-50%);display:flex;align-items:center;gap:6px;
+.zone .zl{position:absolute;left:16px;top:0;z-index:3;transform:translateY(-50%);display:flex;align-items:center;gap:6px;
 cursor:grab;transition:transform .15s,box-shadow .15s;
 font-size:calc(11px * var(--fz));font-weight:800;letter-spacing:-0.08px;color:var(--fg);padding:3px 10px;border-radius:99px;
 background:var(--zoneTab);border:1px solid var(--zoneBorder);white-space:nowrap;
@@ -256,14 +259,14 @@ opacity:0;transition:opacity .15s;cursor:nwse-resize;touch-action:none}
 .zone .rsz svg{width:11px;height:11px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round}
 .zone.rz{outline:2px solid var(--red);outline-offset:-2px}
 .hgrid .ap,.hgrid .wg{position:relative;z-index:1}
-.hgrid .ap{justify-self:center;align-self:start;margin-top:10px;padding:4px 6px;border-radius:16px}
+.hgrid .ap{justify-self:center;align-self:start;margin-top:23px;padding:4px 6px;border-radius:16px}
 .hgrid .slot.zone-slot{border-radius:28px;border-style:dashed}
 .ghost .zone{width:100%;height:100%}
 
 /* 앱 아이콘 — 격자 한 칸 */
 .ap{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:6px;cursor:pointer;
 transition:transform .16s cubic-bezier(.3,1.4,.5,1);background:none;min-width:0}
-.ap:hover{transform:scale(1.07)}
+.ap:hover{transform:scale(1.06)}
 .ap:active{transform:scale(.94)}
 .ap:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:14px}
 .ap .ish{position:relative;width:60px;height:60px;
@@ -328,7 +331,6 @@ body.dockhide .dock:hover,body.dockhide .dockzone:hover ~ .dock,body.dockhide.do
 body.dockhide .dots,body.dockhide .homebar{opacity:0;transition:opacity .25s}
 .dockzone{position:fixed;left:0;right:0;bottom:0;height:16px;z-index:790;display:none}
 body.compact .dockzone{height:28px}
-body.compact.dockhide .homebar{display:block;opacity:1;z-index:795;background:rgba(255,255,255,.85);box-shadow:0 1px 4px rgba(0,0,0,.25)}
 body.dockhide .dockzone{display:block}
 .dk{width:50px;height:50px;display:flex;align-items:center;justify-content:center;
 color:#fff;font-size:11.5px;font-weight:800;letter-spacing:-0.12px;position:relative;cursor:pointer;background:none;
@@ -475,6 +477,7 @@ transition:opacity .14s,left .12s,top .12s,width .12s,height .12s}
 box-shadow:0 26px 70px rgba(0,0,0,.42),0 0 0 .5px rgba(0,0,0,.3);
 animation:winIn .26s cubic-bezier(.2,.9,.3,1.1)}
 @keyframes winIn{from{opacity:0;transform:scale(.9) translateY(14px)}to{opacity:1;transform:none}}
+.win.zooming{animation:none!important}
 .win.closing{animation:winOut .18s ease forwards}
 @keyframes winOut{to{opacity:0;transform:scale(.92)}}
 .win.min{animation:winMin .22s ease forwards}
@@ -673,8 +676,8 @@ line-height:1.7;color:var(--ink);background:#fff;min-height:0}
 body.compact .memo{flex-direction:column}
 body.compact .mlist{width:auto;max-height:42%;border-right:none;border-bottom:.5px solid var(--line)}
 /* 메모 위젯 */
-.wg .mlines{margin-top:8px;display:flex;flex-direction:column;gap:1px}
-.wg .mlines .drow{padding:2px 0}
+.wg .mlines{margin-top:5px;display:flex;flex-direction:column;gap:0}
+.wg .mlines .drow{padding:1px 0}
 .wg .mlines .drow .dd{min-width:calc(40px * var(--fz));opacity:.6}
 .wg .mempty{padding:12px 0;text-align:left;color:inherit;opacity:.6}
 /* 채팅 */
@@ -841,13 +844,12 @@ body.compact .cmenu button{padding:10px 12px;font-size:calc(13.5px * var(--fz))}
 
 <div class="home" id="home">
   <div class="greet">
-      <h1><em>윤길배 <span class="role">대표이사</span></em>님, 좋은 아침입니다</h1>
+      <h1><em>윤길배 <span class="role">대표이사</span></em><span class="tail">님, 좋은 아침입니다</span></h1>
       <p>성현회계법인 · 진행 중 12건 · 리뷰 대기 47건 — 홈에는 핵심 앱만 두었습니다. Dock의 ‘홈에 추가’에서 App · 위젯 · 구역을 더하거나, 우클릭으로 빼 보세요</p>
   </div>
   <div class="hgrid" id="hgrid"></div>
 </div>
 
-<div class="dots"><i class="on"></i><i></i><i></i></div>
 <div class="snap" id="snap"></div>
 <div class="dockzone"></div>
 <div class="dock" id="dock">
@@ -894,7 +896,6 @@ body.compact .cmenu button{padding:10px 12px;font-size:calc(13.5px * var(--fz))}
     <div class="spotres" id="spotres"></div>
   </div>
 </div>
-<div class="homebar"></div>
 
 <!-- 프로필 드롭다운 -->
 <div class="pmenu" id="pmenu">
@@ -1301,7 +1302,7 @@ const WIDGETS={
       <div class="drow"><span class="dd tn">68</span><span class="t">내부 심리 비중</span></div>
     </div>`},
   proj:{open:'aud', body:()=>`
-    <div class="hd"><span class="sq" style="background:var(--red)">P</span>진행 중 프로젝트 · 12건</div>
+    <div class="hd"><span class="sq" style="background:var(--red)">P</span>진행 중 프로젝트<span class="cnt"> · 12건</span></div>
     <div class="plist">${[
       ['A','㈜알파테크 제25기 외부감사','현장수행 · 김회계 · D-12',72,G.aud],
       ['B','㈜베타홀딩스 연결감사','리뷰 · 박회계 · D-19',91,G.k1118],
@@ -1522,7 +1523,7 @@ function fitWidget(el){
   /* 1×1처럼 아주 작은 칸에서 머리글·큰 숫자만으로도 넘칠 때에 한해 살짝 줄인다 */
   for(let i=0;i<2 && c.scrollHeight>c.clientHeight+1;i++){
     const cur=+c.style.getPropertyValue('--s')||1;
-    c.style.setProperty('--s', Math.max(.72, Math.round(cur*(c.clientHeight-2)/c.scrollHeight*100)/100));
+    c.style.setProperty('--s', Math.max(.6, Math.round(cur*(c.clientHeight-2)/c.scrollHeight*100)/100));
   }
 }
 function fitWidgets(){ hgrid.querySelectorAll('.wg').forEach(fitWidget); }
@@ -1795,7 +1796,31 @@ function longPress(e){
   document.addEventListener('pointermove',mv); document.addEventListener('pointerup',off); document.addEventListener('pointercancel',off);
 }
 /* ══════════ 창 시스템 ══════════ */
-const wins=new Map();            // id -> {el, state, restore}
+const wins=new Map();            // id -> {el, state, restore, origin}
+/* 창을 연 아이콘의 화면 위치 — 열고 닫을 때 그 자리에서 확대·축소한다 */
+const rectOf=el=>{ const r=el.getBoundingClientRect(); return {x:r.left,y:r.top,w:r.width,h:r.height}; };
+function iconRect(id){
+  const el=document.querySelector(`.hgrid .ap[data-id="${id}"] .ish`)
+        || document.querySelector(`.dk[data-dock="${id}"]`)
+        || document.querySelector(`.lcard[data-lid="${id}"] .lic`);
+  return el&&el.offsetParent!==null ? rectOf(el) : null;
+}
+function zoomTransform(el,o){
+  const r=el.getBoundingClientRect();
+  if(!r.width||!r.height||!o) return null;
+  const sx=Math.max(.05,o.w/r.width), sy=Math.max(.05,o.h/r.height);
+  return `translate(${(o.x+o.w/2)-(r.left+r.width/2)}px,${(o.y+o.h/2)-(r.top+r.height/2)}px) scale(${sx},${sy})`;
+}
+function zoomIn(el,o){
+  const t=zoomTransform(el,o); if(!t) return;
+  el.classList.add('zooming');
+  el.style.animation='none';                  /* 기본 등장 애니메이션은 끄고 아이콘 자리에서 펼친다 */
+  el.style.transformOrigin='center center'; el.style.transform=t; el.style.opacity='0';
+  el.getBoundingClientRect();                 /* 시작 상태를 확정한 뒤 전환을 건다 */
+  el.style.transition='transform .34s cubic-bezier(.22,.9,.25,1),opacity .2s ease-out';
+  el.style.transform='none'; el.style.opacity='1';
+  setTimeout(()=>{ el.style.transition=''; el.style.transform=''; el.style.opacity=''; el.classList.remove('zooming'); },370);
+}
 let zTop=100, cascade=0;
 const snapEl=document.getElementById('snap');
 const homeEl=document.getElementById('home');
@@ -1840,9 +1865,13 @@ function syncChrome(){
     v.el.classList.toggle('flush', full && v.state==='snap'); });
   tile4Btn.classList.toggle('show', live.length>=2);
 }
+/* 누를 때마다 z를 올리면 언젠가 Dock(800)을 넘어서므로, 순서만 유지하고 값은 101부터 다시 매긴다 */
 function focusWin(id){
   const w=wins.get(id); if(!w) return;
-  w.el.style.zIndex=++zTop;
+  const rest=[...wins.entries()].filter(([k])=>k!==id)
+    .sort((a,b)=>(+a[1].el.style.zIndex||0)-(+b[1].el.style.zIndex||0));
+  rest.forEach(([,v],i)=>v.el.style.zIndex=101+i);
+  zTop=101+rest.length; w.el.style.zIndex=zTop;
   wins.forEach((v,k)=>v.el.classList.toggle('active',k===id));
 }
 /* 남아 있는 창 중 가장 위의 창으로 포커스 이동 */
@@ -1853,7 +1882,7 @@ function focusTop(){
   wins.forEach(v=>v.el.classList.remove('active'));
   if(top) focusWin(top);
 }
-function openApp(id){
+function openApp(id,origin){
   const a=APPS[id]; if(!a) return;
   if(wins.has(id)){
     const w=wins.get(id);
@@ -1887,19 +1916,29 @@ function openApp(id){
   document.body.appendChild(el);
   syncThemeUI();                              /* 설정 창의 배경 카드 선택 상태 반영 */
   if(id==='memo') paintMemo();
-  wins.set(id,{el,state:'normal',restore:null,zone:null});
+  wins.set(id,{el,state:'normal',restore:null,zone:null,origin:origin||iconRect(id)});
   if(compact){ fillArea(wins.get(id)); scrollTo(0,0); }   /* 좁은 화면에서는 전체 화면 시트로 */
   bindWindow(id,el);
   focusWin(id); markDock(); syncHome(); syncChrome();
+  zoomIn(el, wins.get(id).origin);            /* 누른 아이콘 자리에서 펼쳐진다 */
 }
 function closeApp(id){
   const w=wins.get(id); if(!w) return;
-  w.el.classList.add('closing');
-  setTimeout(()=>{w.el.remove(); wins.delete(id); markDock(); syncHome(); focusTop(); syncChrome(); relayoutSnaps();},170);
+  const el=w.el, o=iconRect(id)||w.origin, t=o&&zoomTransform(el,o);
+  const done=()=>{ el.remove(); wins.delete(id); markDock(); syncHome(); focusTop(); syncChrome(); relayoutSnaps(); };
+  if(t){                                       /* 아이콘 자리로 접힌다 */
+    el.classList.add('zooming'); el.style.transformOrigin='center center';
+    el.style.transition='transform .28s cubic-bezier(.4,0,.85,.6),opacity .24s ease-in';
+    el.getBoundingClientRect();
+    el.style.transform=t; el.style.opacity='0';
+    setTimeout(done,300);
+  }else{
+    el.style.animation=''; el.classList.add('closing'); setTimeout(done,170);
+  }
 }
 function minApp(id){
   const w=wins.get(id); if(!w) return;
-  w.el.classList.add('min'); w.state='min'; w.zone=null;
+  w.el.style.animation=''; w.el.classList.add('min'); w.state='min'; w.zone=null;
   w.el.classList.remove('active');
   setTimeout(()=>{ if(w.state==='min') w.el.style.display='none'; },210);
   syncHome(); focusTop(); syncChrome();
@@ -2295,7 +2334,7 @@ document.getElementById('libtabs').addEventListener('click',e=>{
 function setLibTab(t){ libTab=t; document.querySelectorAll('#libtabs [data-ltab]').forEach(x=>x.classList.toggle('on',x.dataset.ltab===t)); }
 libbody.addEventListener('click',e=>{
   const o=e.target.closest('[data-lopen]');
-  if(o){ if(!APPS[o.dataset.lopen].soon){ closeLib(); openApp(o.dataset.lopen); } return; }
+  if(o){ if(!APPS[o.dataset.lopen].soon){ const r=rectOf(o); closeLib(); openApp(o.dataset.lopen,r); } return; }
   const t=e.target.closest('[data-ltoggle]');
   if(t){ const id=t.dataset.ltoggle; onHome(id)?removeFromHome(id):addToHome(id); paintLib(); return; }
   const w=e.target.closest('[data-wtoggle]');
@@ -2592,13 +2631,15 @@ function diagText(){
 /* ══════════ 이벤트 ══════════ */
 document.addEventListener('click',e=>{
   if(justDragged) return;
-  const o=e.target.closest('[data-open]'); if(o){ openApp(o.dataset.open); return; }
+  const o=e.target.closest('[data-open]');
+  if(o){ openApp(o.dataset.open, rectOf(o.querySelector('.ish')||o)); return; }
   const d=e.target.closest('[data-dock]');
   if(d){ const id=d.dataset.dock;
     if(Date.now()-peekAt<450) return;          /* Dock을 불러낸 탭이 올라오는 아이콘에 닿는 것을 막는다 */
     if(id==='memo'){ toggleStickies(); return; }   /* Dock의 메모는 바탕의 스티커를 켜고 끈다 */
+    const dr=rectOf(d);
     if(wins.has(id) && wins.get(id).state!=='min' && wins.get(id).el.classList.contains('active')) minApp(id);
-    else openApp(id);
+    else openApp(id,dr);
   }
 });
 document.addEventListener('keydown',e=>{
@@ -2635,10 +2676,9 @@ addEventListener('resize',()=>{
     el.style.top=Math.max(ar.y-2,Math.min(el.offsetTop,ar.y+ar.h-40))+'px';
   });
 });
-/* 초기 배치 렌더 후 (넓은 화면에서만) 대시보드 한 창 띄워두기 — 휴대폰에서는 전체 화면 시트가 홈을 가리므로 열지 않는다 */
+/* 초기 배치만 그리고 창은 띄우지 않는다 (홈이 먼저 보이도록) */
 loadLayout(); applyTheme(theme,false);
 renderGrid(); renderDock(); saveLayout();
-if(!compact) openApp('aud');
 </script>
 </body>
 </html>
