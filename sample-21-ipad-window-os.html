@@ -483,6 +483,8 @@ animation:winIn .26s cubic-bezier(.2,.9,.3,1.1)}
 /* 최대화: 상태 표시줄 아래 전체를 채운다 (모서리 없이) */
 .win.max{border-radius:0;box-shadow:none}
 .win.max .rs{display:none}
+/* 좌우·4분할로 화면을 나눠 쓸 때도 모서리 없이 맞물리게 */
+.win.flush{border-radius:0}
 
 .wtb{height:46px;flex-shrink:0;display:flex;align-items:stretch;cursor:grab;
 background:rgba(246,247,249,.72);backdrop-filter:blur(24px) saturate(180%);
@@ -675,7 +677,9 @@ body.compact .sbar{cursor:default}
   body:not(.compact) .hgrid{gap:12px}
 }
 body.compact{touch-action:auto;--dockH:84px}
-body.compact .status{padding:0 12px 0 16px;white-space:nowrap}
+body.compact .status{position:sticky;top:0;padding:0 12px 0 16px;white-space:nowrap;
+background:var(--pageBg);z-index:900}
+body.compact .dots,body.compact .dockzone,body.compact .homebar{display:none}
 body.phone .status{font-size:calc(10.5px * var(--fz))}
 body.phone .status .sys,body.phone .prof .nm{font-size:calc(9px * var(--fz))}
 body.phone .prof .av{width:20px;height:20px}
@@ -684,7 +688,7 @@ body.compact #tile4{display:none}
 html.compact,body.compact{height:auto;min-height:100%;overflow:visible}
 body.compact{overflow-x:hidden}
 body.compact .home{position:static;inset:auto;height:auto;min-height:calc(100vh - var(--statusH) - var(--dockH));
-padding:calc(var(--statusH) + 4px) 14px calc(var(--dockH) + 24px + env(safe-area-inset-bottom,0px));gap:8px;overflow:visible}
+padding:4px 14px 10px;gap:8px;overflow:visible}
 body.compact .home.pushed{transform:none;filter:none}
 body.compact .greet{padding:4px 2px 2px}
 body.compact .greet h1{font-size:26px;letter-spacing:-0.4px;line-height:1.22;word-break:keep-all}
@@ -720,8 +724,11 @@ body.compact .ap .icon{font-size:12.5px}
 body.compact .ap .nm{font-size:calc(9.5px * var(--fz));max-width:86px}
 body.phone .ap .nm{font-size:calc(8.5px * var(--fz));max-width:84px}
 /* Dock: 탭 바처럼 항상 보이고, 항목이 많으면 가로로 넘긴다 */
-body.compact .dock{bottom:calc(12px + env(safe-area-inset-bottom,0px));gap:10px;padding:6px 8px;
-max-width:calc(100vw - 16px);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+/* Dock도 흐름 안에서 아래에 달라붙는다 — 스크롤되는 환경에서는 고정처럼, 아니면 문서 맨 아래에 */
+body.compact .dock{position:sticky;left:auto;bottom:calc(10px + env(safe-area-inset-bottom,0px));
+transform:none;margin:6px auto calc(10px + env(safe-area-inset-bottom,0px));width:max-content;
+gap:10px;padding:6px 8px;max-width:calc(100vw - 16px);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+body.compact.dockhide .dock{transform:none}
 body.compact .dock::-webkit-scrollbar{display:none}
 body.compact .dk{width:44px;height:44px;font-size:10.5px;flex-shrink:0}
 body.phone .dock{gap:8px}
@@ -775,7 +782,7 @@ body.compact .cmenu button{padding:10px 12px;font-size:calc(13.5px * var(--fz))}
 <div class="status">
   <div class="tn">오전 9:41 · 4월 5일 (일)</div>
   <div class="sright">
-    <button class="sact" id="tile4" title="열린 창을 4분할로 정렬 (Ctrl/⌘+4)">
+    <button class="sact" id="tile4" title="열린 창을 4분할로 정렬 (Ctrl/⌘+4) · 창을 화면 네 모서리로 끌어도 4분할됩니다">
       <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18M3 12h18"/></svg>
       4분할</button>
     <button class="sact" id="resetLayout" title="아이콘·위젯 배치를 기본값으로">
@@ -1688,7 +1695,7 @@ const wins=new Map();            // id -> {el, state, restore}
 let zTop=100, cascade=0;
 const snapEl=document.getElementById('snap');
 const homeEl=document.getElementById('home');
-const MIN_W=320, MIN_H=220, EDGE=10;
+const MIN_W=320, MIN_H=220, EDGE=26;
 /* 좁은 화면이면 창이 상태 표시줄과 Dock 사이를 꽉 채운다 */
 const STATUS_H=38;
 const area=()=>compact
@@ -1712,10 +1719,20 @@ function fillArea(w){
   Object.assign(el.style,{left:ar.x+'px',top:ar.y+'px',width:ar.w+'px',height:ar.h+'px'});
   w.state='max';
 }
+/* 스냅된 창이 2개 이상이면 상태 표시줄 아래를 통째로 나눠 쓴다 (1개뿐이면 Dock 자리를 남긴다) */
+const snapped=()=>[...wins.values()].filter(w=>w.state==='snap'&&w.zone);
+const snapFull=()=>snapped().length>=2;
+function relayoutSnaps(){
+  const list=snapped(), base=list.length>=2?fullArea():area();
+  list.forEach(w=>{ const r=zoneRect(w.zone,base);
+    Object.assign(w.el.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'}); });
+}
 function syncChrome(){
   const live=[...wins.values()].filter(w=>w.state!=='min');
-  document.body.classList.toggle('dockhide', live.some(w=>w.state==='max'));
-  wins.forEach(v=>v.el.classList.toggle('max', v.state==='max'));
+  const full=snapFull();
+  document.body.classList.toggle('dockhide', live.some(w=>w.state==='max') || full);
+  wins.forEach(v=>{ v.el.classList.toggle('max', v.state==='max');
+    v.el.classList.toggle('flush', full && v.state==='snap'); });
   tile4Btn.classList.toggle('show', live.length>=2);
 }
 function focusWin(id){
@@ -1765,19 +1782,19 @@ function openApp(id){
     ${['n','s','w','e','nw','ne','sw','se'].map(d=>`<div class="rs ${d}" data-rs="${d}"></div>`).join('')}`;
   document.body.appendChild(el);
   syncThemeUI();                              /* 설정 창의 배경 카드 선택 상태 반영 */
-  wins.set(id,{el,state:'normal',restore:null});
-  if(compact) fillArea(wins.get(id));         /* 좁은 화면에서는 전체 화면 시트로 */
+  wins.set(id,{el,state:'normal',restore:null,zone:null});
+  if(compact){ fillArea(wins.get(id)); scrollTo(0,0); }   /* 좁은 화면에서는 전체 화면 시트로 */
   bindWindow(id,el);
   focusWin(id); markDock(); syncHome(); syncChrome();
 }
 function closeApp(id){
   const w=wins.get(id); if(!w) return;
   w.el.classList.add('closing');
-  setTimeout(()=>{w.el.remove(); wins.delete(id); markDock(); syncHome(); focusTop(); syncChrome();},170);
+  setTimeout(()=>{w.el.remove(); wins.delete(id); markDock(); syncHome(); focusTop(); syncChrome(); relayoutSnaps();},170);
 }
 function minApp(id){
   const w=wins.get(id); if(!w) return;
-  w.el.classList.add('min'); w.state='min';
+  w.el.classList.add('min'); w.state='min'; w.zone=null;
   w.el.classList.remove('active');
   setTimeout(()=>{ if(w.state==='min') w.el.style.display='none'; },210);
   syncHome(); focusTop(); syncChrome();
@@ -1786,6 +1803,7 @@ function maxApp(id){
   const w=wins.get(id); if(!w) return;
   const el=w.el, ar=fullArea();
   el.classList.add('snapping');
+  w.zone=null;
   if(w.state==='max' && w.restore){
     Object.assign(el.style,w.restore); w.state='normal'; w.restore=null;
   }else{
@@ -1806,33 +1824,44 @@ function paintMaxBtn(id){
   b.innerHTML=on?ICON_RESTORE:ICON_MAX;
   b.title=b.ariaLabel=on?'이전 크기로':'최대화';
 }
-function snapTo(id,rect){
+function snapTo(id,zone){
   const w=wins.get(id); if(!w) return;
   if(w.state!=='max' && !w.restore) w.restore={left:w.el.style.left,top:w.el.style.top,width:w.el.style.width,height:w.el.style.height};
   w.el.classList.add('snapping');
-  Object.assign(w.el.style,{left:rect.x+'px',top:rect.y+'px',width:rect.w+'px',height:rect.h+'px'});
-  w.state='snap';
+  w.state='snap'; w.zone=zone;
+  relayoutSnaps();                              /* 나머지 스냅 창 크기도 함께 맞춘다 */
   setTimeout(()=>w.el.classList.remove('snapping'),200);
   paintMaxBtn(id); syncChrome();
 }
-function zoneRect(zone){
-  const a=area(), hw=a.w/2-4, hh=a.h/2-4;
+function zoneRect(zone,base){
+  const a=base||(snapFull()?fullArea():area()), hw=a.w/2-4, hh=a.h/2-4;
   if(zone==='max')   return fullArea();
   if(zone==='left')  return {x:a.x,y:a.y,w:hw,h:a.h};
-  if(zone==='right') return {x:a.x+a.w/2+4,y:a.y,w:hw,h:a.h};
+  if(zone==='right') return {x:a.x+a.w-hw,y:a.y,w:hw,h:a.h};
   if(zone==='q1')    return {x:a.x,y:a.y,w:hw,h:hh};                     /* 좌상 */
-  if(zone==='q2')    return {x:a.x+a.w/2+4,y:a.y,w:hw,h:hh};             /* 우상 */
-  if(zone==='q3')    return {x:a.x,y:a.y+a.h/2+4,w:hw,h:hh};             /* 좌하 */
-  if(zone==='q4')    return {x:a.x+a.w/2+4,y:a.y+a.h/2+4,w:hw,h:hh};     /* 우하 */
+  if(zone==='q2')    return {x:a.x+a.w-hw,y:a.y,w:hw,h:hh};             /* 우상 */
+  if(zone==='q3')    return {x:a.x,y:a.y+a.h-hh,w:hw,h:hh};             /* 좌하 */
+  if(zone==='q4')    return {x:a.x+a.w-hw,y:a.y+a.h-hh,w:hw,h:hh};      /* 우하 */
   return null;
 }
+/* ── 끌어서 스냅: 위=최대화, 좌우 가장자리=반화면, 네 모서리=4분할 ── */
+function zoneAt(x,y){
+  const a=fullArea(), CX=Math.max(160,a.w*0.16), CY=Math.max(130,a.h*0.3);
+  if(y<=a.y+6)           return x<a.x+CX?'q1':x>a.x+a.w-CX?'q2':'max';
+  if(y>=a.y+a.h-6)       return x<a.x+CX?'q3':x>a.x+a.w-CX?'q4':null;
+  if(x<=a.x+EDGE)        return y<a.y+CY?'q1':y>a.y+a.h-CY?'q3':'left';
+  if(x>=a.x+a.w-EDGE)    return y<a.y+CY?'q2':y>a.y+a.h-CY?'q4':'right';
+  return null;
+}
+/* 미리보기 크기: 이미 스냅된 다른 창이 있으면 결과와 같게 꽉 찬 영역으로 */
+const previewBase=id=>[...wins.entries()].some(([k,v])=>k!==id&&v.state==='snap'&&v.zone)?fullArea():area();
 /* 열려 있는 창을 최대 4개까지 4분할로 정렬 */
 function tileQuarters(){
   const open=[...wins.entries()].filter(([,v])=>v.state!=='min')
     .sort((a,b)=>(+b[1].el.style.zIndex||0)-(+a[1].el.style.zIndex||0)).slice(0,4);
   if(!open.length) return;
-  const zones=open.length===1?['max']:open.length===2?['left','right']:['q1','q2','q3','q4'];
-  open.forEach(([id],i)=>snapTo(id,zoneRect(zones[i])));
+  const zs=open.length===1?['max']:open.length===2?['left','right']:['q1','q2','q3','q4'];
+  open.forEach(([id],i)=>snapTo(id,zs[i]));
   toast(open.length>=3?'창을 4분할로 정렬했습니다':'창을 좌우로 정렬했습니다');
 }
 
@@ -1864,7 +1893,7 @@ function bindWindow(id,el){
         const rw=parseFloat(w.restore.width);
         Object.assign(el.style,{width:w.restore.width,height:w.restore.height});
         ox=ev.clientX-rw/2; oy=ev.clientY-20; sx=ev.clientX; sy=ev.clientY;
-        w.state='normal'; w.restore=null; syncChrome();
+        w.state='normal'; w.restore=null; w.zone=null; syncChrome(); relayoutSnaps();
       }
       moved=true;
       const ar=area();
@@ -1873,15 +1902,9 @@ function bindWindow(id,el){
       ny=Math.max(ar.y-2, Math.min(ny, ar.y+ar.h-40));
       el.style.left=nx+'px'; el.style.top=ny+'px';
 
-      /* 위 = 최대화, 좌우 가장자리 = 반화면, 모서리 = 4분할 */
-      const ar2=area(), CN=110;
-      zone=null;
-      if(ev.clientY<=ar2.y+6) zone='max';
-      else if(ev.clientX<=EDGE)
-        zone = ev.clientY<ar2.y+CN ? 'q1' : ev.clientY>ar2.y+ar2.h-CN ? 'q3' : 'left';
-      else if(ev.clientX>=VW()-EDGE)
-        zone = ev.clientY<ar2.y+CN ? 'q2' : ev.clientY>ar2.y+ar2.h-CN ? 'q4' : 'right';
-      const r=zone&&zoneRect(zone);
+      /* 위 = 최대화, 좌우 가장자리 = 반화면, 네 모서리 = 4분할 */
+      zone=zoneAt(ev.clientX,ev.clientY);
+      const r=zone&&zoneRect(zone,zone==='max'?fullArea():previewBase(id));
       if(r){ Object.assign(snapEl.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'});
              snapEl.classList.add('show'); }
       else snapEl.classList.remove('show');
@@ -1891,7 +1914,7 @@ function bindWindow(id,el){
       tb.removeEventListener('pointermove',move); tb.removeEventListener('pointerup',up);
       snapEl.classList.remove('show');
       if(zone==='max') maxApp(id);
-      else if(zone) snapTo(id,zoneRect(zone));
+      else if(zone) snapTo(id,zone);
     };
     tb.addEventListener('pointermove',move); tb.addEventListener('pointerup',up);
   });
@@ -1903,7 +1926,7 @@ function bindWindow(id,el){
       const dir=h.dataset.rs, sx=e.clientX, sy=e.clientY;
       const ox=el.offsetLeft, oy=el.offsetTop, ow=el.offsetWidth, oh=el.offsetHeight;
       const ar=area();
-      if(w.state!=='normal'){ w.state='normal'; w.restore=null; }
+      if(w.state!=='normal'){ w.state='normal'; w.restore=null; w.zone=null; syncChrome(); relayoutSnaps(); }
       const move=ev=>{
         const dx=ev.clientX-sx, dy=ev.clientY-sy;
         let x=ox,y=oy,ww=ow,hh=oh;
@@ -2421,10 +2444,11 @@ addEventListener('resize',()=>{
     else if(wasCompact){ wins.forEach(w=>{ if(w.state==='max'&&w.restore&&w.restore.width){ Object.assign(w.el.style,w.restore); w.state='normal'; w.restore=null; paintMaxBtn([...wins.entries()].find(([,v])=>v===w)[0]); } }); }
     syncChrome();
   }
-  fitWidgets();
+  fitWidgets(); relayoutSnaps();
   const ar=area(), fa=fullArea();
   wins.forEach((w,id)=>{
     if(w.state==='max'){ Object.assign(w.el.style,{left:fa.x+'px',top:fa.y+'px',width:fa.w+'px',height:fa.h+'px'}); return; }
+    if(w.state==='snap') return;               /* 스냅 창은 relayoutSnaps가 맡는다 */
     const el=w.el;
     el.style.width=Math.min(el.offsetWidth,ar.w)+'px';
     el.style.left=Math.max(ar.x-el.offsetWidth+120,Math.min(el.offsetLeft,ar.x+ar.w-120))+'px';
