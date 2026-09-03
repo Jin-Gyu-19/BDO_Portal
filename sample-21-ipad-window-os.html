@@ -1221,8 +1221,11 @@ hgrid.style.setProperty('--rows',ROWS);
 /* ── 실제 휴대폰·태블릿 판정: 터치 기기이고 화면 짧은 변이 900px 이하 ──
    뷰어가 페이지를 넓게 그린 뒤 축소해 보여 주는 경우(innerWidth ≫ 기기 폭)에는
    html zoom으로 되돌려, 데스크톱 창을 그 폭으로 줄였을 때와 같은 배치가 나오게 한다 */
+const mobileUA=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+  || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints>1);   /* iPadOS는 Mac으로 보고한다 */
 const handheld=(navigator.maxTouchPoints>0 || matchMedia('(pointer:coarse)').matches)
-  && Math.min(screen.width,screen.height)<=900;
+  && Math.min(screen.width,screen.height)<=900
+  && (mobileUA || matchMedia('(hover:none)').matches);                        /* 터치 노트북은 제외 */
 const devW=()=>{ const a=Math.min(screen.width,screen.height), b=Math.max(screen.width,screen.height);
   return innerWidth>innerHeight?b:a; };
 let Z=1;
