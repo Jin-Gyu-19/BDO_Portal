@@ -2431,10 +2431,10 @@ addEventListener('resize',()=>{
     el.style.top=Math.max(ar.y-2,Math.min(el.offsetTop,ar.y+ar.h-40))+'px';
   });
 });
-/* 초기 배치 렌더 후 대시보드 한 창 띄워두기 */
+/* 초기 배치 렌더 후 (넓은 화면에서만) 대시보드 한 창 띄워두기 — 휴대폰에서는 전체 화면 시트가 홈을 가리므로 열지 않는다 */
 loadLayout(); applyTheme(theme,false);
 renderGrid(); renderDock(); saveLayout();
-openApp('aud');
+if(!compact) openApp('aud');
 </script>
 </body>
 </html>
