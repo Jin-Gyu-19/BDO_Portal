@@ -710,7 +710,6 @@ color:var(--fg);margin:0 0 6px 8px}
 body.compact .mz .zl i{width:7px;height:7px;border-radius:50%;background:var(--zdot);display:block}
 body.compact .mz .zl small{font-weight:700;opacity:.5;margin-left:1px}
 body.compact .mzapps{display:grid;grid-template-columns:repeat(var(--mzc,var(--mc)),1fr);gap:6px 2px}
-body.compact .mz.half{grid-column:span calc(var(--mc) / 2)}
 body.compact .mzapps:empty::after{content:'앱 없음 — 홈에 추가에서 넣어 보세요';font-size:calc(11px * var(--fz));opacity:.5;grid-column:1/-1;padding:4px 8px 6px}
 body.compact .hgrid .ap{padding:4px 2px;gap:5px;border-radius:14px;margin-top:0;align-self:start}
 body.compact .ap:hover{transform:none}
@@ -860,6 +859,8 @@ body.compact .cmenu button{padding:10px 12px;font-size:calc(13.5px * var(--fz))}
   <div class="lbl">배경</div>
   <div class="swatches" id="swatches"></div>
   <div class="sep"></div>
+  <button class="mi" data-mact="diag">
+    <svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>화면 진단</button>
   <button class="mi" data-mact="help">
     <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.4 2.3c-.6.3-.9.8-.9 1.4v.6"/><circle cx="12" cy="17" r=".9" fill="currentColor"/></svg>도움말</button>
   <button class="mi out" data-mact="logout">
@@ -875,6 +876,10 @@ body.compact .cmenu button{padding:10px 12px;font-size:calc(13.5px * var(--fz))}
 <div class="cmenu" id="cmenu"></div>
 
 <script>
+/* 실행 중 오류를 기록해 '화면 진단'에서 볼 수 있게 */
+let lastErr='';
+addEventListener('error',e=>{ lastErr=(e.message||'')+' @'+(e.lineno||''); });
+addEventListener('unhandledrejection',e=>{ lastErr=String(e.reason); });
 /* ══════════ 사용자 · 테마 ══════════ */
 const USER={id:'yoon.gb', name:'윤길배', title:'대표이사', firm:'성현회계법인',
             mail:'yoon.gb@shcpa.kr', init:'윤길'};
@@ -1352,7 +1357,7 @@ function makeItem(o){
 function renderCompact(){
   const zs=layout.filter(o=>o.k==='z');
   const ord=(a,b)=>a.r-b.r||a.c-b.c||(a.k==='z'?-1:b.k==='z'?1:0);
-  [...layout].sort(ord).forEach(o=>{
+  [...layout].sort(ord).forEach(o=>{ try{
     if(o.k==='z'){
       const z=zones[o.id]; if(!z) return;
       const el=document.createElement('div');
@@ -1361,7 +1366,7 @@ function renderCompact(){
       const apps=zoneApps(o).sort(ord);
       /* 앱이 적은 구역은 반 폭으로 두어 둘씩 나란히 놓인다 */
       const half=apps.length<=MC/2;
-      if(half){ el.classList.add('half'); el.style.setProperty('--mzc',MC/2); }
+      if(half){ el.classList.add('half'); el.style.setProperty('--mzc',MC/2); el.style.gridColumn='span '+(MC/2); }
       el.innerHTML=`<div class="zl"><i></i>${z.n}<small class="tn">${apps.length}</small></div><div class="mzapps"></div>`;
       const box=el.querySelector('.mzapps');
       apps.forEach(a=>{ const ae=makeItem(a); if(ae){ ae.style.gridArea=''; box.appendChild(ae); } });
@@ -1371,7 +1376,7 @@ function renderCompact(){
       el.style.gridArea='';
       /* 작은 위젯(마감 · AQI 지수)은 1×2로 줄여 둘씩 나란히, 큰 위젯은 전체 폭 */
       const small=o.cs<=2;
-      el.style.setProperty('--mcs', small?MC/2:MC);
+      el.style.setProperty('--mcs', small?MC/2:MC); el.style.gridColumn='span '+(small?MC/2:MC);
       el.style.setProperty('--mrs', small?1:o.rs);
       if(small){ el.dataset.r=1; el.dataset.c=2; }
       el.querySelector('.wgc').style.setProperty('--s',1);
@@ -1379,7 +1384,7 @@ function renderCompact(){
     }else if(!zs.some(z=>within(o,z))){
       const el=makeItem(o); if(el){ el.style.gridArea=''; hgrid.appendChild(el); }
     }
-  });
+  }catch(err){ lastErr=String(err&&err.message||err); console.error('renderCompact',o,err); } });
 }
 function renderGrid(){
   hgrid.querySelectorAll('[data-uid]').forEach(n=>n.remove());
@@ -2279,6 +2284,7 @@ document.addEventListener('click',e=>{
     if(a==='settings'||a==='profile') openApp('settings');
     else if(a==='notice') openApp('notice');
     else if(a==='help') toast('도움말은 준비 중입니다');
+    else if(a==='diag') alert(diagText());
     else if(a==='logout') toast(USER.name+' 님, 로그아웃되었습니다 (프로토타입)');
     return;
   }
@@ -2362,6 +2368,19 @@ sboard.addEventListener('pointerdown',e=>{
   const up=()=>{ bar.releasePointerCapture(e.pointerId); bar.removeEventListener('pointermove',mv); bar.removeEventListener('pointerup',up); saveMemos(); };
   bar.addEventListener('pointermove',mv); bar.addEventListener('pointerup',up);
 });
+
+/* 화면 진단: 기기 판정·배율·렌더 결과를 한 번에 보여 준다 (모바일 문제 확인용) */
+function diagText(){
+  return ['SH Portal 화면 진단',
+    'UA: '+navigator.userAgent,
+    'inner: '+innerWidth+'×'+innerHeight+'  screen: '+screen.width+'×'+screen.height+'  dpr: '+devicePixelRatio,
+    'touch: '+navigator.maxTouchPoints+'  coarse: '+matchMedia('(pointer:coarse)').matches+'  hover:none: '+matchMedia('(hover:none)').matches,
+    'handheld: '+handheld+'  zoom: '+Z+'  VW: '+Math.round(VW())+'  compact: '+compact+'  phone: '+phone+'  cols: '+MC,
+    'layout: '+layout.length+' (위젯 '+layout.filter(o=>o.k==='w').length+' · 구역 '+layout.filter(o=>o.k==='z').length+' · 앱 '+layout.filter(o=>o.k==='a').length+')',
+    'rendered: 위젯 '+hgrid.querySelectorAll('.wg').length+' · 구역 '+hgrid.querySelectorAll('.mz,.zone').length+' · 앱 '+hgrid.querySelectorAll('.ap').length,
+    'grid: '+getComputedStyle(hgrid).display+' / '+getComputedStyle(hgrid).gridTemplateColumns.split(' ').length+'열, home '+Math.round(homeEl.clientWidth)+'×'+Math.round(homeEl.clientHeight)+' scroll '+homeEl.scrollHeight,
+    'error: '+(lastErr||'없음')].join('\n');
+}
 
 /* ══════════ 이벤트 ══════════ */
 document.addEventListener('click',e=>{
