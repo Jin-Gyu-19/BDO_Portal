@@ -92,6 +92,14 @@ padding:0 18px 0 26px;font-size:calc(12.5px * var(--fz));font-weight:700;z-index
 text-shadow:var(--tshadow);pointer-events:none}
 .status .sright{margin-left:auto;display:flex;align-items:center;gap:9px;pointer-events:auto}
 
+/* 왼쪽 브랜드 — BDO 로고 + Portal */
+.status .brand{display:flex;align-items:center;gap:9px;pointer-events:none}
+.status .brand img{height:20px;width:auto;display:block;flex-shrink:0}
+.status .brand span{font-size:calc(13px * var(--fz));font-weight:700;letter-spacing:-0.2px}
+body[data-theme="dark"] .status .brand img{background:#fff;padding:2px 6px;border-radius:5px;height:24px}
+body.phone .status .brand img{height:17px}
+body.phone .status .brand span{font-size:calc(11px * var(--fz))}
+
 /* 상태 표시줄 (조직명 + 프로필만) */
 .status .sys{font-size:calc(11px * var(--fz));font-weight:700;opacity:.88}
 
@@ -827,7 +835,7 @@ body.compact .cmenu button{padding:10px 12px;font-size:calc(13.5px * var(--fz))}
 <div class="wall"><span class="b1"></span><span class="b2"></span><span class="b3"></span></div>
 
 <div class="status">
-  <div class="tn" id="clock"></div>
+  <div class="brand"><img src="data:image/png;base64,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" alt="BDO"><span>Portal</span></div>
   <div class="sright">
     <button class="sact" id="tile4" title="열린 창을 4분할로 정렬 (Ctrl/⌘+4) · 창을 화면 네 모서리로 끌어도 4분할됩니다">
       <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18M3 12h18"/></svg>
@@ -845,7 +853,7 @@ body.compact .cmenu button{padding:10px 12px;font-size:calc(13.5px * var(--fz))}
 <div class="home" id="home">
   <div class="greet">
       <h1><em>윤길배 <span class="role">대표이사</span></em><span class="tail">님, 좋은 아침입니다</span></h1>
-      <p>성현회계법인 · 진행 중 12건 · 리뷰 대기 47건 — 홈에는 핵심 앱만 두었습니다. Dock의 ‘홈에 추가’에서 App · 위젯 · 구역을 더하거나, 우클릭으로 빼 보세요</p>
+      <p>성현회계법인 · 진행 중 12건 · 리뷰 대기 47건</p>
   </div>
   <div class="hgrid" id="hgrid"></div>
 </div>
@@ -2518,15 +2526,6 @@ document.addEventListener('input',e=>{
   clearTimeout(memoSaveT);
   memoSaveT=setTimeout(()=>{ saveMemos(); paintMemo(); paintStickies(); paintMemoWidget(); },400);
 });
-
-/* ══════════ 시계 (현재 날짜·시각) ══════════ */
-const DOW=['일','월','화','수','목','금','토'];
-function tickClock(){
-  const d=new Date(), h=d.getHours(), m=String(d.getMinutes()).padStart(2,'0');
-  document.getElementById('clock').textContent=
-    `${h<12?'오전':'오후'} ${((h+11)%12)+1}:${m} · ${d.getMonth()+1}월 ${d.getDate()}일 (${DOW[d.getDay()]})`;
-}
-tickClock(); setInterval(tickClock,10000);
 
 /* ══════════ 스티커 메모 동작 ══════════ */
 const STK_COLORS={y:'#FFF59D',p:'#FBC8D9',g:'#CFF0C8',b:'#CFE5FF',o:'#FFD9A8'};
