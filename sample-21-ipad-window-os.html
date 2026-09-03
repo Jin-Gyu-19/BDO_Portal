@@ -895,6 +895,22 @@ font-size:calc(11.5px * var(--fz));color:var(--ink);outline:none;transition:back
 /* 좁은 화면: Dock 위쪽에 버튼을 두고, 대화창은 좌우를 채운다 */
 body.compact .kalfab{right:10px;bottom:calc(var(--dockH) + 6px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));width:76px;height:76px}
 body.compact .kalfab .kdot{top:14px}
+/* 숨기기: 버튼 위에 마우스를 올리면 왼쪽 위에 × 배지, 대화창 머리에도 숨기기 버튼. 숨기면 오른쪽 가장자리에 로봇이 빼꼼 남는다 */
+.kalfab .kh8{position:absolute;top:4px;left:0;width:24px;height:24px;border-radius:50%;background:#fff;color:#3A3A3C;
+box-shadow:0 2px 8px rgba(0,0,0,.22);display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.6);
+transition:opacity .15s,transform .15s;cursor:pointer}
+.kalfab .kh8 .ic{width:12px;height:12px;stroke-width:2.6}
+.kalfab:hover .kh8,.kalfab:focus-visible .kh8{opacity:1;transform:none}
+.kalfab.on .kh8{display:none}
+body.kalhide .kalfab,body.kalhide .kal{display:none}
+.kalpeek{position:fixed;right:0;bottom:calc(34px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));z-index:860;
+width:38px;height:66px;padding:0;border-radius:18px 0 0 18px;background:#1C1F27;cursor:pointer;display:none;overflow:hidden;
+box-shadow:0 8px 22px rgba(14,22,30,.3);transition:width .18s cubic-bezier(.3,1.3,.5,1)}
+.kalpeek .kp{position:absolute;top:50%;left:6px;width:56px;height:48px;transform:translateY(-50%);background:center/contain no-repeat}
+.kalpeek:hover{width:50px}
+.kalpeek:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+body.kalhide .kalpeek{display:block}
+body.compact .kalpeek{bottom:calc(var(--dockH) + 14px + env(safe-area-inset-bottom,0px) + var(--vvb,0px))}
 body.compact .kalfab .ktip{display:none}
 body.compact .kal{right:10px;bottom:calc(var(--dockH) + 94px + env(safe-area-inset-bottom,0px) + var(--vvb,0px));
 width:min(420px,calc(100vw - 20px));height:min(560px,calc(100vh - var(--statusH) - var(--dockH) - 116px));transform-origin:calc(100% - 27px) calc(100% + 40px)}
@@ -990,6 +1006,8 @@ body.phone .kal{left:10px;width:auto}
   <div class="lbl">배경</div>
   <div class="swatches" id="swatches"></div>
   <div class="sep"></div>
+  <button class="mi" data-mact="kal">
+    <svg class="ic" viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="11" rx="3"/><circle cx="9.5" cy="13.5" r="1.2" fill="currentColor"/><circle cx="14.5" cy="13.5" r="1.2" fill="currentColor"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/></svg><span id="kalMi">AI 칼 버튼 숨기기</span></button>
   <button class="mi" data-mact="diag">
     <svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>화면 진단</button>
   <button class="mi" data-mact="help">
@@ -1011,6 +1029,7 @@ body.phone .kal{left:10px;width:auto}
   <div class="kh">
     <div class="kav" id="kalAv"></div>
     <div class="kt"><div class="kn">AI Assistant 칼</div><div class="ks"><i></i>Claude 기반 · 지금 응답 가능</div></div>
+    <button data-kact="hide" title="버튼 숨기기 — 오른쪽 가장자리의 로봇을 누르면 다시 나타납니다"><svg class="ic" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.1A9.8 9.8 0 0 1 12 5c5 0 9 4 10 7a11.6 11.6 0 0 1-2.6 3.7M6.6 6.6A11.7 11.7 0 0 0 2 12c1 3 5 7 10 7a9.7 9.7 0 0 0 3.4-.6"/></svg></button>
     <button data-kact="clear" title="대화 지우기"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
     <button data-kact="close" title="접기"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
   </div>
@@ -1032,7 +1051,9 @@ body.phone .kal{left:10px;width:auto}
   <span class="kx"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
   <span class="kdot"></span>
   <span class="ktip">AI 칼에게 물어보기</span>
+  <span class="kh8" data-kact="hide" title="버튼 숨기기" role="button" aria-label="칼 버튼 숨기기"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></span>
 </button>
+<button class="kalpeek" id="kalpeek" aria-label="AI Assistant 칼 다시 보이기" title="AI 칼 다시 보이기"><span class="kp" id="kalPeekFace"></span></button>
 
 <script>
 /* 실행 중 오류를 기록해 '화면 진단'에서 볼 수 있게 */
@@ -2572,6 +2593,7 @@ document.addEventListener('click',e=>{
     if(a==='settings'||a==='profile') openApp('settings');
     else if(a==='notice') openApp('notice');
     else if(a==='help') toast('도움말은 준비 중입니다');
+    else if(a==='kal') setKalHidden(!document.body.classList.contains('kalhide'));
     else if(a==='diag') alert(diagText());
     else if(a==='logout') toast(USER.name+' 님, 로그아웃되었습니다 (프로토타입)');
     return;
@@ -2768,6 +2790,17 @@ const kal=document.getElementById('kal'), kalfab=document.getElementById('kalfab
       kalIn=document.getElementById('kalIn'), kalGo=document.getElementById('kalGo');
 document.getElementById('kalFace').style.backgroundImage=`url(${ICONS.robot_cut})`;   /* 바탕을 뺀 로봇 모양 */
 document.getElementById('kalAv').style.backgroundImage=`url(${ICONS.robot})`;
+document.getElementById('kalPeekFace').style.backgroundImage=`url(${ICONS.robot_cut})`;
+/* 숨기기/다시 보이기 — 계정별로 기억한다 */
+const KKEY='sh-portal:'+USER.id+':kal';
+const kalHidden=()=>document.body.classList.contains('kalhide');
+function setKalHidden(h,quiet){
+  if(h) closeKal();
+  document.body.classList.toggle('kalhide',h); store.set(KKEY,h?'1':'0');
+  const mi=document.getElementById('kalMi'); if(mi) mi.textContent=h?'AI 칼 버튼 보이기':'AI 칼 버튼 숨기기';
+  if(!quiet) toast(h?'칼을 숨겼습니다 · 오른쪽 가장자리의 로봇을 누르면 다시 나타납니다':'칼이 다시 나타났습니다');
+}
+document.getElementById('kalpeek').addEventListener('click',()=>{ setKalHidden(false,true); openKal(); });
 const KAL_SEED=[
   ['ai','안녕하세요, 대표이사님. 오늘 <b>알파테크</b> 현장수행이 72%까지 올라왔고 리뷰 대기 조서가 14건 쌓였습니다. 무엇을 도와드릴까요?']
 ];
@@ -2788,6 +2821,7 @@ function kalPush(role,html){
 function kalReset(){ kalChat.innerHTML=''; KAL_SEED.forEach(([r,t])=>kalPush(r,t)); }
 kalReset();
 function openKal(){
+  if(kalHidden()) setKalHidden(false,true);   /* 검색·서랍에서 열면 숨긴 버튼도 다시 나타난다 */
   if(kalOpen) return; kalOpen=true;
   kal.classList.add('show'); kal.setAttribute('aria-hidden','false');
   kalfab.classList.add('on'); kalfab.setAttribute('aria-expanded','true'); kalfab.setAttribute('aria-label','AI Assistant 칼 접기');
@@ -2802,6 +2836,7 @@ function closeKal(){
   kalIn.blur();
 }
 function toggleKal(){ kalOpen?closeKal():openKal(); }
+if(store.get(KKEY)==='1') setKalHidden(true,true);   /* 지난번에 숨겨 두었으면 숨긴 채로 시작 */
 let kalBusy=false;
 function kalSend(text){
   text=(text||'').trim(); if(!text||kalBusy) return;
@@ -2812,9 +2847,10 @@ function kalSend(text){
   const ans=hit?hit[1]:`<b>“${text.slice(0,24)}${text.length>24?'…':''}”</b>에 대해 찾아보고 있어요. 관련 조서·공지·프로젝트를 모아 정리해 드릴게요. 우선 리뷰함과 프로젝트 현황을 확인해 보시겠어요?`;
   setTimeout(()=>{ typing.classList.remove('typing'); typing.innerHTML=ans; kalChat.scrollTop=kalChat.scrollHeight; kalBusy=false; },700+Math.min(900,text.length*25));
 }
-kalfab.addEventListener('click',toggleKal);
+kalfab.addEventListener('click',e=>{ if(e.target.closest('.kh8')){ setKalHidden(true); return; } toggleKal(); });
 kal.addEventListener('click',e=>{
-  const b=e.target.closest('[data-kact]'); if(b){ b.dataset.kact==='close'?closeKal():kalReset(); return; }
+  const b=e.target.closest('[data-kact]');
+  if(b){ const k=b.dataset.kact; k==='close'?closeKal():k==='hide'?setKalHidden(true):kalReset(); return; }
   const c=e.target.closest('[data-q]'); if(c){ kalSend(c.dataset.q); kalIn.focus(); }
 });
 document.getElementById('kalForm').addEventListener('submit',e=>{ e.preventDefault(); kalSend(kalIn.value); });
