@@ -1225,7 +1225,7 @@ const mobileUA=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
   || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints>1);   /* iPadOS는 Mac으로 보고한다 */
 const handheld=(navigator.maxTouchPoints>0 || matchMedia('(pointer:coarse)').matches)
   && Math.min(screen.width,screen.height)<=900
-  && (mobileUA || matchMedia('(hover:none)').matches);                        /* 터치 노트북은 제외 */
+  && (mobileUA || (matchMedia('(hover:none)').matches && !/Windows NT|X11|CrOS/.test(navigator.userAgent)));  /* 터치 노트북은 제외 */
 const devW=()=>{ const a=Math.min(screen.width,screen.height), b=Math.max(screen.width,screen.height);
   return innerWidth>innerHeight?b:a; };
 let Z=1;
