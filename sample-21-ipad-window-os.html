@@ -687,6 +687,33 @@ body.compact .mlist{width:auto;max-height:42%;border-right:none;border-bottom:.5
 .wg .mlines .drow{padding:1px 0}
 .wg .mlines .drow .dd{min-width:calc(40px * var(--fz));opacity:.6}
 .wg .mempty{padding:12px 0;text-align:left;color:inherit;opacity:.6}
+/* AI 칼 위젯 — 최근 대화 몇 줄과 바로 묻는 입력칸 */
+.wg.kalw .wgc{display:flex;flex-direction:column}
+.wg.kalw .hd .sq{background:#1C1F27 center/78% no-repeat}
+.klines{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;margin-top:10px}
+.kb{max-width:88%;flex-shrink:0;font-size:calc(10.5px * var(--fz));line-height:1.5;padding:6px 10px;border-radius:13px;word-break:keep-all}
+/* 두 줄로 자르는 클램프는 안쪽 span에 — 바깥 padding 밑으로 세 번째 줄이 비치지 않도록 */
+.kb .kt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.kb.ai{align-self:flex-start;background:rgba(20,30,45,.06);border-bottom-left-radius:4px}
+.kb.me{align-self:flex-end;background:var(--red);color:#fff;border-bottom-right-radius:4px}
+.kb b{font-weight:800}
+.kchips{display:flex;gap:5px;flex-wrap:nowrap;margin-top:8px;overflow:hidden;flex-shrink:0;
+-webkit-mask:linear-gradient(90deg,#000 82%,transparent);mask:linear-gradient(90deg,#000 82%,transparent)}
+.kchips button{font-size:calc(9.5px * var(--fz));font-weight:700;padding:3px 9px;border-radius:99px;
+border:1px solid rgba(20,30,45,.14);background:rgba(255,255,255,.7);color:inherit;white-space:nowrap}
+.kchips button:hover{border-color:var(--red);color:var(--red)}
+.kinw{margin-top:9px;margin-right:14px;flex-shrink:0;display:flex;align-items:center;gap:6px}   /* 오른쪽 여백: 크기 조정 손잡이 자리 */
+.kinw .kin{flex:1;min-width:0;background:rgba(20,30,45,.06);border:none;border-radius:99px;padding:7px 12px;font:inherit;
+font-size:calc(10.5px * var(--fz));color:inherit;outline:none;cursor:text}
+.kinw .kin::placeholder{color:inherit;opacity:.5}
+.kinw .kin:focus{background:rgba(20,30,45,.1);box-shadow:0 0 0 2px rgba(232,26,59,.22)}
+.kinw .kgo{width:26px;height:26px;border-radius:50%;background:#1C1F27;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.kinw .kgo .ic{width:12px;height:12px;stroke-width:2.6}
+.wg.kalw[data-c="1"] .kchips,.wg.kalw[data-r="1"] .kchips{display:none}
+.wg.kalw[data-r="1"] .klines{display:none}
+body[data-theme="dark"] .kb.ai{background:rgba(255,255,255,.14)}
+body[data-theme="dark"] .kinw .kin{background:rgba(255,255,255,.14)}
+body[data-theme="dark"] .kchips button{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)}
 /* 채팅 */
 .chatwrap{display:flex;flex-direction:column;height:100%}
 .chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:#FAFAFB}
@@ -1405,7 +1432,16 @@ const APPS = {
     </div>`}
 };
 /* ══════════ 위젯 정의 ══════════ */
+/* 칼 대화 기록 — 위젯과 플로팅 대화창이 함께 쓴다 */
+const kalLog=[];
+const kalLines=()=>kalLog.slice(-4).map(m=>`<div class="kb ${m.r}"><span class="kt">${m.t}</span></div>`).join('');
 const WIDGETS={
+  kal:{open:'ai', cls:'kalw', body:()=>`
+    <div class="hd"><span class="sq" style="background-image:url(${ICONS.robot_cut})"></span>AI 칼<span class="cnt"> · 응답 가능</span></div>
+    <div class="klines">${kalLines()}</div>
+    <div class="kchips"><button data-kq="오늘 마감 일정 알려줘">오늘 마감</button><button data-kq="리뷰 대기 조서 정리해줘">리뷰 대기</button><button data-kq="ISQM1 보고서 목차 잡아줘">ISQM1 목차</button></div>
+    <div class="kinw"><input class="kin" type="text" placeholder="칼에게 물어보기…" maxlength="300" aria-label="칼에게 물어보기">
+      <button class="kgo" data-kgo aria-label="보내기"><svg class="ic" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div>`},
   dday:{open:'cal', cls:'deadline', body:()=>`
     <div class="hd"><span class="sq" style="background:#FFB454;color:#1A2530">!</span>다가오는 마감</div>
     <div class="big tn">D-12</div>
@@ -1516,7 +1552,8 @@ const WG_META={
   aqi   :{n:'AQI 지수',       d:'감사품질지표 링과 주요 항목',       rs:2,cs:2, dot:'#1F9D61', mark:'AQI'},
   proj  :{n:'진행 중 프로젝트', d:'감사 진행률 상위 5건',              rs:2,cs:4, dot:'#D3374F', mark:'P'},
   notice:{n:'공지사항',       d:'최근 전사 공지 5건',               rs:1,cs:4, dot:'#5C6E80', mark:'N'},
-  memo  :{n:'메모',           d:'최근 메모 미리보기 · 눌러서 편집',   rs:2,cs:2, dot:'#E9B840', mark:'M'}
+  memo  :{n:'메모',           d:'최근 메모 미리보기 · 눌러서 편집',   rs:2,cs:2, dot:'#E9B840', mark:'M'},
+  kal   :{n:'AI 칼',          d:'최근 대화와 바로 묻는 입력칸',       rs:2,cs:2, dot:'#1C1F27', mark:'칼'}
 };
 /* 앱 → 카테고리 (모든 App 서랍의 분류, 홈 추가 시 들어갈 구역) */
 const APP_CAT={aud:'audit',k1118:'audit',xbrl:'audit',fin:'audit',rev:'audit',aqi:'audit',
@@ -1544,7 +1581,7 @@ const LAYOUT_DEFAULT=[
 ];
 const DOCK_DEFAULT=['aud','rev','cal','memo'];
 const DOCK_MAX=10;
-const WG_DEF_COLS={dday:2,aqi:2,notice:4,proj:4,memo:2};   /* 축소 비율 기준 */
+const WG_DEF_COLS={dday:2,aqi:2,notice:4,proj:4,memo:2,kal:2};   /* 축소 비율 기준 */
 
 let layout=LAYOUT_DEFAULT.map(o=>({...o}));
 let dockOrder=[...DOCK_DEFAULT];
@@ -1661,8 +1698,19 @@ function fitWidget(el){
     const cur=+c.style.getPropertyValue('--s')||1;
     c.style.setProperty('--s', Math.max(.6, Math.round(cur*(c.clientHeight-2)/c.scrollHeight*100)/100));
   }
+  if(el.dataset.id==='kal') trimKalWidget(el);
+}
+function trimKalWidget(el){
+  const k=el.querySelector('.klines'); if(!k) return;
+  k.innerHTML=kalLines();
+  if(compact){ while(k.children.length>3) k.firstChild.remove(); return; }
+  /* 말풍선은 아래(입력칸) 쪽에 붙으므로, 위로 밀려 나간 오래된 것부터 지운다 */
+  const top=()=>k.getBoundingClientRect().top-1, first=()=>k.firstElementChild.getBoundingClientRect().top;
+  let n=0; while(k.children.length>1 && first()<top() && n++<10) k.firstChild.remove();
+  if(k.children.length===1 && first()<top()) k.firstChild.style.display='none';
 }
 function fitWidgets(){ hgrid.querySelectorAll('.wg').forEach(fitWidget); }
+function paintKalWidget(){ hgrid.querySelectorAll('.wg[data-id="kal"]').forEach(trimKalWidget); }
 function renderDock(){
   dock.querySelectorAll('[data-id]').forEach(n=>n.remove());
   dockOrder.forEach(id=>{
@@ -1895,6 +1943,7 @@ function startResize(e,handle){
 }
 
 document.addEventListener('pointerdown',e=>{
+  if(e.target.closest('.kinw,.kchips')) return;   /* 칼 위젯의 입력칸·칩은 끌지 않는다 */
   if(compact){ longPress(e); return; }         /* 좁은 화면: 끌어 옮기기 대신 길게 눌러 메뉴 */
   const rsz=e.target.closest('.rsz');
   if(rsz){ e.preventDefault(); e.stopPropagation(); startResize(e,rsz); return; }
@@ -2760,6 +2809,12 @@ function diagText(){
 /* ══════════ 이벤트 ══════════ */
 document.addEventListener('click',e=>{
   if(justDragged) return;
+  /* 칼 위젯: 칩은 바로 묻고, 입력칸은 창을 열지 않는다 */
+  const kq=e.target.closest('.wg [data-kq]');
+  if(kq){ openKal(); kalSend(kq.dataset.kq); return; }
+  const kgo=e.target.closest('.wg [data-kgo]');
+  if(kgo){ const inp=kgo.parentElement.querySelector('.kin'); if(inp.value.trim()){ openKal(); kalSend(inp.value); inp.value=''; } else openKal(); return; }
+  if(e.target.closest('.wg .kin')) return;
   const o=e.target.closest('[data-open]');
   if(o){ openApp(o.dataset.open, rectOf(o.querySelector('.ish')||o)); return; }
   const d=e.target.closest('[data-dock]');
@@ -2814,11 +2869,13 @@ const KAL_ANS=[
   [/안녕|고마|감사/, '네, 대표이사님. 언제든 불러 주세요.']
 ];
 let kalOpen=false;
-function kalPush(role,html){
+function kalPush(role,html,log=true){
   const d=document.createElement('div'); d.className='msg '+role; d.innerHTML=html; kalChat.appendChild(d);
-  kalChat.scrollTop=kalChat.scrollHeight; return d;
+  kalChat.scrollTop=kalChat.scrollHeight;
+  if(log){ kalLog.push({r:role,t:html}); paintKalWidget(); }
+  return d;
 }
-function kalReset(){ kalChat.innerHTML=''; KAL_SEED.forEach(([r,t])=>kalPush(r,t)); }
+function kalReset(){ kalChat.innerHTML=''; kalLog.length=0; KAL_SEED.forEach(([r,t])=>kalPush(r,t)); }
 kalReset();
 function openKal(){
   if(kalHidden()) setKalHidden(false,true);   /* 검색·서랍에서 열면 숨긴 버튼도 다시 나타난다 */
@@ -2842,10 +2899,11 @@ function kalSend(text){
   text=(text||'').trim(); if(!text||kalBusy) return;
   kalPush('me',text.replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])));
   kalIn.value=''; kalGo.classList.add('off'); kalBusy=true;
-  const typing=kalPush('ai','<i></i><i></i><i></i>'); typing.classList.add('typing');
+  const typing=kalPush('ai','<i></i><i></i><i></i>',false); typing.classList.add('typing');
   const hit=KAL_ANS.find(([re])=>re.test(text));
   const ans=hit?hit[1]:`<b>“${text.slice(0,24)}${text.length>24?'…':''}”</b>에 대해 찾아보고 있어요. 관련 조서·공지·프로젝트를 모아 정리해 드릴게요. 우선 리뷰함과 프로젝트 현황을 확인해 보시겠어요?`;
-  setTimeout(()=>{ typing.classList.remove('typing'); typing.innerHTML=ans; kalChat.scrollTop=kalChat.scrollHeight; kalBusy=false; },700+Math.min(900,text.length*25));
+  setTimeout(()=>{ typing.classList.remove('typing'); typing.innerHTML=ans; kalChat.scrollTop=kalChat.scrollHeight; kalBusy=false;
+    kalLog.push({r:'ai',t:ans}); paintKalWidget(); },700+Math.min(900,text.length*25));
 }
 kalfab.addEventListener('click',e=>{ if(e.target.closest('.kh8')){ setKalHidden(true); return; } toggleKal(); });
 kal.addEventListener('click',e=>{
@@ -2855,6 +2913,12 @@ kal.addEventListener('click',e=>{
 });
 document.getElementById('kalForm').addEventListener('submit',e=>{ e.preventDefault(); kalSend(kalIn.value); });
 kalIn.addEventListener('input',()=>kalGo.classList.toggle('off',!kalIn.value.trim()));
+hgrid.addEventListener('keydown',e=>{
+  const inp=e.target.closest('.wg .kin'); if(!inp) return;
+  if(e.key==='Enter'){ e.preventDefault(); if(inp.value.trim()){ openKal(); kalSend(inp.value); inp.value=''; } }
+  else if(e.key==='Escape') inp.blur();
+});
+paintKalWidget();
 
 addEventListener('resize',()=>{
   const wasCompact=compact;
