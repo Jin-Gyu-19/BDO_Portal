@@ -1038,8 +1038,10 @@ body:not([data-theme="dark"]) .zone .zl{background:#fff;border-color:rgba(20,30,
 .kal .chips button,.kchips button{font-weight:600}
 
 /* ══ A-3안 — 칼 검색 홈: 위젯·앱·플로팅 칼·상단 로고를 감추고 가운데 큰 로고 + 긴 질문창 + 추천 앱만 ══ */
-body.a3 .home,body.a3 #kalfab,body.a3 #kalpeek,body.a3 #kal,body.a3 .status .brand,body.a3 #resetLayout,body.a3 #tile4,body.a3 #dockLib,
+body.a3 .home,body.a3 #kalfab,body.a3 #kalpeek,body.a3 #kal,body.a3 .status .brand,body.a3 #resetLayout,body.a3 #tile4,
 body.a3 .stickies{display:none!important}
+/* 검색 홈의 서랍은 '앱 관리': 탭·홈 토글 없이 카테고리별 전체 App */
+body.a3 .libtabs,body.a3 .lib .ltg{display:none!important}
 .a3home{display:none}
 body.a3 .a3rec{display:none}
 body.a3 .a3home{display:flex;position:fixed;inset:var(--statusH) 0 var(--dockH);overflow:auto;flex-direction:column;align-items:center;
@@ -1112,7 +1114,21 @@ body.phone .a3app .an{font-size:calc(9px * var(--fz));max-width:84px}
 body.compact .a3logo{height:52px}
 body.compact .a3rec{margin-top:30px}
 /* 검색 홈의 Dock: 아이콘을 키우되(최대 58px) 개수가 많으면 화면 폭에 맞춰 줄인다(--dks는 JS가 계산) */
-body.a3 .dock{gap:8px}
+body.a3 .dock{gap:8px;align-items:flex-end}
+body.a3 .dock>.dk.dsearch{margin-bottom:0}
+/* 카테고리 묶음: 위에 작은 라벨, 사이에는 또렷한 구분선 */
+body.a3 .dgrp{position:relative;display:flex;align-items:flex-end;gap:8px;padding-top:calc(13px * var(--fz))}
+body.a3 .dgrp .dgl{position:absolute;left:2px;top:0;font-size:calc(8.5px * var(--fz));font-weight:700;letter-spacing:.3px;
+color:var(--fg);opacity:.5;white-space:nowrap;line-height:1;display:flex;align-items:center;gap:4px}
+body.a3 .dgrp .dgl i{width:5px;height:5px;border-radius:50%;background:var(--zdot,var(--fg));display:inline-block;opacity:.9}
+body.a3:not(.compact) .dock.over{max-width:calc(100vw - 24px);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;padding-bottom:8px}
+body.a3:not(.compact) .dock.over::-webkit-scrollbar{display:none}
+body.a3:not(.compact) .dock.over>*{flex-shrink:0}
+body.a3:not(.compact) .dock.over>:first-child{margin-left:auto}
+body.a3:not(.compact) .dock.over>:last-child{margin-right:auto}
+body.a3 .dsep{width:2px;height:var(--dks,58px);opacity:.28;border-radius:2px;background:var(--fg);margin:0 3px;align-self:flex-end}
+body[data-theme="dark"].a3 .dsep{opacity:.4}
+body.compact.a3 .dsep{height:42px}
 body.a3 .dk{width:var(--dks,58px);height:var(--dks,58px)}
 body.a3 .dk.soon{opacity:.45;filter:grayscale(.2) drop-shadow(0 4px 8px rgba(14,22,30,.14))}
 body.a3 .dk.soon:hover{opacity:.7}
@@ -1801,6 +1817,16 @@ function a3DockIds(){
   const rest=Object.keys(APPS).filter(id=>id!=='ai'&&!recent.includes(id));
   return [...recent,'sep',...rest];
 }
+/* 검색 홈 Dock의 묶음: 최근 4개 · 그다음 카테고리(감사 · 세무 · 용역 · 행정 · AI)별로 */
+function a3DockGroups(){
+  const ids=a3DockIds(), recent=ids.slice(0,ids.indexOf('sep')), rest=ids.slice(ids.indexOf('sep')+1);
+  const groups=[{id:'recent',n:'최근',dot:'#E81A3B',ids:recent}];
+  Object.entries(ZONES_BUILTIN).forEach(([cat,z])=>{
+    const g=rest.filter(id=>APP_CAT[id]===cat); if(g.length) groups.push({id:cat,n:z.n,dot:z.dot,ids:g});
+  });
+  const other=rest.filter(id=>!ZONES_BUILTIN[APP_CAT[id]]); if(other.length) groups.push({id:'etc',n:'기타',dot:'#8A9099',ids:other});
+  return groups.filter(g=>g.ids.length);
+}
 const DOCK_MAX=10;
 const WG_DEF_COLS={dday:2,aqi:2,notice:4,proj:4,memo:2,kal:2};   /* 축소 비율 기준 */
 
@@ -1934,12 +1960,31 @@ function trimKalWidget(el){
 }
 function fitWidgets(){ hgrid.querySelectorAll('.wg').forEach(fitWidget); }
 function paintKalWidget(){ hgrid.querySelectorAll('.wg[data-id="kal"]').forEach(trimKalWidget); if(a3chat) paintA3Chat(); }
+function dockItem(id){
+  const a=APPS[id]; if(!a) return null;
+  const el=document.createElement('button');
+  el.className='dk'+(a.soon?' soon':''); el.dataset.dock=id; el.dataset.id=id;
+  el.style.setProperty('--g',a.bg);
+  if(a.fg) el.style.color=a.fg;
+  el.setAttribute('aria-label',a.name);
+  el.innerHTML=`<span class="dksurf${hasIco(id)?' img':''}" style="${icoBg(id)}"></span><span class="dkl">${dockFace(id)}</span>`+
+    `<span class="run"></span><span class="tip">${a.name}</span>`;
+  return el;
+}
 function renderDock(){
-  dock.querySelectorAll('[data-id],.dsep.a3sep').forEach(n=>n.remove());
+  dock.querySelectorAll('[data-id],.dsep.a3sep,.dgrp').forEach(n=>n.remove());
   const a3=document.body.classList.contains('a3');
-  const ids=a3?a3DockIds():dockOrder;
-  ids.forEach(id=>{
-    if(id==='sep'){ const sp=document.createElement('div'); sp.className='dsep a3sep'; dock.appendChild(sp); return; }
+  if(a3){
+    a3DockGroups().forEach((g,i)=>{
+      if(i){ const sp=document.createElement('div'); sp.className='dsep a3sep'; dock.appendChild(sp); }
+      const box=document.createElement('div'); box.className='dgrp'; box.dataset.grp=g.id; box.style.setProperty('--zdot',g.dot);
+      box.innerHTML=`<span class="dgl"><i></i>${g.n}</span>`;
+      g.ids.forEach(id=>{ const el=dockItem(id); if(el) box.appendChild(el); });
+      dock.appendChild(box);
+    });
+    markDock(); sizeA3Dock(); return;
+  }
+  dockOrder.forEach(id=>{
     const a=APPS[id]; if(!a) return;
     const el=document.createElement('button');
     el.className='dk'+(a.soon?' soon':''); el.dataset.dock=id; el.dataset.id=id;
@@ -1951,14 +1996,15 @@ function renderDock(){
     dock.appendChild(el);
   });
   markDock();
-  if(a3) sizeA3Dock();
 }
 /* 검색 홈 Dock 아이콘 크기: 화면 폭에 들어가는 최대 크기(42~58px) */
 function sizeA3Dock(){
   const n=dock.querySelectorAll('.dk').length, seps=dock.querySelectorAll('.dsep').length, gap=8;
-  const avail=VW()-96-(n+seps-1)*gap-seps*1;
-  const px=Math.max(42,Math.min(58,Math.floor(avail/n)));
+  const avail=VW()-64-(n+seps-1)*gap-seps*8;
+  const raw=Math.floor(avail/n), px=Math.max(42,Math.min(58,raw));
   dock.style.setProperty('--dks',px+'px');
+  /* 42px로도 안 들어가면(폭 1025~1180 근처) 줄이지 말고 가로로 넘기게 */
+  dock.classList.toggle('over',raw<42 && !compact);
 }
 /* 최근 쓴 앱 — 계정별로 기억, 검색 홈 Dock 앞쪽 4개 */
 const RKEY='sh-portal:'+USER.id+':recent';
@@ -3174,8 +3220,15 @@ function setHomeMode(m,quiet){
   homeMode=m; store.set(HKEY,m);
   document.body.classList.toggle('a3',m==='search');
   const mi=document.getElementById('homeMi'); if(mi) mi.textContent='홈 스타일: '+(m==='search'?'칼 검색':'대시보드');
-  if(m==='search'){ closeKal(); paintA3Apps(); paintA3Chat(); }
+  if(m==='search'){ closeKal(); paintA3Apps(); paintA3Chat(); setLibTab('app'); }
   else { fitWidgets(); paintKalWidget(); }   /* 감춰진 채 재던 위젯을 보이는 상태에서 다시 맞춘다 */
+  /* 검색 옆 버튼: 검색 홈에서는 '앱 관리', 대시보드에서는 '홈에 추가' */
+  const lb=document.getElementById('dockLib'), s=m==='search';
+  lb.title=s?'앱 관리 (카테고리별 전체 App)':'홈에 추가 (App · 위젯 · 구역)'; lb.setAttribute('aria-label',s?'앱 관리':'홈에 추가');
+  lb.querySelector('.tip').textContent=s?'앱 관리 · 전체 App':'홈에 추가 · App · 위젯 · 구역';
+  const hd=document.querySelector('.libhd h2'), hp=document.querySelector('.libhd p');
+  if(hd) hd.textContent=s?'앱 관리':'홈에 추가';
+  if(hp) hp.textContent=s?'카테고리별 전체 App · 아이콘을 누르면 열립니다':'App · 위젯 · 구역을 홈에 넣거나 뺍니다. 홈에서는 우클릭으로도 뺄 수 있어요';
   renderDock();                               /* 검색 홈은 추천 앱 8개, 대시보드는 내 Dock 배치 */
   if(!quiet) toast(m==='search'?'칼 검색 홈으로 바꿨습니다':'대시보드 홈으로 바꿨습니다');
 }
