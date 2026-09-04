@@ -1037,6 +1037,7 @@ body:not([data-theme="dark"]) .zone .zl{background:#fff;border-color:rgba(20,30,
 body.a3 .home,body.a3 #kalfab,body.a3 #kalpeek,body.a3 #kal,body.a3 .status .brand,body.a3 #resetLayout,body.a3 #tile4,body.a3 #dockLib,
 body.a3 .stickies{display:none!important}
 .a3home{display:none}
+body.a3 .a3rec{display:none}
 body.a3 .a3home{display:flex;position:fixed;inset:var(--statusH) 0 var(--dockH);overflow:auto;flex-direction:column;align-items:center;
 padding:calc(9vh) 24px 24px;gap:0;scrollbar-width:none}
 body.a3 .a3home::-webkit-scrollbar{display:none}
@@ -1106,6 +1107,10 @@ body.compact .a3app .icon{width:54px;height:54px}
 body.phone .a3app .an{font-size:calc(9px * var(--fz));max-width:84px}
 body.compact .a3logo{height:52px}
 body.compact .a3rec{margin-top:30px}
+body.compact.a3 .dock{gap:7px}
+body.phone.a3 .dk{width:38px;height:38px}
+/* 오로라 배경의 좁은 화면: 상단 바가 단색 띠로 보이지 않게 유리판 */
+body.compact[data-theme="aurora"] .status{background:rgba(246,248,253,.62);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%)}
 body.compact .a3chat{max-height:none;overflow:visible}
 body.phone .a3bar .a3av{width:34px;height:34px}
 body.phone .a3bar input{font-size:calc(12px * var(--fz))}
@@ -1778,6 +1783,8 @@ const LAYOUT_DEFAULT=[
   ...row('a',2,9,['cal','notice'])
 ];
 const DOCK_DEFAULT=['aud','rev','cal','memo'];
+/* A-3 칼 검색 홈의 Dock — 추천 앱 8개를 하단 바에 띄운다 (대시보드 Dock 배치와는 별개) */
+var A3_DOCK=['aud','rev','fin','k1118','tax','ins','cal','notice'];
 const DOCK_MAX=10;
 const WG_DEF_COLS={dday:2,aqi:2,notice:4,proj:4,memo:2,kal:2};   /* 축소 비율 기준 */
 
@@ -1913,7 +1920,8 @@ function fitWidgets(){ hgrid.querySelectorAll('.wg').forEach(fitWidget); }
 function paintKalWidget(){ hgrid.querySelectorAll('.wg[data-id="kal"]').forEach(trimKalWidget); if(a3chat) paintA3Chat(); }
 function renderDock(){
   dock.querySelectorAll('[data-id]').forEach(n=>n.remove());
-  dockOrder.forEach(id=>{
+  const ids=document.body.classList.contains('a3')?A3_DOCK:dockOrder;
+  ids.forEach(id=>{
     const a=APPS[id]; if(!a) return;
     const el=document.createElement('button');
     el.className='dk'; el.dataset.dock=id; el.dataset.id=id;
@@ -2149,6 +2157,7 @@ document.addEventListener('pointerdown',e=>{
   if(rsz){ e.preventDefault(); e.stopPropagation(); startResize(e,rsz); return; }
   const el=e.target.closest('.hgrid [data-uid],.dk[data-id]');
   if(!el||e.button) return;
+  if(el.matches('.dk') && document.body.classList.contains('a3')) return;   /* 검색 홈의 Dock은 추천 앱 고정 */
   const sx=e.clientX, sy=e.clientY;
   let started=false;
   const move=ev=>{
@@ -3131,6 +3140,7 @@ function setHomeMode(m,quiet){
   const mi=document.getElementById('homeMi'); if(mi) mi.textContent='홈 스타일: '+(m==='search'?'칼 검색':'대시보드');
   if(m==='search'){ closeKal(); paintA3Apps(); paintA3Chat(); }
   else { fitWidgets(); paintKalWidget(); }   /* 감춰진 채 재던 위젯을 보이는 상태에서 다시 맞춘다 */
+  renderDock();                               /* 검색 홈은 추천 앱 8개, 대시보드는 내 Dock 배치 */
   if(!quiet) toast(m==='search'?'칼 검색 홈으로 바꿨습니다':'대시보드 홈으로 바꿨습니다');
 }
 function a3Send(text){ if(!(text||'').trim()) return; a3in.value=''; a3go.classList.add('off'); kalSend(text); }
