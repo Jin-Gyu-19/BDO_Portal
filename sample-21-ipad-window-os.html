@@ -1082,11 +1082,11 @@ body.chatting .a3rec{margin-top:26px}
 .a3app{display:flex;flex-direction:column;align-items:center;gap:8px;padding:6px 4px;background:none;border:none;color:var(--fg);min-width:0;
 transition:transform .15s}
 .a3app:hover{transform:translateY(-3px)}
-.a3app:hover .icon{filter:drop-shadow(0 8px 16px rgba(14,22,30,.22))}
+.a3app .ish{filter:drop-shadow(0 6px 12px rgba(14,22,30,.22)) drop-shadow(0 1.5px 3px rgba(14,22,30,.14));transition:filter .15s}
+.a3app:hover .ish{filter:drop-shadow(0 12px 22px rgba(14,22,30,.28)) drop-shadow(0 2px 4px rgba(14,22,30,.16))}
 .a3app .ish{position:relative;flex-shrink:0}
 .a3app .icon{width:60px;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;
-background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,0) 54%),var(--g,#8A9099);-webkit-mask:var(--sqmask);mask:var(--sqmask);
-transition:filter .15s}
+background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,0) 54%),var(--g,#8A9099);-webkit-mask:var(--sqmask);mask:var(--sqmask)}
 .a3app .icon small{font-size:8px;font-weight:700;opacity:.85}
 .a3app .bd{position:absolute;top:-6px;right:-6px;min-width:19px;height:19px;padding:0 5px;border-radius:10px;background:var(--red);color:#fff;
 font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid var(--pageBg)}
