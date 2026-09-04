@@ -1045,13 +1045,20 @@ body.a3 .libtabs,body.a3 .lib .ltg{display:none!important}
 .a3home{display:none}
 body.a3 .a3rec{display:none}
 body.a3 .a3home{display:flex;position:fixed;inset:var(--statusH) 0 var(--dockH);overflow:auto;flex-direction:column;align-items:center;
-padding:calc(17vh) 24px 24px;gap:0;scrollbar-width:none}
+padding:calc(17vh + 64px) 24px 24px;gap:0;scrollbar-width:none;transition:padding-top .38s cubic-bezier(.2,.8,.3,1)}
 body.a3 .a3home::-webkit-scrollbar{display:none}
-body.a3.chatting .a3home{padding-top:28px}
+body.a3.chatting .a3home{padding-top:60px}
 .a3hero{width:min(760px,100%);display:flex;flex-direction:column;align-items:center;transition:padding .3s}
 .a3logo{height:64px;width:auto;display:block;transition:height .3s}
 body.chatting .a3logo{height:36px}
 body[data-theme="dark"] .a3logo{background:#fff;padding:8px 14px;border-radius:12px;height:72px}
+/* 검색 홈: 가운데 크게 → 대화가 시작되면 작아지면서 좌측 상단으로 */
+body.a3 .a3logo{position:fixed;top:calc(var(--statusH) + 17vh);left:50%;transform:translateX(-50%);height:64px;z-index:2;
+transition:top .38s cubic-bezier(.2,.8,.3,1),left .38s cubic-bezier(.2,.8,.3,1),transform .38s cubic-bezier(.2,.8,.3,1),height .3s ease}
+body.a3.chatting .a3logo{top:calc(var(--statusH) + 10px);left:22px;transform:none;height:36px}
+body.a3.chatting .a3bar{margin-top:12px}   /* 로고가 비켜났으니 대화를 위로 */
+body[data-theme="dark"].a3 .a3logo{height:72px}
+body[data-theme="dark"].a3.chatting .a3logo{height:40px}
 .a3sub{margin-top:10px;font-size:calc(11px * var(--fz));font-weight:500;color:var(--fg);opacity:.55;letter-spacing:.2px}
 body.chatting .a3sub{display:none}
 .a3bar{width:100%;margin-top:64px;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 12px;border-radius:99px;
@@ -1106,12 +1113,15 @@ body[data-theme="dark"] .a3chips button,body[data-theme="dark"] .a3tools button{
 body[data-theme="dark"] .a3chat .msg.ai{background:rgba(30,36,46,.95);color:#fff;border-color:rgba(255,255,255,.12)}
 /* 좁은 화면: 흐름 안에서, 추천 앱은 두 줄 */
 /* 좁은 화면: 흐름 안에 두되 position:relative + z-index로 고정 배경(.wall) 위에 그려지게 */
-body.compact.a3 .a3home{position:relative;z-index:1;inset:auto;min-height:calc(100vh - var(--statusH) - var(--dockH));padding:32px 14px 20px;overflow:visible}
-body.compact.a3.chatting .a3home{padding-top:18px}
+body.compact.a3 .a3home{position:relative;z-index:1;inset:auto;min-height:calc(100vh - var(--statusH) - var(--dockH));padding:calc(32px + 52px) 14px 20px;overflow:visible}
+body.compact.a3.chatting .a3home{padding-top:56px}
+body.compact.a3 .a3logo{position:absolute;top:32px;left:50%;transform:translateX(-50%)}
+body.compact.a3.chatting .a3logo{top:12px;left:14px;transform:none;height:30px}
 body.compact .a3apps{grid-template-columns:repeat(4,1fr);gap:12px 6px}
 body.compact .a3app .icon{width:54px;height:54px}
 body.phone .a3app .an{font-size:calc(9px * var(--fz));max-width:84px}
 body.compact .a3logo{height:52px}
+body.compact.a3 .a3logo{height:52px}
 body.compact .a3rec{margin-top:30px}
 /* 검색 홈의 Dock: 아이콘을 키우되(최대 58px) 개수가 많으면 화면 폭에 맞춰 줄인다(--dks는 JS가 계산) */
 body.a3 .dock{gap:8px;align-items:flex-end}
@@ -1126,15 +1136,16 @@ body.a3:not(.compact) .dock.over::-webkit-scrollbar{display:none}
 body.a3:not(.compact) .dock.over>*{flex-shrink:0}
 body.a3:not(.compact) .dock.over>:first-child{margin-left:auto}
 body.a3:not(.compact) .dock.over>:last-child{margin-right:auto}
-body.a3 .dsep{width:2px;height:var(--dks,58px);opacity:.28;border-radius:2px;background:var(--fg);margin:0 3px;align-self:flex-end}
+body.a3 .dock{--dksz:var(--dks,58px)}
+body.a3 .dsep{width:2px;height:calc(var(--dksz) * .62);opacity:.28;border-radius:2px;background:var(--fg);
+margin:0 3px calc(var(--dksz) * .19);align-self:flex-end}   /* 아이콘 세로 가운데에 오게 */
 body[data-theme="dark"].a3 .dsep{opacity:.4}
-body.compact.a3 .dsep{height:42px}
 body.a3 .dk{width:var(--dks,58px);height:var(--dks,58px)}
 body.a3 .dk.soon{opacity:.45;filter:grayscale(.2) drop-shadow(0 4px 8px rgba(14,22,30,.14))}
 body.a3 .dk.soon:hover{opacity:.7}
-body.a3 .dsep{height:38px}
-body.compact.a3 .dock{gap:7px}
+body.compact.a3 .dock{--dksz:42px;gap:7px}
 body.compact.a3 .dk{width:42px;height:42px}
+body.phone.a3 .dock{--dksz:40px}
 body.phone.a3 .dk{width:40px;height:40px}
 /* 오로라 배경의 좁은 화면: 상단 바가 단색 띠로 보이지 않게 유리판 */
 body.compact[data-theme="aurora"] .status{background:rgba(246,248,253,.62);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%)}
