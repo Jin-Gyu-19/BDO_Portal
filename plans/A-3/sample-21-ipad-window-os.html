@@ -125,10 +125,12 @@ transition:transform .17s cubic-bezier(.3,1.4,.5,1)}
 .prof:hover,.prof.on{transform:scale(1.07)}
 .prof:active{transform:scale(.97)}
 .prof:focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:8px}
-.prof .av{width:24px;height:24px;border-radius:50%;background:linear-gradient(145deg,#FF5A72,var(--red));
-color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;
+.prof{gap:9px}
+.prof .av{width:36px;height:36px;border-radius:50%;background:linear-gradient(145deg,#FF5A72,var(--red));
+color:#fff;display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:800;
 flex-shrink:0;text-shadow:none}
-.prof .nm{font-size:calc(11px * var(--fz));font-weight:700;letter-spacing:-0.08px}
+.prof .nm{font-size:calc(15px * var(--fz));font-weight:700;letter-spacing:-0.1px}
+.prof .ttl{font-size:calc(11px * var(--fz));font-weight:500;opacity:.6;margin-left:1px}
 
 /* 프로필 드롭다운 */
 .pmenu{position:fixed;top:44px;right:16px;width:340px;z-index:950;border-radius:20px;corner-shape:squircle;padding:6px;
@@ -784,8 +786,9 @@ body.compact .status{position:sticky;top:0;padding:0 12px 0 14px;white-space:now
 background:var(--pageBg);z-index:900}
 body.compact .dots,body.compact .dockzone,body.compact .homebar{display:none}
 body.phone .status{font-size:calc(10.5px * var(--fz))}
-body.phone .prof .nm{font-size:calc(9px * var(--fz))}
-body.phone .prof .av{width:20px;height:20px}
+body.phone .prof .nm{font-size:calc(12px * var(--fz))}
+body.phone .prof .ttl{font-size:calc(9px * var(--fz))}
+body.phone .prof .av{width:30px;height:30px;font-size:11px}
 body.compact #tile4{display:none}
 /* 홈은 고정 상자 안에서 스크롤하지 않고 문서 자체가 스크롤된다 — 앱 웹뷰가 iframe 높이를 내용에 맞추는 경우에도 전부 보인다 */
 html.compact,body.compact{height:auto;min-height:100%;overflow:visible}
@@ -1048,7 +1051,7 @@ body.chatting .a3logo{height:36px}
 body[data-theme="dark"] .a3logo{background:#fff;padding:8px 14px;border-radius:12px;height:72px}
 .a3sub{margin-top:10px;font-size:calc(11px * var(--fz));font-weight:500;color:var(--fg);opacity:.55;letter-spacing:.2px}
 body.chatting .a3sub{display:none}
-.a3bar{width:100%;margin-top:32px;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 12px;border-radius:99px;
+.a3bar{width:100%;margin-top:64px;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 12px;border-radius:99px;
 background:#fff;border:1px solid rgba(20,30,45,.08);box-shadow:0 1px 2px rgba(20,30,45,.04),0 12px 32px rgba(20,30,45,.08);
 transition:box-shadow .2s,border-color .2s}
 .a3bar:focus-within{border-color:rgba(232,26,59,.35);box-shadow:0 1px 2px rgba(20,30,45,.04),0 14px 40px rgba(20,30,45,.12),0 0 0 4px rgba(232,26,59,.08)}
@@ -1130,7 +1133,7 @@ body.phone .a3bar .a3go{width:38px;height:38px}
       <svg class="ic" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
       배치 초기화</button>
     <button class="prof" id="profBtn" aria-haspopup="true" aria-expanded="false" aria-label="윤길배 계정 메뉴">
-      <span class="av">윤길</span><span class="nm">윤길배</span>
+      <span class="av">윤길</span><span class="nm">윤길배</span><span class="ttl">대표이사</span>
     </button>
   </div>
 </div>
