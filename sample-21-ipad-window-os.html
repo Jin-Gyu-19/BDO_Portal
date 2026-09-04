@@ -796,7 +796,9 @@ body.compact .mz .zl{display:flex;align-items:center;gap:6px;font-size:calc(11px
 color:var(--fg);margin:0 0 6px 8px}
 body.compact .mz .zl i{width:7px;height:7px;border-radius:50%;background:var(--zdot);display:block}
 body.compact .mz .zl small{font-weight:700;opacity:.5;margin-left:1px}
-body.compact .mzapps{display:grid;grid-template-columns:repeat(var(--mzc,var(--mc)),1fr);gap:6px 2px}
+/* 구역 안의 앱: 개수만큼 열을 만들어 왼쪽부터 놓고, 열 간격을 양쪽 끝에 맞춰 벌린다 (하나면 왼쪽에) */
+body.compact .mzapps{display:grid;grid-template-columns:repeat(var(--mzc,var(--mc)),auto);justify-content:space-between;
+justify-items:center;gap:6px 8px;padding:0 6px}
 body.compact .mzapps:empty::after{content:'앱 없음 — 홈에 추가에서 넣어 보세요';font-size:calc(11px * var(--fz));opacity:.5;grid-column:1/-1;padding:4px 8px 6px}
 body.compact .hgrid .ap{padding:4px 2px;gap:5px;border-radius:14px;margin-top:0;align-self:start}
 body.compact .ap:hover{transform:none}
@@ -1714,7 +1716,9 @@ function renderCompact(){
       const apps=zoneApps(o).sort(ord);
       /* 앱이 적은 구역은 반 폭으로 두어 둘씩 나란히 놓인다 */
       const half=apps.length<=MC/2;
-      if(half){ el.classList.add('half'); el.style.setProperty('--mzc',MC/2); el.style.gridColumn='span '+(MC/2); }
+      if(half){ el.classList.add('half'); el.style.gridColumn='span '+(MC/2); }
+      /* 열 수 = 앱 수(최대 칸 수) — 앱이 적어도 오른쪽이 비지 않게 양끝으로 벌린다 */
+      el.style.setProperty('--mzc', Math.max(1, Math.min(apps.length, half?MC/2:MC)));
       el.innerHTML=`<div class="zl"><i></i>${z.n}<small class="tn">${apps.length}</small></div><div class="mzapps"></div>`;
       const box=el.querySelector('.mzapps');
       apps.forEach(a=>{ const ae=makeItem(a); if(ae){ ae.style.gridArea=''; box.appendChild(ae); } });
