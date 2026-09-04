@@ -1055,24 +1055,26 @@ body.chatting .a3tools{display:flex}
 .a3tools button{font-size:calc(10px * var(--fz));font-weight:600;padding:5px 11px;border-radius:99px;color:var(--txt2);border:1px solid rgba(20,30,45,.1);background:rgba(255,255,255,.7)}
 .a3tools button:hover{color:var(--red);border-color:var(--red)}
 /* 추천 앱 */
-.a3rec{width:min(880px,100%);margin-top:44px}
+.a3rec{width:min(820px,100%);margin-top:44px}
 body.chatting .a3rec{margin-top:26px}
-.a3rec h3{font-size:calc(11px * var(--fz));font-weight:700;letter-spacing:.6px;opacity:.5;margin:0 0 12px 6px}
-.a3apps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.a3app{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.86);
-border:1px solid rgba(20,30,45,.06);box-shadow:0 1px 2px rgba(20,30,45,.04),0 8px 22px rgba(20,30,45,.05);text-align:left;color:var(--fg);
-transition:transform .15s,box-shadow .15s;min-width:0}
-.a3app:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(20,30,45,.05),0 14px 32px rgba(20,30,45,.1)}
+.a3rec h3{font-size:calc(11px * var(--fz));font-weight:700;letter-spacing:.6px;opacity:.5;margin:0 0 14px;text-align:center}
+/* 추천 앱: 판 없이 홈 아이콘처럼 아이콘 + 이름만 */
+.a3apps{display:grid;grid-template-columns:repeat(8,1fr);gap:14px 8px}
+.a3app{display:flex;flex-direction:column;align-items:center;gap:8px;padding:6px 4px;background:none;border:none;color:var(--fg);min-width:0;
+transition:transform .15s}
+.a3app:hover{transform:translateY(-3px)}
+.a3app:hover .icon{filter:drop-shadow(0 8px 16px rgba(14,22,30,.22))}
 .a3app .ish{position:relative;flex-shrink:0}
-.a3app .icon{width:46px;height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#fff;
-background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,0) 54%),var(--g,#8A9099);-webkit-mask:var(--sqmask);mask:var(--sqmask)}
-.a3app .icon small{font-size:7px;font-weight:700;opacity:.85}
-.a3app .bd{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--red);color:#fff;
-font-size:9.5px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
-.a3app .an{font-size:calc(11.5px * var(--fz));font-weight:600;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.a3app .as{font-size:calc(9.5px * var(--fz));opacity:.55;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.a3app .icon{width:60px;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;
+background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,0) 54%),var(--g,#8A9099);-webkit-mask:var(--sqmask);mask:var(--sqmask);
+transition:filter .15s}
+.a3app .icon small{font-size:8px;font-weight:700;opacity:.85}
+.a3app .bd{position:absolute;top:-6px;right:-6px;min-width:19px;height:19px;padding:0 5px;border-radius:10px;background:var(--red);color:#fff;
+font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid var(--pageBg)}
+.a3app .an{font-size:calc(10.5px * var(--fz));font-weight:500;line-height:1.25;text-align:center;max-width:104px;word-break:keep-all}
+.a3app .as{display:none}
 .a3app>div{min-width:0}
-body[data-theme="dark"] .a3bar,body[data-theme="dark"] .a3app{background:rgba(30,36,46,.9);border-color:rgba(255,255,255,.12)}
+body[data-theme="dark"] .a3bar{background:rgba(30,36,46,.9);border-color:rgba(255,255,255,.12)}
 body[data-theme="dark"] .a3bar input{color:#fff}
 body[data-theme="dark"] .a3chips button,body[data-theme="dark"] .a3tools button{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.18);color:#fff}
 body[data-theme="dark"] .a3chat .msg.ai{background:rgba(30,36,46,.95);color:#fff;border-color:rgba(255,255,255,.12)}
@@ -1080,7 +1082,9 @@ body[data-theme="dark"] .a3chat .msg.ai{background:rgba(30,36,46,.95);color:#fff
 /* 좁은 화면: 흐름 안에 두되 position:relative + z-index로 고정 배경(.wall) 위에 그려지게 */
 body.compact.a3 .a3home{position:relative;z-index:1;inset:auto;min-height:calc(100vh - var(--statusH) - var(--dockH));padding:32px 14px 20px;overflow:visible}
 body.compact.a3.chatting .a3home{padding-top:18px}
-body.compact .a3apps{grid-template-columns:repeat(2,1fr);gap:10px}
+body.compact .a3apps{grid-template-columns:repeat(4,1fr);gap:12px 6px}
+body.compact .a3app .icon{width:54px;height:54px}
+body.phone .a3app .an{font-size:calc(9px * var(--fz));max-width:84px}
 body.compact .a3logo{height:52px}
 body.compact .a3rec{margin-top:30px}
 body.compact .a3chat{max-height:none;overflow:visible}
