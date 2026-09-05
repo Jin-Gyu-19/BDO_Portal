@@ -451,7 +451,7 @@ background:var(--chip);opacity:.8;margin-left:4px;vertical-align:1px}
 border:1px solid var(--btnBorder);background:var(--btnBg);color:var(--fg);opacity:.85;transition:all .15s}
 .ltg:hover{opacity:1}
 .ltg.on{background:var(--red);border-color:transparent;color:#fff;opacity:1}
-.lcard.soon .ltg{visibility:hidden}
+.lcard.soon .ltg:not(.cbx){visibility:hidden}   /* 예정 App도 앱 관리에서는 표시 여부를 고를 수 있게 */
 /* 앱 관리(검색 홈): 바탕화면 표시 여부를 체크박스로 */
 .ltg.cbx{display:flex;align-items:center;gap:6px;padding:5px 9px 5px 7px;background:none;border-color:transparent;color:var(--fg);opacity:.7}
 .ltg.cbx:hover{background:var(--menuHov);border-color:var(--menuLine);opacity:1}
@@ -2819,7 +2819,7 @@ function paintLib(){
 /* 홈 표시 토글: 대시보드에서는 '홈 ✓ / + 홈' 알약, 검색 홈의 앱 관리에서는 '바탕화면' 체크박스 */
 function homeTg(on,attr,id,what){
   if(document.body.classList.contains('a3'))
-    return `<button class="ltg cbx${on?' on':''}" data-${attr}="${id}" role="checkbox" aria-checked="${on}" title="바탕화면(대시보드 홈)에 ${on?'표시 중 — 누르면 뺍니다':'표시하기'}"><i class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.2 5.2L20 7"/></svg></i>바탕화면</button>`;
+    return `<button class="ltg cbx${on?' on':''}" data-${attr}="${id}" role="checkbox" aria-checked="${on}" title="바탕화면(대시보드 홈)에 ${on?'표시 중 — 누르면 뺍니다':'표시하기'}"><i class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.2 5.2L20 7"/></svg></i>표시</button>`;
   return `<button class="ltg${on?' on':''}" data-${attr}="${id}" aria-pressed="${on}" title="${what} 홈에 ${on?'있음 — 누르면 뺍니다':'추가하기'}">${on?'홈 ✓':'+ 홈'}</button>`;
 }
 function openLib(){ closeSpot(); paintLib(); lib.classList.add('on'); setTimeout(()=>libq.focus(),30); }
@@ -3254,7 +3254,7 @@ function setHomeMode(m,quiet){
   lb.querySelector('.tip').textContent=s?'앱 관리 · 전체 App':'홈에 추가 · App · 위젯 · 구역';
   const hd=document.querySelector('.libhd h2'), hp=document.querySelector('.libhd p');
   if(hd) hd.textContent=s?'앱 관리':'홈에 추가';
-  if(hp) hp.textContent=s?'카테고리별 전체 App · 눌러서 열고, 체크하면 바탕화면에 표시':'App · 위젯 · 구역을 홈에 넣거나 뺍니다. 홈에서는 우클릭으로도 뺄 수 있어요';
+  if(hp) hp.textContent=s?'카테고리별 전체 App · 눌러서 열고, 표시를 켜면 바탕화면에 놓입니다':'App · 위젯 · 구역을 홈에 넣거나 뺍니다. 홈에서는 우클릭으로도 뺄 수 있어요';
   renderDock();                               /* 검색 홈은 추천 앱 8개, 대시보드는 내 Dock 배치 */
   if(!quiet) toast(m==='search'?'칼 검색 홈으로 바꿨습니다':'대시보드 홈으로 바꿨습니다');
 }
