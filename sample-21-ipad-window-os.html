@@ -452,6 +452,15 @@ border:1px solid var(--btnBorder);background:var(--btnBg);color:var(--fg);opacit
 .ltg:hover{opacity:1}
 .ltg.on{background:var(--red);border-color:transparent;color:#fff;opacity:1}
 .lcard.soon .ltg{visibility:hidden}
+/* 앱 관리(검색 홈): 바탕화면 표시 여부를 체크박스로 */
+.ltg.cbx{display:flex;align-items:center;gap:6px;padding:5px 9px 5px 7px;background:none;border-color:transparent;color:var(--fg);opacity:.7}
+.ltg.cbx:hover{background:var(--menuHov);border-color:var(--menuLine);opacity:1}
+.ltg.cbx .ck{width:16px;height:16px;border-radius:5px;border:1.6px solid var(--btnBorder);background:var(--menuBg);
+display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.ltg.cbx .ck svg{width:11px;height:11px;stroke:#fff;stroke-width:3.2;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity .15s}
+.ltg.cbx.on{background:none;color:var(--red);opacity:1}
+.ltg.cbx.on .ck{background:var(--red);border-color:var(--red)}
+.ltg.cbx.on .ck svg{opacity:1}
 .libtabs{display:flex;gap:2px;background:var(--btnBg);border-radius:99px;padding:3px;margin-left:8px;flex-shrink:0}
 .libtabs button{font-size:calc(12px * var(--fz));font-weight:700;padding:5px 13px;border-radius:99px;color:var(--fg);opacity:.6;white-space:nowrap}
 .libtabs button.on{background:var(--menuBg);opacity:1;box-shadow:0 1px 4px rgba(14,22,30,.12)}
@@ -1041,7 +1050,7 @@ body:not([data-theme="dark"]) .zone .zl{background:#fff;border-color:rgba(20,30,
 body.a3 .home,body.a3 #kalfab,body.a3 #kalpeek,body.a3 #kal,body.a3 .status .brand,body.a3 #resetLayout,body.a3 #tile4,
 body.a3 .stickies{display:none!important}
 /* 검색 홈의 서랍은 '앱 관리': 탭·홈 토글 없이 카테고리별 전체 App */
-body.a3 .libtabs,body.a3 .lib .ltg{display:none!important}
+body.a3 .libtabs{display:none!important}
 .a3home{display:none}
 body.a3 .a3rec{display:none}
 body.a3 .a3home{display:flex;position:fixed;inset:var(--statusH) 0 var(--dockH);overflow:auto;flex-direction:column;align-items:center;
@@ -2769,7 +2778,7 @@ function paintLib(){
           return `<div class="lcard${a.soon?' soon':''}" data-lid="${id}">
             <button class="lic${hasIco(id)?' img':''}" data-lopen="${id}" style="--g:${a.bg};${a.fg?`color:${a.fg}`:''};${icoBg(id)}" title="${a.name} 열기">${hasIco(id)?'':a.short}</button>
             <div class="ln"><b>${a.name}${a.soon?'<span class="soonpill">예정</span>':''}</b><small>${a.sub||''}</small></div>
-            <button class="ltg${on?' on':''}" data-ltoggle="${id}">${on?'홈 ✓':'+ 홈'}</button>
+            ${homeTg(on,'ltoggle',id,'앱을')}
           </div>`;}).join('')}</div></div>`;
     }).join('') || '<div class="spotempty">일치하는 앱이 없습니다</div>';
     return;
@@ -2781,7 +2790,7 @@ function paintLib(){
         return `<div class="lcard wcard" data-lid="${id}">
           <span class="lic" style="--g:${m.dot}">${m.mark}</span>
           <div class="ln"><b>${m.n}<span class="lsize tn">${m.rs} × ${m.cs}</span></b><small>${m.d}</small></div>
-          <button class="ltg${on?' on':''}" data-wtoggle="${id}">${on?'홈 ✓':'+ 홈'}</button>
+          ${homeTg(on,'wtoggle',id,'위젯을')}
         </div>`;}).join('')}</div></div>`
       :'<div class="spotempty">일치하는 위젯이 없습니다</div>';
     return;
@@ -2795,7 +2804,7 @@ function paintLib(){
       <input class="zname" data-zname="${id}" value="${z.n.replace(/"/g,'&quot;')}" maxlength="20" title="이름을 바꾸려면 클릭">
       <span class="zcount tn">${on?'앱 '+cnt+'개':'홈에 없음'}</span>
       <span class="zcolors">${ZONE_COLORS.map(c=>`<button data-zcolor="${c}" data-zid="${id}" class="${c===z.dot?'on':''}" style="background:${c}" title="색 바꾸기"></button>`).join('')}</span>
-      <button class="ltg${on?' on':''}" data-ztoggle="${id}">${on?'홈 ✓':'+ 홈'}</button>
+      ${homeTg(on,'ztoggle',id,'구역을')}
       ${ZONES_BUILTIN[id]?'':`<button class="zdel" data-zdel="${id}">삭제</button>`}
     </div>`;}).join('');
   libbody.innerHTML=`<div class="lsec"><h3>구역<span style="opacity:.6;font-weight:700">${ids.length}</span></h3>
@@ -2806,6 +2815,12 @@ function paintLib(){
       <select id="nzSize"><option value="2">1 × 2 칸</option><option value="3" selected>1 × 3 칸</option><option value="4">1 × 4 칸</option></select>
       <button type="submit" class="go">추가</button>
     </form>`;
+}
+/* 홈 표시 토글: 대시보드에서는 '홈 ✓ / + 홈' 알약, 검색 홈의 앱 관리에서는 '바탕화면' 체크박스 */
+function homeTg(on,attr,id,what){
+  if(document.body.classList.contains('a3'))
+    return `<button class="ltg cbx${on?' on':''}" data-${attr}="${id}" role="checkbox" aria-checked="${on}" title="바탕화면(대시보드 홈)에 ${on?'표시 중 — 누르면 뺍니다':'표시하기'}"><i class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.2 5.2L20 7"/></svg></i>바탕화면</button>`;
+  return `<button class="ltg${on?' on':''}" data-${attr}="${id}" aria-pressed="${on}" title="${what} 홈에 ${on?'있음 — 누르면 뺍니다':'추가하기'}">${on?'홈 ✓':'+ 홈'}</button>`;
 }
 function openLib(){ closeSpot(); paintLib(); lib.classList.add('on'); setTimeout(()=>libq.focus(),30); }
 function closeLib(){ lib.classList.remove('on'); libq.blur(); }
@@ -3239,7 +3254,7 @@ function setHomeMode(m,quiet){
   lb.querySelector('.tip').textContent=s?'앱 관리 · 전체 App':'홈에 추가 · App · 위젯 · 구역';
   const hd=document.querySelector('.libhd h2'), hp=document.querySelector('.libhd p');
   if(hd) hd.textContent=s?'앱 관리':'홈에 추가';
-  if(hp) hp.textContent=s?'카테고리별 전체 App · 아이콘을 누르면 열립니다':'App · 위젯 · 구역을 홈에 넣거나 뺍니다. 홈에서는 우클릭으로도 뺄 수 있어요';
+  if(hp) hp.textContent=s?'카테고리별 전체 App · 눌러서 열고, 체크하면 바탕화면에 표시':'App · 위젯 · 구역을 홈에 넣거나 뺍니다. 홈에서는 우클릭으로도 뺄 수 있어요';
   renderDock();                               /* 검색 홈은 추천 앱 8개, 대시보드는 내 Dock 배치 */
   if(!quiet) toast(m==='search'?'칼 검색 홈으로 바꿨습니다':'대시보드 홈으로 바꿨습니다');
 }
