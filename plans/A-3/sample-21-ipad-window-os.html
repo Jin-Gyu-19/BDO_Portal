@@ -61,7 +61,7 @@ body[data-theme="aurora"]{
 --menuBg:rgba(255,255,255,.78);--menuBorder:rgba(255,255,255,.8);
 --zoneBg:rgba(255,255,255,.3);--zoneBorder:rgba(255,255,255,.55);--zoneTab:rgba(255,255,255,.92)}
 body[data-theme="aurora"] .zone{background:rgba(255,255,255,.3)!important;border-color:rgba(255,255,255,.55)!important}
-body[data-theme="aurora"] .a3bar{background:rgba(255,255,255,.8);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border-color:rgba(255,255,255,.9)}
+body[data-theme="aurora"] .a3bar{background:rgba(18,22,31,.82);border-color:rgba(255,255,255,.14)}
 body[data-theme="aurora"] .a3chips button,body[data-theme="aurora"] .a3tools button{background:rgba(255,255,255,.55);border-color:rgba(255,255,255,.8)}
 body[data-theme="aurora"] .a3chat .msg.ai{background:rgba(255,255,255,.82);border-color:rgba(255,255,255,.9)}
 body[data-theme="aurora"] .dk.dsearch .dksurf{background:rgba(255,255,255,.72)}
@@ -1070,22 +1070,32 @@ body[data-theme="dark"].a3 .a3logo{height:72px}
 body[data-theme="dark"].a3.chatting .a3logo{height:40px}
 .a3sub{margin-top:10px;font-size:calc(11px * var(--fz));font-weight:500;color:var(--fg);opacity:.55;letter-spacing:.2px}
 body.chatting .a3sub{display:none}
-.a3bar{width:100%;margin-top:64px;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 12px;border-radius:99px;
-background:#fff;border:1px solid rgba(20,30,45,.08);box-shadow:0 1px 2px rgba(20,30,45,.04),0 12px 32px rgba(20,30,45,.08);
+/* 명령 팔레트: 검색창이 아니라 '칼에게 지시하는 자리'로 읽히게 어두운 판 */
+.a3bar{width:100%;margin-top:64px;display:flex;align-items:center;gap:12px;padding:13px 13px 13px 17px;border-radius:18px;
+background:rgba(18,22,31,.86);border:1px solid rgba(255,255,255,.10);
+box-shadow:0 2px 6px rgba(12,18,28,.16),0 20px 50px rgba(12,18,28,.30);
+backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);
 transition:box-shadow .2s,border-color .2s}
-.a3bar:focus-within{border-color:rgba(232,26,59,.35);box-shadow:0 1px 2px rgba(20,30,45,.04),0 14px 40px rgba(20,30,45,.12),0 0 0 4px rgba(232,26,59,.08)}
-.a3bar .a3av{width:40px;height:40px;flex-shrink:0;background:center/contain no-repeat}
-.a3bar input{flex:1;min-width:0;border:none;outline:none;background:none;font:inherit;font-size:calc(13.5px * var(--fz));color:var(--ink);padding:8px 4px}
-.a3bar input::placeholder{color:var(--txt3)}
-.a3bar .a3go{width:44px;height:44px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;
-transition:transform .15s,opacity .15s}
+.a3bar:focus-within{border-color:rgba(232,26,59,.55);box-shadow:0 2px 6px rgba(12,18,28,.16),0 22px 56px rgba(12,18,28,.36),0 0 0 4px rgba(232,26,59,.16)}
+.a3bar .a3av{width:32px;height:32px;flex-shrink:0;background:center/contain no-repeat;filter:drop-shadow(0 2px 5px rgba(0,0,0,.45))}
+.a3bar input{flex:1;min-width:0;border:none;outline:none;background:none;font:inherit;font-size:calc(13.5px * var(--fz));color:#fff;padding:7px 2px}
+.a3bar input::placeholder{color:rgba(255,255,255,.58)}
+.a3kbd{font-size:calc(9.5px * var(--fz));font-weight:800;letter-spacing:.4px;color:rgba(255,255,255,.66);
+border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.07);border-radius:8px;padding:5px 9px;flex-shrink:0}
+.a3bar .a3go{width:38px;height:38px;border-radius:12px;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+transition:transform .15s,opacity .15s,background .15s}
 .a3bar .a3go:hover{transform:scale(1.06)}
-.a3bar .a3go.off{background:rgba(20,30,45,.12);color:#fff}
-.a3bar .a3go .ic{width:18px;height:18px;stroke-width:2.4}
-.a3chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px}
-.a3chips button{font-size:calc(10.5px * var(--fz));font-weight:600;padding:7px 14px;border-radius:99px;
-border:1px solid rgba(20,30,45,.1);background:rgba(255,255,255,.7);color:var(--txt);transition:border-color .15s,color .15s,background .15s}
-.a3chips button:hover{border-color:var(--red);color:var(--red);background:#fff}
+.a3bar .a3go.off{background:rgba(255,255,255,.12);color:rgba(255,255,255,.65)}
+/* 비어 있을 땐 ↵ 배지만, 무언가 쓰기 시작하면 보내기 버튼으로 바뀐다 */
+body.a3:not(.compact) .a3bar .a3go.off{display:none}
+.a3bar.typing .a3kbd{display:none}
+.a3bar .a3go .ic{width:17px;height:17px;stroke-width:2.5}
+/* 빠른 질문 = 명령 후보 */
+.a3chips{width:100%;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-start;margin-top:10px;padding:0 4px}
+.a3chips button{display:flex;align-items:center;gap:6px;font-size:calc(10.5px * var(--fz));font-weight:600;padding:6px 11px;border-radius:9px;
+border:1px solid rgba(20,30,45,.08);background:rgba(255,255,255,.74);color:var(--txt);transition:border-color .15s,color .15s,background .15s,transform .15s}
+.a3chips button:before{content:'>';font-weight:800;color:var(--red);opacity:.85}
+.a3chips button:hover{border-color:var(--red);color:var(--red);background:#fff;transform:translateY(-1px)}
 body.chatting .a3chips{display:none}
 /* 질문하면 검색창 아래로 대화가 이어진다 */
 .a3chat{display:none;width:100%;margin-top:18px;flex-direction:column;gap:10px;max-height:min(52vh,560px);overflow-y:auto;padding:4px 2px;scrollbar-width:thin}
@@ -1116,10 +1126,11 @@ font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:c
 .a3app .an{font-size:calc(10.5px * var(--fz));font-weight:500;line-height:1.25;text-align:center;max-width:104px;word-break:keep-all}
 .a3app .as{display:none}
 .a3app>div{min-width:0}
-body[data-theme="dark"] .a3bar{background:rgba(30,36,46,.9);border-color:rgba(255,255,255,.12)}
+body[data-theme="dark"] .a3bar{background:rgba(10,13,19,.9);border-color:rgba(255,255,255,.16)}
 body[data-theme="dark"] .a3bar input{color:#fff}
 body[data-theme="dark"] .a3chips button,body[data-theme="dark"] .a3tools button{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.18);color:#fff}
 body[data-theme="dark"] .a3chat .msg.ai{background:rgba(30,36,46,.95);color:#fff;border-color:rgba(255,255,255,.12)}
+body[data-theme="dark"] .a3chat .msg.ai b{color:#fff}   /* 다크 배경에서 굵은 글씨가 묻히지 않게 */
 /* 좁은 화면: 흐름 안에서, 추천 앱은 두 줄 */
 /* 좁은 화면: 흐름 안에 두되 position:relative + z-index로 고정 배경(.wall) 위에 그려지게 */
 body.compact.a3 .a3home{position:relative;z-index:1;inset:auto;min-height:calc(100vh - var(--statusH) - var(--dockH));padding:calc(32px + 52px) 14px 20px;overflow:visible}
@@ -1159,9 +1170,11 @@ body.phone.a3 .dk{width:40px;height:40px}
 /* 오로라 배경의 좁은 화면: 상단 바가 단색 띠로 보이지 않게 유리판 */
 body.compact[data-theme="aurora"] .status{background:rgba(246,248,253,.62);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%)}
 body.compact .a3chat{max-height:none;overflow:visible}
-body.phone .a3bar .a3av{width:34px;height:34px}
+body.phone .a3bar .a3av{width:28px;height:28px}
 body.phone .a3bar input{font-size:calc(12px * var(--fz))}
-body.phone .a3bar .a3go{width:38px;height:38px}
+body.phone .a3bar .a3go{width:34px;height:34px}
+body.compact .a3kbd{display:none}   /* 터치 화면에서는 ↵ 배지 대신 보내기 버튼만 */
+body.compact .a3bar{padding:11px 11px 11px 14px;gap:9px}
 </style>
 </head>
 <body>
@@ -1197,7 +1210,8 @@ body.phone .a3bar .a3go{width:38px;height:38px}
     <div class="a3sub">성현회계법인 Portal · AI Assistant 칼</div>
     <form class="a3bar" id="a3form" autocomplete="off">
       <span class="a3av" id="a3av"></span>
-      <input id="a3in" type="text" placeholder="칼에게 무엇이든 물어보세요 — 마감, 리뷰 대기 조서, “리뷰함 열어줘”" maxlength="300" aria-label="칼에게 물어보기">
+      <input id="a3in" type="text" placeholder="칼에게 지시하기 — 조서, 마감, 앱 실행" maxlength="300" aria-label="칼에게 물어보기">
+      <kbd class="a3kbd" aria-hidden="true">↵</kbd>
       <button type="submit" class="a3go off" id="a3go" aria-label="보내기"><svg class="ic" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
     </form>
     <div class="a3chips">
@@ -3258,9 +3272,11 @@ function setHomeMode(m,quiet){
   renderDock();                               /* 검색 홈은 추천 앱 8개, 대시보드는 내 Dock 배치 */
   if(!quiet) toast(m==='search'?'칼 검색 홈으로 바꿨습니다':'대시보드 홈으로 바꿨습니다');
 }
-function a3Send(text){ if(!(text||'').trim()) return; a3in.value=''; a3go.classList.add('off'); kalSend(text); }
-document.getElementById('a3form').addEventListener('submit',e=>{ e.preventDefault(); a3Send(a3in.value); });
-a3in.addEventListener('input',()=>a3go.classList.toggle('off',!a3in.value.trim()));
+var a3form=document.getElementById('a3form');
+function a3Send(text){ if(!(text||'').trim()) return; a3in.value=''; a3go.classList.add('off'); a3form.classList.remove('typing'); kalSend(text); }
+a3form.addEventListener('submit',e=>{ e.preventDefault(); a3Send(a3in.value); });
+function a3Typing(){ const t=!!a3in.value.trim(); a3go.classList.toggle('off',!t); a3form.classList.toggle('typing',t); }
+a3in.addEventListener('input',a3Typing);
 document.getElementById('a3home').addEventListener('click',e=>{
   const q=e.target.closest('[data-a3q]'); if(q){ a3Send(q.dataset.a3q); return; }
   const c=e.target.closest('[data-a3act="clear"]'); if(c){ kalReset(); a3in.focus(); return; }
