@@ -12,8 +12,9 @@
 | `portal-deploy-v5/` | **포털 본체(`index.html`) + 배포 스크립트(`deploy-portal-PC.bat`) + 현행 nginx 라우팅(`default.conf`)** | ★ 포털 작업은 여기서 |
 | `docs/` | 작업 인수인계서, NAS 인프라 변경보고서(SH-AX-INFRA-001) | 배경·제약 사항 |
 | `infra/reference/` | 초기 인프라 구축본(compose, nginx.conf, .env.example) | 운영본과 다름. 참고만 |
-| `sample-*.html`, `plans/`, `assets/` | 차기 포털 디자인 시안 (작업 파일은 `sample-21-ipad-window-os.html`, 안 관리 규칙은 `PLANS.md`) | 배포본과 별개 |
-| `TODO.md` | 시안 쪽 남은 일 (AI 칼 규칙형 비서 등) | |
+| `design-new/` (예정) | 새 포털 디자인 원본 (PC에서 git으로 올릴 예정) | 배포본에 반영할 재료 |
+
+이전 디자인 시안(sample-1~21, plans/A·A-2·A-3, TODO.md)은 2026-09-16에 저장소에서 삭제했습니다. 필요하면 커밋 `33a3b0e` 이전 이력에서 꺼낼 수 있습니다.
 
 원본 zip에서 **가져오지 않은 것**: `audit.html`·`ifrs18.html`(4/8 구버전), `deploy-v5.sh`(실행 금지 스크립트), `index.html.bak*`(git 이력이 대신함), `app-deploy*`·`pc-build`(초기본), `finance-deploy`·`dsd-deploy`(범위 외), `UPDATE_20260420_IFRS18_Analyzer`(건드리지 말 것).
 
