@@ -81,11 +81,15 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
 
 ## 배포 방법
 
-```
-portal-deploy-v5/deploy-portal-PC.bat   ← 이것만 사용 (Windows PC에서 더블클릭)
-```
+**기본: `portal-deploy-v5/update-portal-from-github.bat`** (Windows PC에서 더블클릭, 저장소 클론 불필요)
 
-더블클릭 → NAS 비밀번호 입력 → 원본 자동 백업(`index.html.bak_타임스탬프`) → `portal/index.html`만 교체. nginx 재시작 불필요(정적 파일).
+1. GitHub `claude/awesome-hopper-cmd4wg` 브랜치의 `portal-deploy-v5/index.html`을 raw로 내려받음 (캐시 우회)
+2. 검사: 200KB 이상 · `<title>SH Portal` 포함 · `</html>`로 끝남. 하나라도 실패하면 배포 안 함
+3. ssh 한 번(비밀번호 1회)으로 NAS에 전송 → 바이트 수 대조 → 원본 `index.html.bak_타임스탬프` 백업 → 교체. 크기 불일치면 아무것도 안 바꿈
+
+즉 흐름은 **여기서 푸시 → 사용자가 PC에서 .bat 더블클릭 → 비밀번호 1회**. 배포 브랜치를 바꾸려면 .bat 상단 `GH_BRANCH`만 수정. nginx 재시작 불필요(정적 파일).
+
+**예비: `portal-deploy-v5/deploy-portal-PC.bat`** — .bat과 같은 폴더의 `index.html`(로컬 클론본)을 scp로 올림. GitHub에 접근이 안 될 때만.
 
 이 저장소(클라우드 세션)에서는 NAS에 접근할 수 없습니다. 여기서는 코드·문서 작업까지만 하고, 배포는 데스크톱에서 합니다.
 
