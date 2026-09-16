@@ -529,13 +529,6 @@ border-left:.5px solid transparent;transition:background .12s,color .12s}
 .wctl button:focus-visible{outline:2px solid var(--blue);outline-offset:-3px}
 .wctl svg{width:11px;height:11px;stroke:currentColor;stroke-width:1.35;fill:none;stroke-linecap:square}
 .wbody{flex:1;overflow:auto;background:#fff;min-height:0}
-/* ── 실제 앱(iframe) 창 + 로딩 스피너 ── */
-.wbody.frame{overflow:hidden;position:relative;display:flex}
-.appframe{flex:1;width:100%;height:100%;border:0;display:block;background:#fff}
-.app-loading{position:absolute;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:var(--txt2);font-size:calc(11px * var(--fz));font-weight:500;z-index:2}
-.app-loading .spinner{width:36px;height:36px;border:3px solid var(--line);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-body.winDrag iframe{pointer-events:none}
 .wbody::-webkit-scrollbar{width:9px;height:9px}
 .wbody::-webkit-scrollbar-thumb{background:rgba(0,0,0,.2);border-radius:9px;border:2.5px solid #fff}
 .rs{position:absolute;z-index:5}
@@ -1447,7 +1440,7 @@ const USER={id:'yoon.gb', name:'윤길배', title:'대표이사', firm:'성현�
             mail:'yoon.gb@shcpa.kr', init:'윤길'};
 const LKEY='sh-portal:'+USER.id+':v7';
 /* 저장소가 막힌 환경(샌드박스 iframe·앱 웹뷰)에서도 페이지가 죽지 않도록 */
-const finalMemory={"sh-portal:yoon.gb:v7":"{\"user\":\"yoon.gb@shcpa.kr\",\"layout\":[{\"k\":\"z\",\"id\":\"audit\",\"r\":1,\"c\":5,\"rs\":1,\"cs\":6},{\"k\":\"a\",\"id\":\"shaudit\",\"r\":1,\"c\":10,\"rs\":1,\"cs\":1},{\"k\":\"z\",\"id\":\"admin\",\"r\":2,\"c\":7,\"rs\":1,\"cs\":4},{\"k\":\"z\",\"id\":\"tax\",\"r\":2,\"c\":5,\"rs\":1,\"cs\":2},{\"k\":\"w\",\"id\":\"team\",\"r\":1,\"c\":3,\"rs\":1,\"cs\":2},{\"k\":\"w\",\"id\":\"timesheet\",\"r\":2,\"c\":3,\"rs\":2,\"cs\":2},{\"k\":\"w\",\"id\":\"notice\",\"r\":4,\"c\":1,\"rs\":2,\"cs\":4},{\"k\":\"w\",\"id\":\"memo\",\"r\":3,\"c\":1,\"rs\":1,\"cs\":2},{\"k\":\"w\",\"id\":\"dday\",\"r\":1,\"c\":1,\"rs\":2,\"cs\":2},{\"k\":\"a\",\"id\":\"jet\",\"r\":1,\"c\":5,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"footing\",\"r\":1,\"c\":6,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"fin\",\"r\":1,\"c\":8,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"taxagent\",\"r\":2,\"c\":5,\"rs\":1,\"cs\":1},{\"k\":\"z\",\"id\":\"ai\",\"r\":3,\"c\":5,\"rs\":1,\"cs\":5},{\"k\":\"a\",\"id\":\"dsdroll\",\"r\":3,\"c\":5,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"pdfguard\",\"r\":3,\"c\":8,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"claudeexcel\",\"r\":3,\"c\":6,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"k1118\",\"r\":3,\"c\":7,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"notice\",\"r\":2,\"c\":7,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"settings\",\"r\":2,\"c\":9,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"expense\",\"r\":2,\"c\":8,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"markettool\",\"r\":1,\"c\":7,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"dart\",\"r\":1,\"c\":9,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"room\",\"r\":2,\"c\":10,\"rs\":1,\"cs\":1}],\"dock\":[\"rev\",\"cal\",\"team\",\"memo\"],\"theme\":\"gray\",\"zones\":{\"audit\":{\"n\":\"감사\",\"dot\":\"#D3374F\"},\"tax\":{\"n\":\"세무\",\"dot\":\"#DFA748\"},\"admin\":{\"n\":\"공통\",\"dot\":\"#5C6E80\"},\"ai\":{\"n\":\"AI · 자동화\",\"dot\":\"#232B36\"},\"z_mtslau9x\":{\"n\":\"업무 지원\",\"dot\":\"#C7519A\"}}}","sh-portal:memo:yoon.gb":"[{\"id\":\"m1\",\"t\":\"알파테크 매출 절사 테스트\\n12/28~31 표본 3건 — 인도조건 확인 필요, 검수확인서 1건 미비\",\"ts\":1789514842597,\"c\":\"y\"},{\"id\":\"m2\",\"t\":\"4/15 파트너 월례회의 안건\\n- ISQM1 보고서 진행 상황\\n- 상반기 필수 교육 이수율\\n- 신규 수임 검토 2건\",\"ts\":1789360042597,\"c\":\"b\"},{\"id\":\"m3\",\"t\":\"감마물산 현장 종료 전 확인\\n재고 실사 차이 조정, 우발부채 질문서 회신\",\"ts\":1789187242597,\"c\":\"p\"}]","sh-portal:yoon.gb:kal":"1"};
+const finalMemory={"sh-portal:yoon.gb:v7":"{\"user\":\"yoon.gb@shcpa.kr\",\"layout\":[{\"k\":\"z\",\"id\":\"audit\",\"r\":1,\"c\":5,\"rs\":1,\"cs\":5},{\"k\":\"z\",\"id\":\"admin\",\"r\":2,\"c\":7,\"rs\":1,\"cs\":4},{\"k\":\"z\",\"id\":\"tax\",\"r\":2,\"c\":5,\"rs\":1,\"cs\":2},{\"k\":\"w\",\"id\":\"team\",\"r\":1,\"c\":3,\"rs\":1,\"cs\":2},{\"k\":\"w\",\"id\":\"timesheet\",\"r\":2,\"c\":3,\"rs\":2,\"cs\":2},{\"k\":\"w\",\"id\":\"notice\",\"r\":4,\"c\":1,\"rs\":2,\"cs\":4},{\"k\":\"w\",\"id\":\"memo\",\"r\":3,\"c\":1,\"rs\":1,\"cs\":2},{\"k\":\"w\",\"id\":\"dday\",\"r\":1,\"c\":1,\"rs\":2,\"cs\":2},{\"k\":\"a\",\"id\":\"jet\",\"r\":1,\"c\":5,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"footing\",\"r\":1,\"c\":6,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"fin\",\"r\":1,\"c\":8,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"taxagent\",\"r\":2,\"c\":5,\"rs\":1,\"cs\":1},{\"k\":\"z\",\"id\":\"ai\",\"r\":3,\"c\":5,\"rs\":1,\"cs\":5},{\"k\":\"a\",\"id\":\"dsdroll\",\"r\":3,\"c\":5,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"pdfguard\",\"r\":3,\"c\":8,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"claudeexcel\",\"r\":3,\"c\":6,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"k1118\",\"r\":3,\"c\":7,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"notice\",\"r\":2,\"c\":7,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"settings\",\"r\":2,\"c\":9,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"expense\",\"r\":2,\"c\":8,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"markettool\",\"r\":1,\"c\":7,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"dart\",\"r\":1,\"c\":9,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"room\",\"r\":2,\"c\":10,\"rs\":1,\"cs\":1}],\"dock\":[\"rev\",\"cal\",\"team\",\"memo\"],\"theme\":\"gray\",\"zones\":{\"audit\":{\"n\":\"감사\",\"dot\":\"#D3374F\"},\"tax\":{\"n\":\"세무\",\"dot\":\"#DFA748\"},\"admin\":{\"n\":\"공통\",\"dot\":\"#5C6E80\"},\"ai\":{\"n\":\"AI · 자동화\",\"dot\":\"#232B36\"},\"z_mtslau9x\":{\"n\":\"업무 지원\",\"dot\":\"#C7519A\"}}}","sh-portal:memo:yoon.gb":"[{\"id\":\"m1\",\"t\":\"알파테크 매출 절사 테스트\\n12/28~31 표본 3건 — 인도조건 확인 필요, 검수확인서 1건 미비\",\"ts\":1789514842597,\"c\":\"y\"},{\"id\":\"m2\",\"t\":\"4/15 파트너 월례회의 안건\\n- ISQM1 보고서 진행 상황\\n- 상반기 필수 교육 이수율\\n- 신규 수임 검토 2건\",\"ts\":1789360042597,\"c\":\"b\"},{\"id\":\"m3\",\"t\":\"감마물산 현장 종료 전 확인\\n재고 실사 차이 조정, 우발부채 질문서 회신\",\"ts\":1789187242597,\"c\":\"p\"}]","sh-portal:yoon.gb:kal":"1"};
 const store={get(k){try{const v=localStorage.getItem("sh-final-20260916:"+k);if(v!==null)return v;}catch(e){}return finalMemory[k]??null;},set(k,v){finalMemory[k]=String(v);try{localStorage.setItem("sh-final-20260916:"+k,v);}catch(e){}}};
 /* ══════════ 메모 (계정별로 이 브라우저에 자동 저장) ══════════ */
 const MKEY='sh-portal:memo:'+USER.id;
@@ -1535,7 +1528,7 @@ Object.assign(ICONS,{"expense_claim":"icons/dimensional-matte-expense-20260909.p
 /* Meeting room reservation uses the existing schedule calendar and live date. */
 ICONS.meeting_room=ICONS.calendar;
 const APP_ICON={
-  shaudit:'sh_audit', taxagent:'accounting_insights',
+  taxagent:'accounting_insights',
   rev:'review', k1118:'k1118', fin:'bank', xbrl:'aud_doc', aqi:'report',
   ins:'bulb', cal:'calendar', notice:'megaphone', memo:'memo', erp:'dashboard', settings:'cloud_its',
   ai:'robot', rag:'ai_brain', precheck:'pre_review', dart:'open_dart', jet:'jet_tool',
@@ -1803,8 +1796,6 @@ document.addEventListener('click', e=>{
 });
 
 const APPS = {
-  /* ── 실제 연결 앱: url이 있으면 창 안에 iframe으로 열린다 (NAS nginx 경로 · XBRL은 :4000 직접) ── */
-  shaudit:{name:'SH Audit Platform', sub:'감사 플랫폼 · 재무제표 구조화', short:'SH', bg:'linear-gradient(150deg,#E81A3B,#8E0F24)', w:1600, h:1000, url:'/audit/index.html'},
   taxagent:{name:'TAX Agent',sub:'연결 주소 등록 대기',short:'TAX',bg:'linear-gradient(150deg,#E7A027,#B96B10)',w:520,h:340,body:()=>`<div class="empty"><div class="bigicon img" style="${icoBg('taxagent')}"></div><div class="t">TAX Agent</div><div class="d">앱 아이콘이 추가되었습니다.<br>연결할 사이트 주소는 아직 등록되지 않았습니다.</div></div>`},
   expense:{name:'경비청구', sub:'연결 주소 등록 대기', short:'경비', bg:'linear-gradient(150deg,#309CF4,#07368B)', w:560, h:380, body:()=>`
     <div class="empty"><div class="bigicon img" style="${icoBg('expense')}"></div>
@@ -1837,7 +1828,7 @@ const APPS = {
       <div class="inp"><div class="f">칼에게 물어보기…</div>
         <div class="go"><svg class="ic" style="width:15px;height:15px" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div></div>
     </div>`},
-  k1118:{name:'K-IFRS 1118호 자동화 Tool', sub:'표시·재분류 자동화', short:'1118', bg:G.k1118, w:1600, h:1000, url:'/ifrs18/index.html', body:()=>`
+  k1118:{name:'K-IFRS 1118호 자동화 Tool', sub:'표시·재분류 자동화', short:'1118', bg:G.k1118, w:800, h:540, body:()=>`
     <div class="pad">
       <div class="h1">표시 기준 분석<span>.</span></div>
       <div class="hsub">㈜알파테크 제25기 · 영업손익 구분 표시 및 재분류 결과</div>
@@ -1856,7 +1847,7 @@ const APPS = {
           .map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td><span class="tagp ${r[2].includes('유지')?'o':'f'}">${r[2]}</span></td><td class="tn">${r[3]}</td></tr>`).join('')}
       </table>
     </div>`},
-  fin:{name:'금융기관 조회', sub:'v2.3 · 활성 15건', short:'FIN', bg:G.fin, badge:15, w:1600, h:1000, url:'/data/', body:()=>`
+  fin:{name:'금융기관 조회', sub:'v2.3 · 활성 15건', short:'FIN', bg:G.fin, badge:15, w:780, h:520, body:()=>`
     <div class="pad">
       <div class="h1">조회서 발송·회신 현황<span>.</span></div>
       <div class="hsub">2026 기말감사 · 총 38건 발송 · 회신 23건 (60.5%)</div>
@@ -1875,7 +1866,7 @@ const APPS = {
           .map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td class="tn">${r[2]}</td><td><span class="tagp ${r[4]}">${r[3]}</span></td></tr>`).join('')}
       </table>
     </div>`},
-  xbrl:{name:'XBRL Comparator', sub:'v1.0', short:'XBRL', bg:G.xbrl, w:1600, h:1000, url:'http://192.168.100.25:4000/', body:()=>`
+  xbrl:{name:'XBRL Comparator', sub:'v1.0', short:'XBRL', bg:G.xbrl, w:760, h:500, body:()=>`
     <div class="pad">
       <div class="h1">공시 정합성 비교<span>.</span></div>
       <div class="hsub">㈜베타홀딩스 · 감사보고서 XBRL vs 사업보고서 IXD</div>
@@ -2163,14 +2154,14 @@ const WG_META={
   timesheet:{n:'타임시트',     d:'이번 주 작성 현황과 바로 작성하기',   rs:2,cs:2, dot:'#3A6FD8', mark:'TS'}
 };
 /* 앱 → 카테고리 (모든 App 서랍의 분류, 홈 추가 시 들어갈 그룹) */
-const APP_CAT={shaudit:'audit',k1118:'audit',xbrl:'audit',fin:'audit',rev:'audit',precheck:'audit',dart:'audit',jet:'audit',
+const APP_CAT={k1118:'audit',xbrl:'audit',fin:'audit',rev:'audit',precheck:'audit',dart:'audit',jet:'audit',
   taxagent:'tax',
   pdfguard:'audit',markettool:'audit',toolkit:'audit',footing:'audit',claudeexcel:'ai',dsdroll:'audit',
   ins:'adv',cal:'admin',notice:'admin',memo:'admin',erp:'admin',settings:'admin',room:'admin',expense:'admin',team:'admin',timesheet:'admin',ai:'ai',rag:'ai'};
 /* k: 'w' 위젯 · 'z' 존 · 'a' 앱 / r,c: 시작 칸 / rs,cs: 차지하는 칸 수 */
 const row=(k,r,c0,ids)=>ids.map((id,i)=>({k,id,r,c:c0+i,rs:1,cs:1}));
 /* Final home snapshot from user backup, 2026-09-08. Existing browser saves still take precedence. */
-const LAYOUT_DEFAULT=[{"k":"z","id":"audit","r":1,"c":5,"rs":1,"cs":6},{"k":"a","id":"shaudit","r":1,"c":10,"rs":1,"cs":1},{"k":"z","id":"admin","r":2,"c":7,"rs":1,"cs":4},{"k":"z","id":"tax","r":2,"c":5,"rs":1,"cs":2},{"k":"w","id":"team","r":1,"c":3,"rs":1,"cs":2},{"k":"w","id":"timesheet","r":2,"c":3,"rs":2,"cs":2},{"k":"w","id":"notice","r":4,"c":1,"rs":2,"cs":4},{"k":"w","id":"memo","r":3,"c":1,"rs":1,"cs":2},{"k":"w","id":"dday","r":1,"c":1,"rs":2,"cs":2},{"k":"a","id":"jet","r":1,"c":5,"rs":1,"cs":1},{"k":"a","id":"footing","r":1,"c":6,"rs":1,"cs":1},{"k":"a","id":"fin","r":1,"c":8,"rs":1,"cs":1},{"k":"a","id":"taxagent","r":2,"c":5,"rs":1,"cs":1},{"k":"z","id":"ai","r":3,"c":5,"rs":1,"cs":5},{"k":"a","id":"dsdroll","r":3,"c":5,"rs":1,"cs":1},{"k":"a","id":"pdfguard","r":3,"c":8,"rs":1,"cs":1},{"k":"a","id":"claudeexcel","r":3,"c":6,"rs":1,"cs":1},{"k":"a","id":"k1118","r":3,"c":7,"rs":1,"cs":1},{"k":"a","id":"notice","r":2,"c":7,"rs":1,"cs":1},{"k":"a","id":"settings","r":2,"c":9,"rs":1,"cs":1},{"k":"a","id":"expense","r":2,"c":8,"rs":1,"cs":1},{"k":"a","id":"markettool","r":1,"c":7,"rs":1,"cs":1},{"k":"a","id":"dart","r":1,"c":9,"rs":1,"cs":1},{"k":"a","id":"room","r":2,"c":10,"rs":1,"cs":1}];
+const LAYOUT_DEFAULT=[{"k":"z","id":"audit","r":1,"c":5,"rs":1,"cs":5},{"k":"z","id":"admin","r":2,"c":7,"rs":1,"cs":4},{"k":"z","id":"tax","r":2,"c":5,"rs":1,"cs":2},{"k":"w","id":"team","r":1,"c":3,"rs":1,"cs":2},{"k":"w","id":"timesheet","r":2,"c":3,"rs":2,"cs":2},{"k":"w","id":"notice","r":4,"c":1,"rs":2,"cs":4},{"k":"w","id":"memo","r":3,"c":1,"rs":1,"cs":2},{"k":"w","id":"dday","r":1,"c":1,"rs":2,"cs":2},{"k":"a","id":"jet","r":1,"c":5,"rs":1,"cs":1},{"k":"a","id":"footing","r":1,"c":6,"rs":1,"cs":1},{"k":"a","id":"fin","r":1,"c":8,"rs":1,"cs":1},{"k":"a","id":"taxagent","r":2,"c":5,"rs":1,"cs":1},{"k":"z","id":"ai","r":3,"c":5,"rs":1,"cs":5},{"k":"a","id":"dsdroll","r":3,"c":5,"rs":1,"cs":1},{"k":"a","id":"pdfguard","r":3,"c":8,"rs":1,"cs":1},{"k":"a","id":"claudeexcel","r":3,"c":6,"rs":1,"cs":1},{"k":"a","id":"k1118","r":3,"c":7,"rs":1,"cs":1},{"k":"a","id":"notice","r":2,"c":7,"rs":1,"cs":1},{"k":"a","id":"settings","r":2,"c":9,"rs":1,"cs":1},{"k":"a","id":"expense","r":2,"c":8,"rs":1,"cs":1},{"k":"a","id":"markettool","r":1,"c":7,"rs":1,"cs":1},{"k":"a","id":"dart","r":1,"c":9,"rs":1,"cs":1},{"k":"a","id":"room","r":2,"c":10,"rs":1,"cs":1}];
 const DOCK_DEFAULT=["rev","cal","team","memo"];
 const DOCK_MAX=10;
 const WG_DEF_COLS={dday:2,notice:4,memo:2,kal:2,team:2,timesheet:2};   /* 축소 비율 기준 */
@@ -2661,12 +2652,6 @@ function focusTop(){
   wins.forEach(v=>v.el.classList.remove('active'));
   if(top) focusWin(top);
 }
-/* ── 실제 앱 주소: NAS(nginx)에서 열면 상대 경로, 파일을 로컬에서 열면 NAS 절대 주소 ── */
-const NAS_BASE='http://192.168.100.25:8080';
-const onNAS=location.protocol.startsWith('http') && location.hostname!=='localhost' && location.hostname!=='127.0.0.1';
-const appUrl=a=>!a.url ? null : /^https?:/i.test(a.url) ? a.url : (onNAS ? a.url : NAS_BASE+a.url);
-const frameBody=(id,a)=>`<div class="wbody frame"><iframe class="appframe" src="${appUrl(a)}" title="${a.name}" allow="clipboard-read; clipboard-write; fullscreen"></iframe>`+
-  `<div class="app-loading"><div class="spinner"></div><span>${a.name} 불러오는 중…</span></div></div>`;
 function openApp(id,origin){
   const a=APPS[id]; if(!a) return;
   if(id==='ai'){ openKal(); return; }   /* 칼은 우측 하단 플로팅 챗봇으로 연다 */
@@ -2694,17 +2679,12 @@ function openApp(id,origin){
         <button class="close" data-act="close" title="닫기" aria-label="닫기"><svg viewBox="0 0 12 12"><path d="M2.6 2.6l6.8 6.8M9.4 2.6l-6.8 6.8"/></svg></button>
       </div>
     </div>
-    ${a.url?frameBody(id,a):`<div class="wbody">${a.body?a.body():`
+    <div class="wbody">${a.body?a.body():`
       <div class="empty"><div class="bigicon${hasIco(id)?' img':''}" style="background:${a.bg};${icoBg(id)}">${hasIco(id)?'':a.short}</div>
       <div class="t">${a.name}</div>
-      <div class="d">${a.soon?'아직 준비 중인 App입니다. 오픈 시 이 창에서 바로 실행됩니다.':'구독 App입니다. 외부 서비스 창이 이 자리에 임베드됩니다.'}<br>${a.sub}</div></div>`}</div>`}
+      <div class="d">${a.soon?'아직 준비 중인 App입니다. 오픈 시 이 창에서 바로 실행됩니다.':'구독 App입니다. 외부 서비스 창이 이 자리에 임베드됩니다.'}<br>${a.sub}</div></div>`}</div>
     ${['n','s','w','e','nw','ne','sw','se'].map(d=>`<div class="rs ${d}" data-rs="${d}"></div>`).join('')}`;
   document.body.appendChild(el);
-  /* 실제 앱: iframe 로드 완료 시 스피너 해제 (최소 0.5초 노출로 깜빡임 방지) */
-  const fr=el.querySelector('iframe.appframe');
-  if(fr){ const t0=Date.now(); const done=()=>{ const l=el.querySelector('.app-loading'); if(l) l.remove(); };
-    fr.addEventListener('load',()=>setTimeout(done, Math.max(0,500-(Date.now()-t0))),{once:true});
-    setTimeout(done,15000); }   /* 15초 안에 응답이 없으면 스피너를 걷어 브라우저 오류 화면이 보이게 */
   syncThemeUI();                              /* 설정 창의 배경 카드 선택 상태 반영 */
   if(id==='memo') paintMemo();
   wins.set(id,{el,state:'normal',restore:null,zone:null,origin:origin||iconRect(id)});
@@ -2816,7 +2796,7 @@ function bindWindow(id,el){
   tb.addEventListener('dblclick',()=>{ if(!compact) maxApp(id); });
   tb.addEventListener('pointerdown',e=>{
     if(compact || e.target.closest('.wctl')) return;
-    e.preventDefault(); tb.setPointerCapture(e.pointerId); document.body.classList.add('winDrag');
+    e.preventDefault(); tb.setPointerCapture(e.pointerId);
     let sx=e.clientX, sy=e.clientY;
     let ox=el.offsetLeft, oy=el.offsetTop, moved=false, zone=null;
 
@@ -2845,7 +2825,7 @@ function bindWindow(id,el){
       else snapEl.classList.remove('show');
     };
     const up=ev=>{
-      tb.releasePointerCapture(e.pointerId); document.body.classList.remove('winDrag');
+      tb.releasePointerCapture(e.pointerId);
       tb.removeEventListener('pointermove',move); tb.removeEventListener('pointerup',up);
       snapEl.classList.remove('show');
       if(zone==='max') maxApp(id);
@@ -2857,7 +2837,7 @@ function bindWindow(id,el){
   /* 8방향 리사이즈 */
   el.querySelectorAll('[data-rs]').forEach(h=>{
     h.addEventListener('pointerdown',e=>{
-      e.preventDefault(); e.stopPropagation(); h.setPointerCapture(e.pointerId); document.body.classList.add('winDrag');
+      e.preventDefault(); e.stopPropagation(); h.setPointerCapture(e.pointerId);
       const dir=h.dataset.rs, sx=e.clientX, sy=e.clientY;
       const ox=el.offsetLeft, oy=el.offsetTop, ow=el.offsetWidth, oh=el.offsetHeight;
       const ar=area();
@@ -2871,7 +2851,7 @@ function bindWindow(id,el){
         if(dir.includes('n')){ hh=Math.max(MIN_H,Math.min(oh-dy, oy+oh-ar.y)); y=oy+oh-hh; }
         Object.assign(el.style,{left:x+'px',top:y+'px',width:ww+'px',height:hh+'px'});
       };
-      const up=()=>{ h.releasePointerCapture(e.pointerId); document.body.classList.remove('winDrag');
+      const up=()=>{ h.releasePointerCapture(e.pointerId);
         h.removeEventListener('pointermove',move); h.removeEventListener('pointerup',up); };
       h.addEventListener('pointermove',move); h.addEventListener('pointerup',up);
     });
