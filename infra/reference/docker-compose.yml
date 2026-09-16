@@ -1,0 +1,127 @@
+# ============================================================
+#  SH Platform — Docker Compose
+#  성현회계법인 AX 대전환 프로젝트
+#  NAS 경로: /volume1/sh-pf/docker/sh-platform/docker-compose.yml
+# ============================================================
+#
+#  실행 방법:
+#    ssh jinkyu.kim@192.168.100.25 -p 3907
+#    cd /volume1/sh-pf/docker/sh-platform
+#    docker-compose up -d
+#
+#  중지: docker-compose down
+#  로그: docker-compose logs -f
+#  상태: docker-compose ps
+# ============================================================
+
+version: "3.9"
+
+services:
+  # ── 1. PostgreSQL 데이터베이스 ──
+  postgres:
+    image: postgres:15-alpine
+    container_name: sh-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sh_admin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
+      POSTGRES_DB: sh_platform
+      TZ: Asia/Seoul
+    volumes:
+      - /volume1/sh-pf/database:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    ports:
+      - "127.0.0.1:5432:5432"   # 내부(localhost)만 접근 허용
+    networks:
+      - sh-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sh_admin -d sh_platform"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── 2. Streamlit 감사자동화 앱 ──
+  streamlit:
+    build:
+      context: ./streamlit-app
+      dockerfile: Dockerfile
+    container_name: sh-streamlit
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://sh_admin:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}@postgres:5432/sh_platform
+      TZ: Asia/Seoul
+    volumes:
+      - /volume1/sh-pf/docker/streamlit-apps:/app
+      - /volume1/sh-pf/uploads:/app/uploads
+      - /volume1/sh-pf/projects:/app/projects
+    ports:
+      - "127.0.0.1:8501:8501"   # Nginx 뒤에서 구동
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - sh-net
+
+  # ── 3. Nginx 리버스 프록시 ──
+  nginx:
+    image: nginx:alpine
+    container_name: sh-nginx
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Seoul
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8080:80"               # 내부 테스트용 (NAS의 Synology Web Station이 80/443 사용 중)
+      - "8443:443"              # HTTPS (Synology 인증서와 별도 운영)
+    depends_on:
+      - streamlit
+    networks:
+      - sh-net
+
+  # ── 4. Redis 캐시 (향후 Portal 세션/알림용) ──
+  redis:
+    image: redis:7-alpine
+    container_name: sh-redis
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Seoul
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    ports:
+      - "127.0.0.1:6379:6379"
+    networks:
+      - sh-net
+
+  # ── 5. DB 자동 백업 (매일 새벽 2시) ──
+  db-backup:
+    image: postgres:15-alpine
+    container_name: sh-db-backup
+    restart: unless-stopped
+    environment:
+      PGHOST: postgres
+      PGUSER: sh_admin
+      PGPASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
+      PGDATABASE: sh_platform
+      TZ: Asia/Seoul
+    volumes:
+      - /volume1/sh-pf/backups/daily:/backups
+      - ./scripts/backup.sh:/backup.sh:ro
+    entrypoint: /bin/sh
+    command: ["-c", "chmod +x /backup.sh && crond -f -l 2 -L /dev/stdout"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - sh-net
+
+networks:
+  sh-net:
+    driver: bridge
+    name: sh-platform-net
+
+volumes:
+  redis-data:
+    name: sh-redis-data

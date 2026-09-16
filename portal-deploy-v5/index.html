@@ -1,0 +1,1538 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SH Portal — 성현회계법인 디지털 운영체제</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  /* ink & neutrals */
+  --ink:#1A1B1E;--ink2:#2A2B30;--txt:#3D3E44;--txt2:#6A6C74;--txt3:#9A9CA4;
+  --line:#E6E6EA;--line2:#EFEFF2;--fill:#F4F4F6;--fill2:#FAFAFB;
+  --bg:#F6F6F7;--card:#FFFFFF;
+  /* rail (sidebar) */
+  --rail:#141519;--rail-txt:#9B9DA6;--rail-hi:#FFFFFF;
+  /* brand & semantic */
+  --red:#E81E25;--ok:#1F9D61;--ok-bg:#EAF6F0;--warn:#D64545;--warn-bg:#FCEEEE;
+  --amber:#C77414;--amber-bg:#FBF2E6;--blue:#3B6FD4;--blue-bg:#EDF2FC;
+  --sh-1:0 1px 2px rgba(20,21,25,.05);
+  --sh-2:0 8px 28px rgba(20,21,25,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Pretendard Variable',Pretendard,-apple-system,'Malgun Gothic','Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt);font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px;border-radius:2px}
+.num,.kpi-value,.wp-table td.num,.dim-score,.gauge-val .big{font-variant-numeric:tabular-nums}
+.ic{width:16px;height:16px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+
+/* ── 원장 괘선 (signature): 단선·이중선 ── */
+.rule{height:1px;background:var(--line);margin:14px 0 20px}
+.rule.dbl{height:5px;background:none;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);opacity:.85}
+
+/* ── 최상단 안내 배너 ── */
+.banner{background:var(--ink);color:#C9CAD1;padding:8px 24px;font-size:11.5px;display:flex;align-items:center;gap:12px;letter-spacing:.1px}
+.banner b{font-weight:700;color:#fff}
+.banner .tag{background:var(--red);color:#fff;padding:2px 8px;border-radius:3px;font-size:9.5px;font-weight:800;letter-spacing:1.2px}
+
+/* ── 헤더바 ── */
+.topbar{background:#fff;height:60px;display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--line)}
+.logo{font-size:16.5px;font-weight:800;color:var(--ink);letter-spacing:-.3px;display:flex;align-items:center;gap:9px}
+.logo .dot{width:9px;height:9px;background:var(--red);display:inline-block;border-radius:2px}
+.logo span{font-size:11px;color:var(--txt3);font-weight:500;margin-left:4px;letter-spacing:0}
+.topbar .bdo-member{display:inline-flex;align-items:center;gap:7px;margin-left:16px;padding-left:16px;border-left:1px solid var(--line)}
+.topbar .bdo-member .bdo-box-sm{background:var(--red);color:#fff;font-weight:900;font-size:11px;padding:3px 6px;border-radius:2px;font-family:Arial,sans-serif;letter-spacing:.5px}
+.topbar .bdo-member .mem{font-size:9.5px;color:var(--txt3);line-height:1.25}
+.topbar-search{flex:1;max-width:440px;margin:0 32px;position:relative}
+.topbar-search input{width:100%;padding:8px 14px 8px 34px;border:1px solid var(--line);border-radius:9px;background:var(--fill);font-size:12.5px;outline:none;font-family:inherit;color:var(--ink);transition:border-color .15s,background .15s}
+.topbar-search input::placeholder{color:var(--txt3)}
+.topbar-search input:focus{border-color:var(--ink);background:#fff}
+.topbar-search .ic{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--txt3)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.bell{position:relative;padding:8px;color:var(--txt2);border-radius:8px;transition:background .15s}
+.bell:hover{background:var(--fill)}
+.bell .badge{position:absolute;top:3px;right:2px;background:var(--red);color:#fff;font-size:8.5px;font-weight:800;border-radius:8px;padding:1px 4.5px;line-height:1.3}
+.user-chip{display:flex;align-items:center;gap:10px;padding:4px 12px 4px 5px;border:1px solid var(--line);border-radius:99px;background:#fff}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10.5px}
+.user-name{font-weight:700;font-size:12px;color:var(--ink);line-height:1.3}
+.user-role{font-size:9.5px;color:var(--txt3)}
+
+/* ── 본문 레이아웃 ── */
+.layout{display:grid;grid-template-columns:224px 1fr;min-height:calc(100vh - 60px - 37px)}
+
+/* ── 사이드바 (다크 레일) ── */
+.sidebar{background:var(--rail);padding:14px 10px 20px}
+.side-group{padding:14px 12px 6px;font-size:9.5px;font-weight:700;color:#5B5D66;letter-spacing:1.6px;text-transform:uppercase}
+.side-item{padding:8px 12px;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--rail-txt);cursor:pointer;border-radius:8px;position:relative;transition:background .12s,color .12s;margin-bottom:1px}
+.side-item:hover{background:rgba(255,255,255,.05);color:#D5D6DC}
+.side-item.active{background:rgba(255,255,255,.07);color:var(--rail-hi);font-weight:700}
+.side-item.active::before{content:'';position:absolute;left:-10px;top:7px;bottom:7px;width:2.5px;background:var(--red);border-radius:0 2px 2px 0}
+.side-item .count{margin-left:auto;background:rgba(255,255,255,.09);color:#B9BAC2;font-size:9px;font-weight:700;padding:1.5px 6px;border-radius:8px}
+.side-item.active .count{background:var(--red);color:#fff}
+
+/* ── 메인 ── */
+.main{padding:28px 36px;overflow-y:auto}
+.view{display:none;animation:fadein .22s ease}
+.view.on{display:block}
+@keyframes fadein{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* ── 공통 요소 ── */
+.page-title{font-size:23px;font-weight:800;color:var(--ink);letter-spacing:-.5px;line-height:1.3}
+.page-sub{font-size:12.5px;color:var(--txt2);margin-top:3px}
+.card{background:var(--card);border-radius:13px;padding:20px;border:1px solid var(--line);box-shadow:var(--sh-1)}
+.card h3{font-size:13px;font-weight:800;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px;letter-spacing:-.2px}
+.card h3 .tag{background:var(--fill);color:var(--txt2);font-size:9px;padding:2px 7px;border-radius:4px;letter-spacing:1px;font-weight:800;border:1px solid var(--line)}
+.card h3 .tag.live{background:var(--ok-bg);color:var(--ok);border-color:transparent}
+
+/* ── DASHBOARD ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.kpi{background:#fff;border-radius:13px;padding:18px 20px;border:1px solid var(--line);box-shadow:var(--sh-1);transition:border-color .15s}
+.kpi-label{font-size:11px;color:var(--txt2);font-weight:600;margin-bottom:8px;letter-spacing:.2px}
+.kpi-value{font-size:30px;font-weight:800;color:var(--ink);letter-spacing:-1px;line-height:1.1}
+.kpi-delta{font-size:10.5px;color:var(--ok);font-weight:700;margin-top:7px}
+.kpi-delta.down{color:var(--warn)}
+.kpi-delta.mut{color:var(--txt3)}
+.kpi.link:hover{border-color:var(--ink);cursor:pointer}
+
+.dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px}
+.proj-list{display:flex;flex-direction:column;gap:8px}
+.proj-item{display:flex;align-items:center;gap:14px;padding:12px 14px;border:1px solid var(--line2);border-radius:10px;background:var(--fill2);cursor:pointer;transition:border-color .15s,background .15s}
+.proj-item:hover{border-color:var(--ink);background:#fff}
+.proj-icon{width:38px;height:38px;border-radius:9px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0}
+.proj-info{flex:1;min-width:0}
+.proj-name{font-weight:700;font-size:13px;color:var(--ink);margin-bottom:2px;letter-spacing:-.2px}
+.proj-meta{font-size:10.5px;color:var(--txt3);display:flex;gap:8px}
+.proj-meta .sep{color:var(--line)}
+.proj-prog{width:118px;flex-shrink:0}
+.prog-bar{height:4px;background:var(--line2);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:var(--ink);border-radius:2px}
+.prog-label{font-size:10px;color:var(--txt3);font-weight:600;margin-top:4px;text-align:right;font-variant-numeric:tabular-nums}
+.proj-status{font-size:9.5px;font-weight:800;padding:3.5px 9px;border-radius:6px;letter-spacing:.3px;white-space:nowrap}
+.st-field{background:var(--amber-bg);color:var(--amber)}
+.st-review{background:var(--blue-bg);color:var(--blue)}
+.st-done{background:var(--ok-bg);color:var(--ok)}
+
+.notice-list{display:flex;flex-direction:column;gap:2px}
+.notice{padding:10px 10px 10px 14px;border-radius:8px;font-size:12px;position:relative;transition:background .12s;cursor:pointer}
+.notice::before{content:'';position:absolute;left:0;top:12px;bottom:12px;width:2px;background:var(--line);border-radius:2px}
+.notice:hover{background:var(--fill2)}
+.notice .t{font-weight:700;color:var(--ink);margin-bottom:2px;letter-spacing:-.2px}
+.notice .d{font-size:10px;color:var(--txt3)}
+.notice.urgent::before{background:var(--red)}
+.notice.urgent .t{color:var(--red)}
+
+/* ── APP GRID ── */
+.app-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.app-card{background:#fff;border-radius:13px;padding:20px;border:1px solid var(--line);box-shadow:var(--sh-1);cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s;position:relative}
+.app-card:hover{transform:translateY(-2px);border-color:var(--ink);box-shadow:var(--sh-2)}
+.app-chip{position:absolute;top:16px;right:16px;font-size:9px;font-weight:800;letter-spacing:.6px;padding:3px 8px;border-radius:5px;background:var(--fill);color:var(--txt2);border:1px solid var(--line)}
+.app-chip.own{background:var(--ink);color:#fff;border-color:var(--ink)}
+.app-chip.ext{background:var(--blue-bg);color:var(--blue);border-color:transparent}
+.app-chip.coming{background:var(--fill);color:var(--txt3)}
+.app-code{width:48px;height:48px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;letter-spacing:.3px;margin-bottom:14px;font-family:inherit}
+.cd-aud{background:var(--ink);color:#fff}
+.cd-fin{background:var(--ok-bg);color:var(--ok)}
+.cd-ifrs{background:#FBEBEB;color:var(--red)}
+.cd-xbrl{background:var(--blue-bg);color:var(--blue)}
+.cd-law{background:#F1EDF9;color:#7A5BC7}
+.cd-erp{background:var(--fill);color:var(--txt2)}
+.cd-tax{background:var(--amber-bg);color:var(--amber)}
+.cd-ins{background:#E8F4F3;color:#25837B}
+.cd-rag{background:var(--fill);color:var(--txt2)}
+.cd-ai{background:#FBEBEB;color:var(--red)}
+.app-name{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:4px;letter-spacing:-.3px}
+.app-desc{font-size:11px;color:var(--txt2);line-height:1.55;min-height:34px}
+.app-meta{margin-top:14px;padding-top:11px;border-top:1px solid var(--line2);display:flex;justify-content:space-between;font-size:10px;color:var(--txt3);font-weight:600}
+
+/* ── PROJECT LIST ── */
+.breadcrumb{font-size:11px;color:var(--txt3);margin-bottom:14px;display:flex;align-items:center;gap:7px;font-weight:500}
+.breadcrumb a{color:var(--txt2);font-weight:600;cursor:pointer}
+.breadcrumb a:hover{color:var(--ink)}
+.breadcrumb .arr{color:var(--line);font-size:9px}
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.toolbar input{padding:8px 13px;border:1px solid var(--line);border-radius:9px;font-size:12px;flex:1;max-width:280px;outline:none;font-family:inherit;background:#fff}
+.toolbar input:focus{border-color:var(--ink)}
+.toolbar select{padding:8px 11px;border:1px solid var(--line);border-radius:9px;font-size:12px;background:#fff;outline:none;font-family:inherit;color:var(--txt)}
+.btn{padding:8px 15px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:background .15s,border-color .15s,color .15s;border:1px solid transparent;letter-spacing:-.1px}
+.btn-pri{background:var(--ink);color:#fff}
+.btn-pri:hover{background:#000}
+.btn-ghost{background:#fff;color:var(--txt);border-color:var(--line)}
+.btn-ghost:hover{border-color:var(--ink);color:var(--ink)}
+
+.proj-table{background:#fff;border-radius:13px;border:1px solid var(--line);box-shadow:var(--sh-1);overflow:hidden}
+.proj-table table{width:100%;border-collapse:collapse}
+.proj-table th{background:var(--fill2);padding:11px 14px;text-align:left;font-size:10px;font-weight:800;color:var(--txt2);border-bottom:1px solid var(--line);letter-spacing:.8px;text-transform:uppercase}
+.proj-table td{padding:13px 14px;font-size:12.5px;border-bottom:1px solid var(--line2);color:var(--txt)}
+.proj-table tr:hover td{background:var(--fill2)}
+.proj-table tr:last-child td{border-bottom:none}
+.proj-table b{color:var(--ink)}
+.cb{display:inline-block;width:24px;height:24px;border-radius:6px;background:var(--ink);color:#fff;text-align:center;line-height:24px;font-size:11px;font-weight:800;margin-right:9px}
+.members{display:flex;align-items:center}
+.members .av{width:24px;height:24px;border-radius:50%;background:var(--txt2);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;border:2px solid #fff;margin-left:-6px}
+.members .av:first-child{margin-left:0}
+.members .av.p{background:var(--red)}
+.members .av.m{background:var(--ink)}
+.go-detail{color:var(--txt3);font-size:10px;font-weight:700;margin-left:6px}
+tr:hover .go-detail{color:var(--red)}
+
+/* ── NEW PROJECT FORM ── */
+.form-wrap{max-width:780px;margin:0 auto}
+.stepper{display:flex;gap:0;margin-bottom:20px;padding:10px;background:#fff;border-radius:13px;border:1px solid var(--line)}
+.step{flex:1;padding:8px;text-align:center;position:relative;font-size:11px;color:var(--txt3);font-weight:600;cursor:pointer}
+.step::after{content:'';position:absolute;right:0;top:50%;width:1px;height:26px;background:var(--line2);transform:translateY(-50%)}
+.step:last-child::after{display:none}
+.step .stnum{display:inline-flex;width:25px;height:25px;border-radius:50%;background:var(--fill);color:var(--txt3);align-items:center;justify-content:center;font-weight:800;margin-bottom:5px;font-size:11.5px}
+.step.active{color:var(--ink);font-weight:700}
+.step.active .stnum{background:var(--ink);color:#fff}
+.step.done{color:var(--ok)}
+.step.done .stnum{background:var(--ok-bg);color:var(--ok)}
+
+.form-card{background:#fff;border-radius:13px;padding:28px;border:1px solid var(--line);box-shadow:var(--sh-1)}
+.form-card h2{font-size:16px;font-weight:800;color:var(--ink);margin-bottom:3px;letter-spacing:-.3px}
+.form-card .sub{font-size:11.5px;color:var(--txt2);margin-bottom:22px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;margin-bottom:20px}
+.fg{display:flex;flex-direction:column;gap:6px}
+.fg.full{grid-column:1/-1}
+.fg label{font-size:10.5px;font-weight:700;color:var(--txt2);letter-spacing:.2px}
+.fg label .req{color:var(--red)}
+.fg input,.fg select{padding:9px 12px;border:1px solid var(--line);border-radius:9px;font-size:12.5px;background:#fff;outline:none;font-family:inherit;color:var(--ink);transition:border-color .15s}
+.fg input:focus,.fg select:focus{border-color:var(--ink)}
+.radio-row{display:flex;gap:8px}
+.radio-pill{flex:1;padding:9px 10px;border:1px solid var(--line);border-radius:9px;text-align:center;font-size:11.5px;font-weight:600;color:var(--txt2);cursor:pointer;transition:border-color .15s,color .15s,background .15s}
+.radio-pill:hover{border-color:var(--ink);color:var(--ink)}
+.radio-pill.on{border-color:var(--ink);background:var(--ink);color:#fff;font-weight:700}
+
+.member-picker{border:1px dashed var(--line);border-radius:11px;padding:16px;background:var(--fill2)}
+.mp-title{font-size:11px;font-weight:800;color:var(--txt2);margin-bottom:12px;letter-spacing:.3px}
+.member-row{display:grid;grid-template-columns:100px 1fr;gap:12px;margin-bottom:10px;align-items:center}
+.member-row label{font-size:11.5px;color:var(--txt);font-weight:600}
+.chip-row{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;background:#fff;border:1px solid var(--line);border-radius:99px;font-size:11px;color:var(--txt);font-weight:600}
+.chip .av{width:20px;height:20px;border-radius:50%;background:var(--ink);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:700}
+.chip .x{cursor:pointer;color:var(--txt3);font-weight:700;padding:0 2px}
+.chip .x:hover{color:var(--warn)}
+.chip.add{border-style:dashed;color:var(--txt3);cursor:pointer;padding:4px 12px}
+.chip.add:hover{border-color:var(--ink);color:var(--ink)}
+
+.prior-box{background:var(--fill);border:1px solid var(--line);border-left:2px solid var(--red);border-radius:8px;padding:13px 16px;display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.prior-box .txt{flex:1;font-size:11.5px;color:var(--txt)}
+.prior-box .txt b{color:var(--ink)}
+.form-actions{display:flex;justify-content:space-between;margin-top:22px}
+
+/* ── FOOTER ── */
+.footer{border-top:1px solid var(--line);padding:11px 24px;font-size:10px;color:var(--txt3);display:flex;justify-content:space-between;background:#fff}
+.footer b{color:var(--red)}
+
+/* ═══ 로그인 화면 ═══ */
+.login-screen{position:fixed;inset:0;z-index:1000;background:#0E0F12;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.login-screen::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(to bottom,transparent 0 35px,rgba(255,255,255,.035) 35px 36px);pointer-events:none}
+.login-screen::after{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(232,30,37,.35);pointer-events:none}
+.login-wrap{position:relative;display:grid;grid-template-columns:1.25fr 1fr;gap:56px;width:min(1020px,92vw);padding:24px;z-index:2}
+.login-hero{color:#fff;display:flex;flex-direction:column;justify-content:center}
+.bdo-mark{display:inline-flex;align-items:center;gap:11px;margin-bottom:26px}
+.bdo-mark .bdo-box{background:var(--red);color:#fff;font-weight:900;font-size:17px;letter-spacing:1px;padding:6px 10px;border-radius:2px;line-height:1;font-family:Arial,sans-serif}
+.bdo-mark .bdo-tag{color:#fff;opacity:.75;font-size:10.5px;letter-spacing:.3px;line-height:1.4}
+.bdo-mark .bdo-tag b{display:block;font-weight:700;letter-spacing:1.8px;font-size:9.5px;margin-bottom:2px}
+.login-hero .brand{font-size:11px;font-weight:700;letter-spacing:4px;color:#84868F;margin-bottom:16px}
+.login-hero h1{font-size:52px;font-weight:800;line-height:1.22;letter-spacing:-1.5px;margin-bottom:20px;word-break:keep-all}
+.login-hero h1 span{color:var(--red)}
+.login-hero p{font-size:13.5px;color:#A6A8B0;line-height:1.75;margin-bottom:34px;max-width:460px;word-break:keep-all}
+.login-features{display:flex;flex-direction:column}
+.lf-item{display:flex;align-items:center;gap:14px;font-size:12px;color:#C9CAD1;padding:11px 2px;border-top:1px solid rgba(255,255,255,.08)}
+.lf-item:last-child{border-bottom:1px solid rgba(255,255,255,.08)}
+.lf-item .lf-no{font-size:10px;font-weight:800;color:var(--red);letter-spacing:1px;width:24px;font-variant-numeric:tabular-nums}
+.login-card{background:#fff;border-radius:16px;padding:38px 34px;box-shadow:0 32px 80px rgba(0,0,0,.5);align-self:center}
+.login-card .lc-logo{display:flex;align-items:center;gap:9px;margin-bottom:3px}
+.login-card .lc-logo .dot{width:12px;height:12px;background:var(--red);border-radius:3px;cursor:default}
+.login-card .lc-logo b{font-size:21px;color:var(--ink);font-weight:800;letter-spacing:-.4px}
+.login-card .lc-sub{font-size:11px;color:var(--txt3);margin-bottom:26px}
+.login-card h2{font-size:16.5px;color:var(--ink);font-weight:800;margin-bottom:5px;letter-spacing:-.3px}
+.login-card .hint{font-size:11px;color:var(--txt2);margin-bottom:22px;line-height:1.6}
+.sso-btn{width:100%;padding:12px 16px;border-radius:10px;border:1px solid var(--line);background:#fff;display:flex;align-items:center;gap:12px;font-size:13px;font-weight:700;color:var(--txt);margin-bottom:9px;transition:border-color .15s,background .15s;cursor:pointer}
+.sso-btn:hover{border-color:var(--ink);background:var(--fill2)}
+.sso-btn .sic{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:11px;flex-shrink:0}
+.sso-btn .sic.g{background:#4285F4}
+.sso-btn .sic.m{background:#00A4EF}
+.sso-btn .sic.id{background:var(--txt2)}
+.sso-btn .arr{margin-left:auto;color:var(--txt3);font-size:11px}
+.login-div{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--txt3);font-size:10px;font-weight:600}
+.login-div::before,.login-div::after{content:'';flex:1;height:1px;background:var(--line2)}
+.login-foot{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--txt3);margin-top:20px;padding-top:16px;border-top:1px solid var(--line2)}
+.login-foot .tag-2fa{display:inline-flex;align-items:center;gap:4px;background:var(--ok-bg);color:var(--ok);padding:3px 9px;border-radius:99px;font-weight:700}
+.login-foot a{color:var(--txt2);font-weight:600;cursor:pointer}
+.login-foot a:hover{color:var(--ink)}
+.login-screen.hidden{display:none}
+
+/* ═══ 개발자 인증 모달 ═══ */
+.dev-modal{position:fixed;inset:0;z-index:2000;background:rgba(14,15,18,.88);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center}
+.dev-modal.hidden{display:none}
+.dev-box{background:#fff;border-radius:16px;padding:36px 32px;box-shadow:0 32px 80px rgba(0,0,0,.5);width:min(400px,90vw);text-align:center}
+.dev-box .dev-icon{width:52px;height:52px;border-radius:13px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;letter-spacing:1px;margin:0 auto 16px}
+.dev-box h2{font-size:18px;font-weight:800;color:var(--ink);margin-bottom:4px;letter-spacing:-.3px}
+.dev-box .dev-sub{font-size:11px;color:var(--txt2);margin-bottom:24px}
+.dev-box .dev-input{width:100%;padding:12px 16px;border:1.5px solid var(--line);border-radius:10px;font-size:14px;font-family:inherit;outline:none;text-align:center;letter-spacing:3px;transition:border-color .2s}
+.dev-box .dev-input:focus{border-color:var(--ink)}
+.dev-box .dev-input.error{border-color:var(--warn);animation:shake .4s ease}
+.dev-box .dev-enter{width:100%;padding:12px;margin-top:12px;background:var(--ink);color:#fff;border:none;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;transition:background .2s}
+.dev-box .dev-enter:hover{background:#000}
+.dev-box .dev-error-msg{color:var(--warn);font-size:11px;font-weight:600;margin-top:10px;min-height:16px}
+.dev-box .dev-hint{font-size:10px;color:var(--txt3);margin-top:14px;padding-top:14px;border-top:1px solid var(--line2)}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+
+/* ═══ 프로젝트 상세 (조서 트리) ═══ */
+.proj-header{background:#fff;border-radius:13px;padding:18px 22px;border:1px solid var(--line);box-shadow:var(--sh-1);margin-bottom:14px;display:flex;align-items:center;gap:18px}
+.proj-header .ph-ico{width:52px;height:52px;border-radius:12px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800}
+.proj-header .ph-info{flex:1}
+.proj-header .ph-name{font-size:17px;font-weight:800;color:var(--ink);margin-bottom:5px;display:flex;align-items:center;gap:8px;letter-spacing:-.3px;flex-wrap:wrap}
+.badge-sm{display:inline-block;background:var(--fill);color:var(--txt2);font-size:9.5px;font-weight:700;padding:2.5px 8px;border-radius:5px;letter-spacing:.3px;border:1px solid var(--line)}
+.badge-sm.pri{background:var(--blue-bg);color:var(--blue);border-color:transparent}
+.badge-sm.acc{background:#FBEBEB;color:var(--red);border-color:transparent}
+.proj-header .ph-meta{font-size:11px;color:var(--txt3);display:flex;gap:10px;flex-wrap:wrap}
+.proj-header .ph-meta .sep{color:var(--line)}
+.proj-header .ph-prog{width:180px;margin-right:12px}
+.proj-header .ph-act{display:flex;gap:6px}
+
+.wp-layout{display:grid;grid-template-columns:260px 1fr 300px;gap:12px;height:calc(100vh - 400px);min-height:520px}
+.wp-col{background:#fff;border-radius:13px;border:1px solid var(--line);box-shadow:var(--sh-1);overflow:hidden;display:flex;flex-direction:column}
+.wp-col-head{padding:11px 14px;border-bottom:1px solid var(--line);background:var(--fill2);font-size:11px;font-weight:800;color:var(--txt2);letter-spacing:.4px;display:flex;align-items:center;gap:6px}
+.wp-col-head .count{margin-left:auto;font-size:9.5px;background:var(--fill);color:var(--txt2);padding:2px 7px;border-radius:8px;border:1px solid var(--line);font-variant-numeric:tabular-nums}
+.wp-col-body{flex:1;overflow-y:auto;padding:8px}
+
+/* 조서 트리 */
+.tree-node{padding:6px 10px 6px 22px;font-size:12px;color:var(--txt);cursor:pointer;border-radius:7px;display:flex;align-items:center;gap:7px;position:relative}
+.tree-node:hover{background:var(--fill2)}
+.tree-node.active{background:var(--fill);color:var(--ink);font-weight:700}
+.tree-group{padding:8px 10px 6px;font-size:11.5px;font-weight:800;color:var(--ink);cursor:pointer;display:flex;align-items:center;gap:6px;margin-top:4px;border-radius:7px;letter-spacing:-.1px}
+.tree-group:hover{background:var(--fill2)}
+.tree-group .arr{font-size:8px;transition:transform .15s;color:var(--txt3)}
+.tree-group.collapsed .arr{transform:rotate(-90deg)}
+.tree-group.collapsed + .tree-children{display:none}
+.tree-fsa{font-size:9px;color:var(--txt3);font-weight:700;margin-left:auto;background:var(--fill);padding:1px 6px;border-radius:4px;letter-spacing:.5px}
+.tree-children{margin-left:6px;border-left:1px solid var(--line2);padding-left:2px}
+.tree-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.tree-dot.done{background:var(--ok)}
+.tree-dot.prog{background:var(--amber)}
+.tree-dot.none{background:var(--line)}
+.tree-dot.rev{background:var(--blue)}
+.tree-node .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tree-node .cnt{font-size:9px;color:var(--txt3)}
+
+/* 조서 프리뷰 */
+.wp-prev{padding:18px 22px;overflow:auto}
+.wp-prev-h{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:3px;letter-spacing:-.3px}
+.wp-prev-sub{font-size:10.5px;color:var(--txt3);margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap}
+.wp-prev-sub .sep{color:var(--line)}
+.wp-prev-sub .done{color:var(--ok);font-weight:700}
+.wp-toolbar{display:flex;gap:6px;margin-bottom:14px}
+.tbtn{padding:5px 11px;border:1px solid var(--line);background:#fff;border-radius:7px;font-size:10.5px;color:var(--txt2);cursor:pointer;font-weight:600;transition:border-color .12s,color .12s}
+.tbtn:hover{border-color:var(--ink);color:var(--ink)}
+.tbtn.on{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+.wp-table{width:100%;border-collapse:collapse;font-size:11.5px;margin-bottom:16px}
+.wp-table th{background:var(--fill2);padding:7px 9px;text-align:left;font-weight:800;color:var(--txt2);border:1px solid var(--line2);font-size:10px;letter-spacing:.3px}
+.wp-table td{padding:6.5px 9px;border:1px solid var(--line2);color:var(--txt)}
+.wp-table td.num{text-align:right}
+.wp-table tr.total td{font-weight:800;color:var(--ink);border-top:3px double var(--ink);background:var(--fill2)}
+.wp-note{background:var(--fill2);border:1px solid var(--line2);border-left:2px solid var(--amber);padding:10px 14px;border-radius:0 8px 8px 0;font-size:11.5px;color:var(--txt);margin-bottom:8px;line-height:1.6}
+.wp-note b{color:var(--ink)}
+.wp-note.proc{border-left-color:var(--blue)}
+.wp-note a{color:var(--blue);cursor:pointer;font-weight:700}
+.ai-chip{display:inline-block;background:var(--ink);color:#fff;font-size:8.5px;font-weight:800;padding:1.5px 6px;border-radius:4px;letter-spacing:1px;margin-right:4px;vertical-align:1px}
+
+/* 리뷰 노트 (우측) */
+.rn-item{padding:11px 13px;border-bottom:1px solid var(--line2);font-size:11.5px}
+.rn-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.rn-avatar{width:22px;height:22px;border-radius:50%;background:var(--txt2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.rn-avatar.p{background:var(--red)}
+.rn-avatar.m{background:var(--ink)}
+.rn-name{font-weight:700;color:var(--ink);font-size:11.5px}
+.rn-role{font-size:9px;color:var(--txt3)}
+.rn-date{margin-left:auto;font-size:9px;color:var(--txt3)}
+.rn-body{color:var(--txt);line-height:1.6;padding-left:30px}
+.rn-status{display:inline-block;font-size:9px;font-weight:800;padding:2.5px 8px;border-radius:5px;margin-top:6px;margin-left:30px;letter-spacing:.3px}
+.rn-status.open{background:var(--warn-bg);color:var(--warn)}
+.rn-status.closed{background:var(--ok-bg);color:var(--ok)}
+.rn-reply{margin-left:30px;padding:7px 11px;background:var(--fill2);border-radius:7px;font-size:10.5px;color:var(--txt2);margin-top:6px;border:1px solid var(--line2)}
+.rn-reply b{color:var(--ink)}
+.rn-add{padding:12px;border-top:1px solid var(--line);background:var(--fill2)}
+.rn-add textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px;font-size:11.5px;font-family:inherit;resize:none;outline:none;min-height:52px;transition:border-color .15s}
+.rn-add textarea:focus{border-color:var(--ink)}
+.rn-actions{display:flex;gap:6px;margin-top:8px}
+.rn-actions .btn{padding:6px 12px;font-size:10.5px}
+
+/* ═══ AQI 대시보드 상세 ═══ */
+.aqi-top{display:grid;grid-template-columns:1.3fr 2fr;gap:14px;margin-bottom:14px}
+.gauge-card{background:var(--rail);color:#fff;border-radius:13px;padding:24px;position:relative;overflow:hidden}
+.gauge-card::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(to bottom,transparent 0 27px,rgba(255,255,255,.04) 27px 28px);pointer-events:none}
+.gauge-label{font-size:10px;color:#84868F;font-weight:800;letter-spacing:1.6px;margin-bottom:4px}
+.gauge-title{font-size:16px;font-weight:800;margin-bottom:20px;letter-spacing:-.3px}
+.gauge-visual{display:flex;align-items:center;gap:22px;position:relative}
+.gauge-circle{width:138px;height:138px;border-radius:50%;background:conic-gradient(var(--ok) 0deg 332deg,rgba(255,255,255,.12) 332deg 360deg);display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
+.gauge-circle::before{content:'';position:absolute;inset:9px;border-radius:50%;background:var(--rail)}
+.gauge-val{position:relative;z-index:2;text-align:center}
+.gauge-val .big{font-size:36px;font-weight:800;letter-spacing:-1.5px}
+.gauge-val .sm{font-size:10.5px;color:#84868F}
+.gauge-info{flex:1}
+.gauge-info .tr{font-size:11.5px;color:#C9CAD1;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.gauge-info .tr .up{color:#4ECe8F;font-weight:800}
+.gauge-info .sts{display:inline-block;background:rgba(78,206,143,.15);color:#4ECE8F;font-size:10px;font-weight:800;padding:4px 11px;border-radius:99px;margin-top:6px}
+
+.aqi-dims{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.dim-card{background:#fff;border-radius:11px;padding:14px 16px;border:1px solid var(--line);box-shadow:var(--sh-1)}
+.dim-label{font-size:10px;color:var(--txt2);font-weight:800;letter-spacing:.4px;margin-bottom:5px}
+.dim-score{font-size:22px;font-weight:800;color:var(--ink);margin-bottom:8px;letter-spacing:-.8px}
+.dim-score .unit{font-size:10.5px;color:var(--txt3);font-weight:600;letter-spacing:0}
+.dim-bar{height:4px;background:var(--line2);border-radius:2px;overflow:hidden}
+.dim-bar div{height:100%;border-radius:2px}
+.dim-trend{font-size:10px;color:var(--txt3);margin-top:6px;display:flex;justify-content:space-between;font-weight:600}
+.dim-trend .up{color:var(--ok);font-weight:800}
+.dim-trend .dn{color:var(--warn);font-weight:800}
+
+.aqi-mid{display:grid;grid-template-columns:2fr 1.2fr;gap:14px;margin-bottom:14px}
+.bar-chart{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.bar-row{display:grid;grid-template-columns:96px 1fr 56px;gap:12px;align-items:center;font-size:11.5px}
+.bar-row .nm{color:var(--ink);font-weight:700}
+.bar-viz{height:20px;background:var(--fill);border-radius:5px;position:relative;overflow:hidden}
+.bar-viz div{height:100%;background:var(--ink);border-radius:5px;display:flex;align-items:center;padding-left:8px;color:#fff;font-size:10px;font-weight:700;font-variant-numeric:tabular-nums}
+.bar-row .val{text-align:right;font-weight:800;color:var(--ok);font-size:10.5px}
+.bar-row .val.dn{color:var(--warn)}
+
+.isqm-list{display:flex;flex-direction:column;gap:7px}
+.isqm-row{padding:8px 12px;background:var(--fill2);border-radius:8px;display:flex;align-items:center;gap:10px;font-size:11.5px;border:1px solid var(--line2)}
+.isqm-row .ck{width:17px;height:17px;border-radius:50%;background:var(--ok);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:800;flex-shrink:0}
+.isqm-row.warn .ck{background:var(--warn)}
+.isqm-row.pending .ck{background:var(--amber)}
+.isqm-row .t{flex:1;color:var(--txt);font-weight:600}
+.isqm-row .d{font-size:9.5px;color:var(--txt3);font-weight:600}
+
+.incident-list{display:flex;flex-direction:column;gap:8px}
+.inc-item{padding:12px 14px;border:1px solid var(--line2);border-radius:9px;font-size:11.5px;background:var(--fill2)}
+.inc-head{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.inc-sev{font-size:8.5px;font-weight:900;padding:2.5px 7px;border-radius:5px;letter-spacing:.8px}
+.inc-sev.hi{background:var(--warn-bg);color:var(--warn)}
+.inc-sev.mid{background:var(--amber-bg);color:var(--amber)}
+.inc-sev.lo{background:var(--ok-bg);color:var(--ok)}
+.inc-title{font-weight:700;color:var(--ink);font-size:11.5px;flex:1;letter-spacing:-.1px}
+.inc-date{font-size:9.5px;color:var(--txt3)}
+.inc-desc{color:var(--txt2);font-size:10.5px;line-height:1.6}
+
+/* ── APP VIEWER (iframe 통합) ── */
+.app-viewer{display:flex;flex-direction:column;height:calc(100vh - 60px - 37px);position:relative}
+.app-viewer-bar{display:flex;align-items:center;gap:14px;padding:10px 20px;background:#fff;border-bottom:1px solid var(--line);flex-shrink:0;position:relative;z-index:2}
+.app-viewer-bar .back-btn{display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border:1px solid var(--line);border-radius:8px;font-size:12px;font-weight:700;color:var(--txt);cursor:pointer;background:#fff;transition:border-color .15s,color .15s}
+.app-viewer-bar .back-btn:hover{border-color:var(--ink);color:var(--ink)}
+.app-viewer-bar .app-viewer-title{font-size:13.5px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:8px;letter-spacing:-.2px}
+.app-viewer-bar .app-viewer-title .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
+.app-viewer-bar .app-viewer-ver{font-size:10px;color:var(--txt3);margin-left:auto;font-weight:600}
+.app-viewer iframe{flex:1;border:none;width:100%;background:#fff}
+/* 공통 로딩 스피너 */
+.app-loading{position:absolute;inset:0;z-index:1;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:rgba(255,255,255,.97)}
+.app-viewer.loading .app-loading{display:flex}
+.app-loading .spinner{width:44px;height:44px;border-radius:50%;border:3px solid var(--line2);border-top-color:var(--red);animation:spin .8s linear infinite}
+.app-loading .ld-text{font-size:12.5px;font-weight:700;color:var(--txt2);letter-spacing:.3px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* 앱 뷰어 모드 */
+.layout.app-mode{grid-template-columns:1fr}
+.layout.app-mode .sidebar{display:none}
+.layout.app-mode .main{padding:0;overflow:hidden}
+
+/* 스크롤바 */
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--txt3)}
+
+/* ── 반응형 ── */
+@media (max-width:1180px){
+  .kpi-grid,.app-grid{grid-template-columns:repeat(2,1fr)}
+  .aqi-top,.aqi-mid,.dash-grid{grid-template-columns:1fr}
+  .wp-layout{grid-template-columns:220px 1fr;height:auto}
+  .wp-col:last-child{grid-column:1/-1}
+}
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:flex;overflow-x:auto;padding:8px;gap:2px}
+  .side-group{display:none}
+  .side-item{white-space:nowrap}
+  .side-item.active::before{display:none}
+  .topbar-search{display:none}
+  .login-wrap{grid-template-columns:1fr;gap:32px}
+  .login-hero h1{font-size:36px}
+  .kpi-grid,.app-grid{grid-template-columns:1fr}
+  .wp-layout{grid-template-columns:1fr}
+  .main{padding:20px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ 개발자 인증 모달 ═══ -->
+<div class="dev-modal hidden" id="devModal">
+  <div class="dev-box">
+    <div class="dev-icon">DEV</div>
+    <h2>Developer Access</h2>
+    <div class="dev-sub">포털 개발 모드로 진입합니다. 비밀번호를 입력하세요.</div>
+    <input type="password" class="dev-input" id="devPwInput" placeholder="비밀번호 입력" autofocus>
+    <button class="dev-enter" id="devEnterBtn">포털 개발 모드 진입</button>
+    <div class="dev-error-msg" id="devErrorMsg"></div>
+    <div class="dev-hint">이 화면은 ?dev 파라미터로 접속한 관리자에게만 표시됩니다.</div>
+  </div>
+</div>
+
+<!-- ═══ 로그인 화면 (오버레이) ═══ -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-wrap">
+    <div class="login-hero">
+      <div class="bdo-mark">
+        <div class="bdo-box">BDO</div>
+        <div class="bdo-tag"><b>MEMBER FIRM</b>People Helping People Achieve Their Dreams</div>
+      </div>
+      <div class="brand">SEONGHYUN CPAs · AX</div>
+      <h1>AI와 함께 일하는<br>회계법인, <span>성현.</span></h1>
+      <p>감사·세무·자문 업무가 하나의 포털 위에서 흐르고, 개인의 경험이 법인의 데이터로 축적되며, AI가 언제나 동료로 곁에 있는 디지털 운영체제 — SH Portal에 오신 것을 환영합니다.</p>
+      <div class="login-features">
+        <div class="lf-item"><span class="lf-no">01</span>구성원 전용 SSO 인증 · 2단계 보안</div>
+        <div class="lf-item"><span class="lf-no">02</span>프로젝트 · 조서 · ERP · 외부 App 통합 진입</div>
+        <div class="lf-item"><span class="lf-no">03</span>Claude 기반 AI Assistant 상시 동반</div>
+      </div>
+    </div>
+
+    <div class="login-card">
+      <div class="lc-logo"><span class="dot" id="lcDot" title=""></span><b>SH Portal</b></div>
+      <div class="lc-sub">성현회계법인 디지털 운영체제</div>
+      <h2>로그인</h2>
+      <div class="hint">성현 계정으로 로그인하세요. 최초 로그인 시 관리자 승인이 필요할 수 있습니다.</div>
+
+      <button class="sso-btn" id="btnSsoGoogle">
+        <div class="sic g">G</div>
+        Google Workspace로 로그인
+        <span class="arr">→</span>
+      </button>
+      <button class="sso-btn" id="btnSsoMs">
+        <div class="sic m">⊞</div>
+        Microsoft 365로 로그인
+        <span class="arr">→</span>
+      </button>
+
+      <div class="login-div">또는</div>
+
+      <button class="sso-btn">
+        <div class="sic id">ID</div>
+        사원번호로 로그인
+        <span class="arr">→</span>
+      </button>
+
+      <div class="login-foot">
+        <span class="tag-2fa">2FA 보호</span>
+        <span><a>관리자 문의</a> · <a>비밀번호 재설정</a></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 안내 배너 -->
+<div class="banner">
+  <span class="tag">MOCKUP</span>
+  <b>SH Portal 뼈대 목업</b>
+  <span>— 파트너총회 발표용 UI 개념 시연. 좌측 메뉴를 클릭해 주요 화면을 전환해 보세요.</span>
+</div>
+
+<!-- 상단 헤더 -->
+<div class="topbar">
+  <div class="logo">
+    <span class="dot"></span>SH Portal
+    <span>성현회계법인 디지털 운영체제</span>
+  </div>
+  <div class="bdo-member">
+    <div class="bdo-box-sm">BDO</div>
+    <div class="mem">Member Firm<br><span style="opacity:.7">성현회계법인</span></div>
+  </div>
+  <div class="topbar-search">
+    <svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input placeholder="회사명·조서·규정·판례를 한 번에 검색">
+  </div>
+  <div class="topbar-right">
+    <button class="bell" aria-label="알림">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
+      <span class="badge">3</span>
+    </button>
+    <div class="user-chip">
+      <div class="avatar">윤길</div>
+      <div>
+        <div class="user-name">윤길배 CPA</div>
+        <div class="user-role">대표이사 · Partner</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- 사이드바 -->
+  <aside class="sidebar">
+    <div class="side-group">Main</div>
+    <div class="side-item active" data-view="dashboard"><svg class="ic" viewBox="0 0 24 24"><path d="m3 10.5 9-7.5 9 7.5"/><path d="M5.5 9v11h13V9"/></svg>대시보드</div>
+    <div class="side-item" data-view="auditapp"><svg class="ic" viewBox="0 0 24 24"><path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"/><path d="M9 8h5M9 12h5"/></svg>SH Audit Platform</div>
+    <div class="side-item" data-view="ifrs18app"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M6 16v-5M11 16V7M16 16v-8"/></svg>IFRS 1118호 분석기</div>
+    <div class="side-item" data-view="financeapp"><svg class="ic" viewBox="0 0 24 24"><path d="m12 3 9 5H3z"/><path d="M5 10v7M10 10v7M14 10v7M19 10v7M3 20h18"/></svg>금융기관 조회</div>
+    <div class="side-item" data-view="xbrlapp"><svg class="ic" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M7.8 7.8 10.5 16M16.2 7.8 13.5 16M8.5 6h7"/></svg>XBRL Comparator</div>
+    <div class="side-item" data-view="apps"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>App 그리드<span class="count">10</span></div>
+    <div class="side-item" data-view="projects"><svg class="ic" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>내 프로젝트<span class="count">12</span></div>
+    <div class="side-item" data-view="newproj"><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>새 프로젝트</div>
+
+    <div class="side-group">Workspace</div>
+    <div class="side-item"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>ERP</div>
+    <div class="side-item" data-view="aqi"><svg class="ic" viewBox="0 0 24 24"><path d="M4 14a8 8 0 1 1 16 0"/><path d="m12 14 4-4"/><path d="M4 19h16"/></svg>AQI 지표</div>
+    <div class="side-item"><svg class="ic" viewBox="0 0 24 24"><path d="M5 4v16M10 4v16M15 6l4 13.5"/></svg>지식 라이브러리</div>
+
+    <div class="side-group">Firm</div>
+    <div class="side-item"><svg class="ic" viewBox="0 0 24 24"><path d="M7 3h10a2 2 0 0 1 2 2v16H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>규정·지침</div>
+    <div class="side-item"><svg class="ic" viewBox="0 0 24 24"><path d="m4 10 12-5v14L4 14z"/><path d="M16 8.5a3.5 3.5 0 0 1 0 7"/><path d="M7 14.5V19"/></svg>공지사항</div>
+    <div class="side-item"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>일정</div>
+    <div class="side-item"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>설정</div>
+  </aside>
+
+  <!-- 메인 -->
+  <main class="main">
+
+    <!-- ═══ 1. DASHBOARD ═══ -->
+    <div class="view on" id="v-dashboard">
+      <div class="page-title">대시보드</div>
+      <div class="page-sub">윤길배 대표이사님, 오늘 성현은 12건의 프로젝트가 진행 중입니다.</div>
+      <div class="rule"></div>
+
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-label">진행 중 감사</div><div class="kpi-value">12</div><div class="kpi-delta">▲ 전월 대비 +2건</div></div>
+        <div class="kpi"><div class="kpi-label">리뷰 대기 조서</div><div class="kpi-value">47</div><div class="kpi-delta">▼ 전주 대비 -8건</div></div>
+        <div class="kpi"><div class="kpi-label">마감 임박 (7일 내)</div><div class="kpi-value" style="color:var(--warn)">3</div><div class="kpi-delta down">주의 필요</div></div>
+        <div class="kpi link" data-view="aqi"><div class="kpi-label">AQI 지수</div><div class="kpi-value">92.4</div><div class="kpi-delta mut">ISQM1 기준 충족 · 상세 보기 →</div></div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="card">
+          <h3>진행 중 감사 프로젝트 <span class="tag live">LIVE</span></h3>
+          <div class="proj-list">
+            <div class="proj-item">
+              <div class="proj-icon">A</div>
+              <div class="proj-info">
+                <div class="proj-name">㈜알파테크 제25기 외부감사</div>
+                <div class="proj-meta">K-IFRS<span class="sep">|</span>12월 결산<span class="sep">|</span>인차지 김회계</div>
+              </div>
+              <div class="proj-prog"><div class="prog-bar"><div class="prog-fill" style="width:72%"></div></div><div class="prog-label">72%</div></div>
+              <span class="proj-status st-field">현장수행</span>
+            </div>
+            <div class="proj-item">
+              <div class="proj-icon">B</div>
+              <div class="proj-info">
+                <div class="proj-name">㈜베타홀딩스 연결감사</div>
+                <div class="proj-meta">K-IFRS<span class="sep">|</span>12월 결산<span class="sep">|</span>인차지 박회계</div>
+              </div>
+              <div class="proj-prog"><div class="prog-bar"><div class="prog-fill" style="width:91%"></div></div><div class="prog-label">91%</div></div>
+              <span class="proj-status st-review">리뷰</span>
+            </div>
+            <div class="proj-item">
+              <div class="proj-icon">C</div>
+              <div class="proj-info">
+                <div class="proj-name">㈜감마물산 제18기 감사</div>
+                <div class="proj-meta">일반기준<span class="sep">|</span>12월 결산<span class="sep">|</span>인차지 이회계</div>
+              </div>
+              <div class="proj-prog"><div class="prog-bar"><div class="prog-fill" style="width:45%"></div></div><div class="prog-label">45%</div></div>
+              <span class="proj-status st-field">현장수행</span>
+            </div>
+            <div class="proj-item">
+              <div class="proj-icon">D</div>
+              <div class="proj-info">
+                <div class="proj-name">㈜델타에너지 기말감사</div>
+                <div class="proj-meta">K-IFRS<span class="sep">|</span>12월 결산<span class="sep">|</span>인차지 최회계</div>
+              </div>
+              <div class="proj-prog"><div class="prog-bar"><div class="prog-fill" style="width:100%"></div></div><div class="prog-label">100%</div></div>
+              <span class="proj-status st-done">완료</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>법인 공지</h3>
+          <div class="notice-list">
+            <div class="notice urgent">
+              <div class="t">ISQM1 2026년 품질관리 보고서 작성 안내</div>
+              <div class="d">품질관리본부 · 04/03</div>
+            </div>
+            <div class="notice">
+              <div class="t">SH Audit Platform 회사 기초정보 기능 오픈</div>
+              <div class="d">AX 추진위 · 04/02</div>
+            </div>
+            <div class="notice">
+              <div class="t">4월 정기 파트너 월례회의 (15일 14시)</div>
+              <div class="d">경영지원실 · 04/01</div>
+            </div>
+            <div class="notice">
+              <div class="t">삼일 TAX Agent 법인 구독 완료</div>
+              <div class="d">AX 추진위 · 03/28</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 2. APP GRID ═══ -->
+    <div class="view" id="v-apps">
+      <div class="page-title">App 그리드</div>
+      <div class="page-sub">성현의 모든 업무 앱이 한자리에 — 클릭 한 번으로 진입하세요.</div>
+      <div class="rule"></div>
+
+      <div class="app-grid">
+        <div class="app-card" data-view="auditapp">
+          <span class="app-chip own">자체 개발</span>
+          <div class="app-code cd-aud">AUD</div>
+          <div class="app-name">SH Audit Platform</div>
+          <div class="app-desc">재무제표 구조화 · FSA 매핑 · 감사조서 · 감사보고서</div>
+          <div class="app-meta"><span>진행 프로젝트 12건</span><span>v4.0</span></div>
+        </div>
+        <div class="app-card" data-view="financeapp">
+          <span class="app-chip own">자체 개발</span>
+          <div class="app-code cd-fin">FIN</div>
+          <div class="app-name">금융기관 조회</div>
+          <div class="app-desc">조회서 발송 · 회신 취합 · 집계표 자동 작성</div>
+          <div class="app-meta"><span>활성 15건</span><span>v2.3</span></div>
+        </div>
+        <div class="app-card" data-view="ifrs18app">
+          <span class="app-chip own">자체 개발</span>
+          <div class="app-code cd-ifrs">1118</div>
+          <div class="app-name">K-IFRS 1118호 분석기</div>
+          <div class="app-desc">재무제표 표시 기준 분석 · 영업이익 재분류 · BDO Red</div>
+          <div class="app-meta"><span>v1.0</span><span>자체 개발</span></div>
+        </div>
+        <div class="app-card" data-view="xbrlapp">
+          <span class="app-chip own">자체 개발</span>
+          <div class="app-code cd-xbrl">XBRL</div>
+          <div class="app-name">XBRL Comparator</div>
+          <div class="app-desc">XBRL IXD 재무제표 비교 · 항목 차이 검증 · 공시 정합성 점검</div>
+          <div class="app-meta"><span>v1.0</span><span>자체 개발</span></div>
+        </div>
+        <div class="app-card">
+          <span class="app-chip own">자체 개발</span>
+          <div class="app-code cd-law">LAW</div>
+          <div class="app-name">채권채무·소송 조회</div>
+          <div class="app-desc">대법원 API 연동 · 외부조회 자동화</div>
+          <div class="app-meta"><span>개발 중</span><span>Phase 2</span></div>
+        </div>
+        <div class="app-card">
+          <span class="app-chip">ERP</span>
+          <div class="app-code cd-erp">ERP</div>
+          <div class="app-name">ERP (회계·인사·품질)</div>
+          <div class="app-desc">법인 운영 · ISQM1 품질관리 체계</div>
+          <div class="app-meta"><span>도입 예정</span><span>2026 Q3</span></div>
+        </div>
+        <div class="app-card">
+          <span class="app-chip ext">외부 구독</span>
+          <div class="app-code cd-tax">TAX</div>
+          <div class="app-name">삼일 TAX Agent</div>
+          <div class="app-desc">세무 이슈 조회 및 의견서 생성</div>
+          <div class="app-meta"><span>법인 구독</span><span>SSO</span></div>
+        </div>
+        <div class="app-card">
+          <span class="app-chip ext">외부 구독</span>
+          <div class="app-code cd-ins">INS</div>
+          <div class="app-name">Accounting Insight</div>
+          <div class="app-desc">회계기준·공시사례·기업공시 조회</div>
+          <div class="app-meta"><span>법인 구독</span><span>SSO</span></div>
+        </div>
+        <div class="app-card">
+          <span class="app-chip coming">예정</span>
+          <div class="app-code cd-rag">RAG</div>
+          <div class="app-name">법인 지식 RAG</div>
+          <div class="app-desc">과거 프로젝트 전체 검색 · 유사사례 추천</div>
+          <div class="app-meta"><span>Phase 4</span><span>2028</span></div>
+        </div>
+        <div class="app-card">
+          <span class="app-chip own">상시 활용</span>
+          <div class="app-code cd-ai">AI</div>
+          <div class="app-name">AI Assistant (칼)</div>
+          <div class="app-desc">Claude 기반 도메인 전문 어시스턴트</div>
+          <div class="app-meta"><span>항상 가동</span><span>Claude</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 3. PROJECT LIST (SH Audit Platform) ═══ -->
+    <div class="view" id="v-projects">
+      <div class="breadcrumb">
+        <a data-view="apps">App 그리드</a>
+        <span class="arr">▶</span>
+        <a data-view="projects">SH Audit Platform</a>
+        <span class="arr">▶</span>
+        <span>프로젝트 목록</span>
+      </div>
+      <div class="page-title">SH Audit Platform — 프로젝트 목록</div>
+      <div class="page-sub">내가 참여한 감사 프로젝트를 확인하거나 새 프로젝트를 시작하세요.</div>
+      <div class="rule"></div>
+
+      <div class="toolbar">
+        <input placeholder="회사명 또는 기수로 검색">
+        <select><option>모든 기준</option><option>K-IFRS</option><option>일반기업회계기준</option></select>
+        <select><option>모든 상태</option><option>계획</option><option>현장수행</option><option>리뷰</option><option>완료</option></select>
+        <select><option>2025 사업연도</option><option>2024 사업연도</option></select>
+        <button class="btn btn-ghost">필터</button>
+        <div style="margin-left:auto"></div>
+        <button class="btn btn-pri" data-view="newproj">+ 새 프로젝트 만들기</button>
+      </div>
+
+      <div class="proj-table">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:36%">회사 / 기수</th>
+              <th>기준</th>
+              <th>결산일</th>
+              <th>참여인력</th>
+              <th>진행률</th>
+              <th>상태</th>
+              <th>최근 수정</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-view="projdetail" style="cursor:pointer">
+              <td><span class="cb">A</span><b>㈜알파테크</b> 제25기 <span class="go-detail">상세 →</span></td>
+              <td>K-IFRS</td>
+              <td>2025-12-31</td>
+              <td><span class="members"><span class="av p">윤</span><span class="av m">박</span><span class="av">김</span><span class="av">이</span></span></td>
+              <td><div class="prog-bar"><div class="prog-fill" style="width:72%"></div></div></td>
+              <td><span class="proj-status st-field">현장수행</span></td>
+              <td>4/5 10:23</td>
+            </tr>
+            <tr>
+              <td><span class="cb">B</span><b>㈜베타홀딩스</b> 제12기 연결</td>
+              <td>K-IFRS</td>
+              <td>2025-12-31</td>
+              <td><span class="members"><span class="av p">윤</span><span class="av m">정</span><span class="av">박</span></span></td>
+              <td><div class="prog-bar"><div class="prog-fill" style="width:91%"></div></div></td>
+              <td><span class="proj-status st-review">리뷰</span></td>
+              <td>4/4 18:47</td>
+            </tr>
+            <tr>
+              <td><span class="cb">C</span><b>㈜감마물산</b> 제18기</td>
+              <td>일반기준</td>
+              <td>2025-12-31</td>
+              <td><span class="members"><span class="av p">윤</span><span class="av">이</span><span class="av">최</span></span></td>
+              <td><div class="prog-bar"><div class="prog-fill" style="width:45%"></div></div></td>
+              <td><span class="proj-status st-field">현장수행</span></td>
+              <td>4/4 15:12</td>
+            </tr>
+            <tr>
+              <td><span class="cb">D</span><b>㈜델타에너지</b> 제31기</td>
+              <td>K-IFRS</td>
+              <td>2025-12-31</td>
+              <td><span class="members"><span class="av p">윤</span><span class="av m">최</span><span class="av">강</span></span></td>
+              <td><div class="prog-bar"><div class="prog-fill" style="width:100%"></div></div></td>
+              <td><span class="proj-status st-done">완료</span></td>
+              <td>3/28 16:50</td>
+            </tr>
+            <tr>
+              <td><span class="cb">E</span><b>㈜이오스전자</b> 제9기</td>
+              <td>K-IFRS</td>
+              <td>2025-12-31</td>
+              <td><span class="members"><span class="av p">윤</span><span class="av m">박</span><span class="av">한</span></span></td>
+              <td><div class="prog-bar"><div class="prog-fill" style="width:28%"></div></div></td>
+              <td><span class="proj-status st-field">현장수행</span></td>
+              <td>4/5 09:10</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 4. NEW PROJECT FORM ═══ -->
+    <div class="view" id="v-newproj">
+      <div class="breadcrumb">
+        <a data-view="apps">App 그리드</a>
+        <span class="arr">▶</span>
+        <a data-view="projects">SH Audit Platform</a>
+        <span class="arr">▶</span>
+        <span>새 프로젝트 만들기</span>
+      </div>
+      <div class="page-title">새 프로젝트 만들기</div>
+      <div class="page-sub">4단계만 입력하면 감사팀이 바로 작업을 시작할 수 있습니다.</div>
+      <div class="rule"></div>
+
+      <div class="form-wrap">
+        <div class="stepper">
+          <div class="step done"><div class="stnum">✓</div>기본 정보</div>
+          <div class="step active"><div class="stnum">2</div>감사 정보</div>
+          <div class="step"><div class="stnum">3</div>참여 인력</div>
+          <div class="step"><div class="stnum">4</div>전기 연결</div>
+        </div>
+
+        <div class="form-card">
+          <h2>감사 대상회사 정보</h2>
+          <div class="sub">사업자등록번호를 입력하면 나머지는 API로 자동 채워집니다.</div>
+
+          <div class="form-grid">
+            <div class="fg full">
+              <label>사업자등록번호 <span class="req">*</span></label>
+              <input value="123-45-67890" placeholder="숫자 10자리">
+            </div>
+            <div class="fg full">
+              <label>회사명 <span class="req">*</span></label>
+              <input value="㈜알파테크" placeholder="예: ㈜알파테크">
+            </div>
+            <div class="fg">
+              <label>법인등록번호</label>
+              <input value="110111-0123456">
+            </div>
+            <div class="fg">
+              <label>대표이사</label>
+              <input value="홍길동">
+            </div>
+            <div class="fg">
+              <label>업종</label>
+              <input value="전자부품 제조업">
+            </div>
+            <div class="fg">
+              <label>상장 여부</label>
+              <select><option>비상장</option><option>코스피</option><option>코스닥</option><option>코넥스</option></select>
+            </div>
+
+            <div class="fg full">
+              <label>적용 회계기준 <span class="req">*</span></label>
+              <div class="radio-row">
+                <div class="radio-pill on">K-IFRS</div>
+                <div class="radio-pill">일반기업회계기준</div>
+                <div class="radio-pill">중소기업회계기준</div>
+              </div>
+            </div>
+
+            <div class="fg">
+              <label>결산일 <span class="req">*</span></label>
+              <input type="date" value="2025-12-31">
+            </div>
+            <div class="fg">
+              <label>기수</label>
+              <input value="제25기">
+            </div>
+
+            <div class="fg full">
+              <label>감사 유형 <span class="req">*</span></label>
+              <div class="radio-row">
+                <div class="radio-pill on">법정감사</div>
+                <div class="radio-pill">지정감사</div>
+                <div class="radio-pill">임의감사</div>
+                <div class="radio-pill">검토</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="member-picker">
+            <div class="mp-title">참여 인력 구성 (다음 단계 미리보기)</div>
+            <div class="member-row">
+              <label>업무수행이사</label>
+              <div class="chip-row"><div class="chip"><span class="av">윤</span>윤길배 · Partner<span class="x">×</span></div></div>
+            </div>
+            <div class="member-row">
+              <label>EQR</label>
+              <div class="chip-row"><div class="chip"><span class="av">정</span>정인훈 · Partner<span class="x">×</span></div></div>
+            </div>
+            <div class="member-row">
+              <label>매니저</label>
+              <div class="chip-row"><div class="chip"><span class="av">박</span>박선영 · Manager<span class="x">×</span></div></div>
+            </div>
+            <div class="member-row">
+              <label>인차지·스태프</label>
+              <div class="chip-row">
+                <div class="chip"><span class="av">김</span>김회계 · In-charge<span class="x">×</span></div>
+                <div class="chip"><span class="av">이</span>이회계 · Staff<span class="x">×</span></div>
+                <div class="chip"><span class="av">한</span>한회계 · Staff<span class="x">×</span></div>
+                <div class="chip add">+ 추가</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="height:16px"></div>
+          <div class="prior-box">
+            <div class="txt"><b>전기 프로젝트가 발견되었습니다.</b> ㈜알파테크 제24기의 기말잔액·FSA 매핑·조서번호 체계를 자동 승계할 수 있습니다. 다음 단계에서 승계 여부를 선택하세요.</div>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-ghost">← 이전 단계</button>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-ghost">임시저장</button>
+              <button class="btn btn-pri">다음 단계 →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 5. PROJECT DETAIL (조서 트리) ═══ -->
+    <div class="view" id="v-projdetail">
+      <div class="breadcrumb">
+        <a data-view="apps">App 그리드</a>
+        <span class="arr">▶</span>
+        <a data-view="projects">SH Audit Platform</a>
+        <span class="arr">▶</span>
+        <a data-view="projects">프로젝트 목록</a>
+        <span class="arr">▶</span>
+        <span>㈜알파테크 제25기</span>
+      </div>
+
+      <div class="proj-header">
+        <div class="ph-ico">A</div>
+        <div class="ph-info">
+          <div class="ph-name">㈜알파테크 제25기 외부감사
+            <span class="badge-sm pri">K-IFRS</span>
+            <span class="badge-sm">12월 결산</span>
+            <span class="badge-sm acc">법정감사</span>
+          </div>
+          <div class="ph-meta">
+            <span>사업자 123-45-67890</span><span class="sep">|</span>
+            <span>결산일 2025-12-31</span><span class="sep">|</span>
+            <span>업무수행이사 윤길배</span><span class="sep">|</span>
+            <span>인차지 김회계</span>
+          </div>
+        </div>
+        <div class="ph-prog">
+          <div class="prog-bar"><div class="prog-fill" style="width:72%"></div></div>
+          <div class="prog-label">진행률 72% · 47개 조서 중 34개 완료</div>
+        </div>
+        <span class="members"><span class="av p">윤</span><span class="av m">박</span><span class="av">김</span><span class="av">이</span><span class="av">한</span></span>
+        <div class="ph-act">
+          <button class="btn btn-ghost">AI</button>
+          <button class="btn btn-ghost">진행리포트</button>
+          <button class="btn btn-pri">저장</button>
+        </div>
+      </div>
+
+      <div class="wp-layout">
+        <!-- 좌: 조서 트리 -->
+        <div class="wp-col">
+          <div class="wp-col-head">조서 트리 <span class="count">47</span></div>
+          <div class="wp-col-body">
+            <div class="tree-group"><span class="arr">▾</span>A. 감사 계획 <span class="tree-fsa">PLAN</span></div>
+            <div class="tree-children">
+              <div class="tree-node"><span class="tree-dot done"></span><span class="nm">A-1 계약 수락·유지</span></div>
+              <div class="tree-node"><span class="tree-dot done"></span><span class="nm">A-2 독립성 확인</span></div>
+              <div class="tree-node"><span class="tree-dot done"></span><span class="nm">A-3 감사팀 구성</span></div>
+              <div class="tree-node"><span class="tree-dot done"></span><span class="nm">A-4 중요성 금액 산정</span></div>
+              <div class="tree-node"><span class="tree-dot done"></span><span class="nm">A-5 위험 평가 (RAP)</span></div>
+            </div>
+
+            <div class="tree-group"><span class="arr">▾</span>B. 현금및현금성자산 <span class="tree-fsa">100</span></div>
+            <div class="tree-children">
+              <div class="tree-node active"><span class="tree-dot done"></span><span class="nm">B-1 Lead Schedule</span><span class="cnt">●</span></div>
+              <div class="tree-node"><span class="tree-dot done"></span><span class="nm">B-2 은행조회서 집계</span></div>
+              <div class="tree-node"><span class="tree-dot done"></span><span class="nm">B-3 Cut-off 검토</span></div>
+              <div class="tree-node"><span class="tree-dot rev"></span><span class="nm">B-4 외화환산 검증</span></div>
+            </div>
+
+            <div class="tree-group"><span class="arr">▾</span>C. 매출채권 <span class="tree-fsa">110</span></div>
+            <div class="tree-children">
+              <div class="tree-node"><span class="tree-dot done"></span><span class="nm">C-1 Lead Schedule</span></div>
+              <div class="tree-node"><span class="tree-dot prog"></span><span class="nm">C-2 조회서 발송·회수</span></div>
+              <div class="tree-node"><span class="tree-dot prog"></span><span class="nm">C-3 연령분석</span></div>
+              <div class="tree-node"><span class="tree-dot none"></span><span class="nm">C-4 대손충당금 검토</span></div>
+            </div>
+
+            <div class="tree-group collapsed"><span class="arr">▾</span>D. 재고자산 <span class="tree-fsa">130</span></div>
+            <div class="tree-children">
+              <div class="tree-node"><span class="tree-dot done"></span><span class="nm">D-1 Lead Schedule</span></div>
+              <div class="tree-node"><span class="tree-dot prog"></span><span class="nm">D-2 재고 실사 입회</span></div>
+              <div class="tree-node"><span class="tree-dot none"></span><span class="nm">D-3 단가 검증</span></div>
+            </div>
+
+            <div class="tree-group"><span class="arr">▾</span>E. 유형자산 <span class="tree-fsa">200</span></div>
+            <div class="tree-children">
+              <div class="tree-node"><span class="tree-dot done"></span><span class="nm">E-1 Lead Schedule</span></div>
+              <div class="tree-node"><span class="tree-dot prog"></span><span class="nm">E-2 취득·처분 검증</span></div>
+              <div class="tree-node"><span class="tree-dot none"></span><span class="nm">E-3 감가상각 재계산</span></div>
+              <div class="tree-node"><span class="tree-dot none"></span><span class="nm">E-4 손상 검토</span></div>
+            </div>
+
+            <div class="tree-group"><span class="arr">▾</span>F. 매출 <span class="tree-fsa">500</span></div>
+            <div class="tree-children">
+              <div class="tree-node"><span class="tree-dot done"></span><span class="nm">F-1 Lead Schedule</span></div>
+              <div class="tree-node"><span class="tree-dot prog"></span><span class="nm">F-2 수익인식 기준 검토</span></div>
+              <div class="tree-node"><span class="tree-dot prog"></span><span class="nm">F-3 Cut-off Test</span></div>
+              <div class="tree-node"><span class="tree-dot rev"></span><span class="nm">F-4 JET 이상거래</span></div>
+            </div>
+
+            <div class="tree-group collapsed"><span class="arr">▾</span>Z. 마감 절차 <span class="tree-fsa">END</span></div>
+            <div class="tree-children">
+              <div class="tree-node"><span class="tree-dot none"></span><span class="nm">Z-1 후속사건 검토</span></div>
+              <div class="tree-node"><span class="tree-dot none"></span><span class="nm">Z-2 경영진 서면진술서</span></div>
+              <div class="tree-node"><span class="tree-dot none"></span><span class="nm">Z-3 감사보고서 초안</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 중: 조서 프리뷰 -->
+        <div class="wp-col">
+          <div class="wp-col-head">B-1 Lead Schedule · 현금및현금성자산 (FSA 100)</div>
+          <div class="wp-prev">
+            <div class="wp-prev-h">Lead Schedule — 현금및현금성자산</div>
+            <div class="wp-prev-sub">
+              <span>작성 김회계</span><span class="sep">|</span>
+              <span>리뷰 박선영 매니저</span><span class="sep">|</span>
+              <span>최종 수정 4/5 10:23</span><span class="sep">|</span>
+              <span class="done">✓ 작성 완료</span>
+            </div>
+            <div class="wp-toolbar">
+              <button class="tbtn on">집계표</button>
+              <button class="tbtn">증감분석</button>
+              <button class="tbtn">감사절차</button>
+              <button class="tbtn">첨부 (4)</button>
+              <div style="margin-left:auto"></div>
+              <button class="tbtn">엑셀 다운로드</button>
+            </div>
+
+            <table class="wp-table">
+              <thead>
+                <tr><th>계정코드</th><th>계정명</th><th>당기말</th><th>전기말</th><th>증감</th><th>증감률</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1111</td><td>현금</td><td class="num">12,500,000</td><td class="num">8,300,000</td><td class="num">4,200,000</td><td class="num">50.6%</td></tr>
+                <tr><td>1121</td><td>보통예금</td><td class="num">3,420,180,500</td><td class="num">2,840,560,100</td><td class="num">579,620,400</td><td class="num">20.4%</td></tr>
+                <tr><td>1122</td><td>당좌예금</td><td class="num">180,300,000</td><td class="num">250,800,000</td><td class="num">(70,500,000)</td><td class="num">(28.1)%</td></tr>
+                <tr><td>1131</td><td>정기예금</td><td class="num">1,500,000,000</td><td class="num">1,500,000,000</td><td class="num">-</td><td class="num">0.0%</td></tr>
+                <tr><td>1135</td><td>MMF</td><td class="num">480,750,300</td><td class="num">320,410,200</td><td class="num">160,340,100</td><td class="num">50.0%</td></tr>
+                <tr class="total"><td colspan="2">합계 (FSA 100)</td><td class="num">5,593,730,800</td><td class="num">4,920,070,300</td><td class="num">673,660,500</td><td class="num">13.7%</td></tr>
+              </tbody>
+            </table>
+
+            <div class="wp-note">
+              <span class="ai-chip">AI</span><b>분석 노트:</b> MMF 잔액이 전기 대비 50% 증가. 분개장 Cut-off 테스트에서 12/28 ~ 12/31 기간에 대규모 매출채권 회수가 집중된 점과 연계 검토 필요. 관련 이상거래 후보 2건이 JET 모듈에서 자동 추출되었습니다. <a>F-4 조서로 이동 →</a>
+            </div>
+
+            <div class="wp-note proc">
+              <b>감사 절차:</b> ① 은행조회서 100% 확보 완료, ② 기말잔액 대조 완료, ③ Cut-off 검토 완료, ④ 외화환산 검증 리뷰 대기.
+            </div>
+          </div>
+        </div>
+
+        <!-- 우: 리뷰 노트 -->
+        <div class="wp-col">
+          <div class="wp-col-head">리뷰 노트 <span class="count">3</span></div>
+          <div class="wp-col-body" style="padding:0">
+            <div class="rn-item">
+              <div class="rn-head">
+                <div class="rn-avatar m">박</div>
+                <div>
+                  <div class="rn-name">박선영</div>
+                  <div class="rn-role">Manager</div>
+                </div>
+                <div class="rn-date">4/5 11:40</div>
+              </div>
+              <div class="rn-body">MMF 증가 사유에 대한 경영진 문의 결과를 Memo에 추가 기재 바랍니다. 전기 대비 50% 증가는 감사조서상 "의미 있는 변동"에 해당합니다.</div>
+              <span class="rn-status open">보완 필요</span>
+            </div>
+
+            <div class="rn-item">
+              <div class="rn-head">
+                <div class="rn-avatar p">윤</div>
+                <div>
+                  <div class="rn-name">윤길배</div>
+                  <div class="rn-role">Partner</div>
+                </div>
+                <div class="rn-date">4/5 09:15</div>
+              </div>
+              <div class="rn-body">Cut-off 검토 범위를 12/25 ~ 1/5로 확장해 주세요. 업종 특성상 기말 마지막 주에 거래가 집중됩니다.</div>
+              <span class="rn-status closed">해결 완료</span>
+              <div class="rn-reply">
+                <b>김회계 · 4/5 10:20:</b> 범위 확장하여 재검토 완료했습니다. 이상사항 없음.
+              </div>
+            </div>
+
+            <div class="rn-item">
+              <div class="rn-head">
+                <div class="rn-avatar">김</div>
+                <div>
+                  <div class="rn-name">김회계</div>
+                  <div class="rn-role">In-charge</div>
+                </div>
+                <div class="rn-date">4/4 17:32</div>
+              </div>
+              <div class="rn-body">은행조회서 회신 5건 중 4건 수령 완료. 신한은행 1건 재발송 요청 상태입니다.</div>
+              <span class="rn-status closed">해결 완료</span>
+            </div>
+
+            <div class="rn-add">
+              <textarea placeholder="리뷰 노트를 작성하세요… (@멘션으로 팀원 호출)"></textarea>
+              <div class="rn-actions">
+                <button class="btn btn-ghost">첨부</button>
+                <button class="btn btn-ghost">AI 초안</button>
+                <button class="btn btn-pri" style="margin-left:auto">리뷰 등록</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 6. AQI 대시보드 상세 ═══ -->
+    <div class="view" id="v-aqi">
+      <div class="breadcrumb">
+        <a data-view="dashboard">대시보드</a>
+        <span class="arr">▶</span>
+        <span>AQI 지표 (감사품질지표)</span>
+      </div>
+      <div class="page-title">AQI 지표 · 감사품질지표 대시보드</div>
+      <div class="page-sub">성현회계법인의 감사품질 현황을 ISQM1 및 금융감독원 기준에 따라 실시간으로 조망합니다.</div>
+      <div class="rule"></div>
+
+      <div class="aqi-top">
+        <div class="gauge-card">
+          <div class="gauge-label">OVERALL AQI SCORE · 2026 Q1</div>
+          <div class="gauge-title">종합 감사품질지수</div>
+          <div class="gauge-visual">
+            <div class="gauge-circle">
+              <div class="gauge-val">
+                <div class="big">92.4</div>
+                <div class="sm">/ 100</div>
+              </div>
+            </div>
+            <div class="gauge-info">
+              <div class="tr">전년 동기 대비 <span class="up">▲ 4.8p</span></div>
+              <div class="tr">업계 평균 (중견법인) <span class="up">▲ 8.2p</span></div>
+              <div class="tr">목표 기준선 90점 달성</div>
+              <div class="sts">✓ ISQM1 요건 전면 충족</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="aqi-dims">
+          <div class="dim-card">
+            <div class="dim-label">감사 인력</div>
+            <div class="dim-score">94.2<span class="unit">/100</span></div>
+            <div class="dim-bar"><div style="width:94%;background:var(--ok)"></div></div>
+            <div class="dim-trend"><span>파트너당 평균 12건</span><span class="up">▲ 2.1</span></div>
+          </div>
+          <div class="dim-card">
+            <div class="dim-label">감사 시간</div>
+            <div class="dim-score">89.6<span class="unit">/100</span></div>
+            <div class="dim-bar"><div style="width:89%;background:var(--ink)"></div></div>
+            <div class="dim-trend"><span>건당 평균 480h</span><span class="up">▲ 1.4</span></div>
+          </div>
+          <div class="dim-card">
+            <div class="dim-label">감사 보수</div>
+            <div class="dim-score">88.1<span class="unit">/100</span></div>
+            <div class="dim-bar"><div style="width:88%;background:var(--ink)"></div></div>
+            <div class="dim-trend"><span>표준대비 적정</span><span class="up">▲ 3.0</span></div>
+          </div>
+          <div class="dim-card">
+            <div class="dim-label">품질관리체계</div>
+            <div class="dim-score">96.8<span class="unit">/100</span></div>
+            <div class="dim-bar"><div style="width:96%;background:var(--ok)"></div></div>
+            <div class="dim-trend"><span>ISQM1 10대 요소</span><span class="up">▲ 5.2</span></div>
+          </div>
+          <div class="dim-card">
+            <div class="dim-label">독립성</div>
+            <div class="dim-score">98.5<span class="unit">/100</span></div>
+            <div class="dim-bar"><div style="width:98%;background:var(--ok)"></div></div>
+            <div class="dim-trend"><span>위반 0건</span><span class="up">▲ 0.3</span></div>
+          </div>
+          <div class="dim-card">
+            <div class="dim-label">교육·훈련</div>
+            <div class="dim-score">87.4<span class="unit">/100</span></div>
+            <div class="dim-bar"><div style="width:87%;background:var(--amber)"></div></div>
+            <div class="dim-trend"><span>1인당 평균 42h</span><span class="dn">▼ 1.8</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="aqi-mid">
+        <div class="card">
+          <h3>파트너별 프로젝트 감사품질 <span class="tag">분기</span></h3>
+          <div class="bar-chart">
+            <div class="bar-row"><span class="nm">윤길배</span><div class="bar-viz"><div style="width:95%">95.2</div></div><span class="val">▲ 2.1</span></div>
+            <div class="bar-row"><span class="nm">정인훈</span><div class="bar-viz"><div style="width:93%">93.5</div></div><span class="val">▲ 1.4</span></div>
+            <div class="bar-row"><span class="nm">이성민</span><div class="bar-viz"><div style="width:91%">91.0</div></div><span class="val">▲ 3.2</span></div>
+            <div class="bar-row"><span class="nm">최지훈</span><div class="bar-viz"><div style="width:90%">90.1</div></div><span class="val">▲ 0.8</span></div>
+            <div class="bar-row"><span class="nm">한영숙</span><div class="bar-viz"><div style="width:89%">89.3</div></div><span class="val">▲ 2.5</span></div>
+            <div class="bar-row"><span class="nm">박상호</span><div class="bar-viz"><div style="width:87%">87.9</div></div><span class="val dn">▼ 0.4</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>ISQM1 10대 요소 준수 현황</h3>
+          <div class="isqm-list">
+            <div class="isqm-row"><div class="ck">✓</div><div class="t">법인 리더십의 책임</div><div class="d">4/1</div></div>
+            <div class="isqm-row"><div class="ck">✓</div><div class="t">윤리·독립성 요건</div><div class="d">4/2</div></div>
+            <div class="isqm-row"><div class="ck">✓</div><div class="t">계약의 수락과 유지</div><div class="d">4/1</div></div>
+            <div class="isqm-row"><div class="ck">✓</div><div class="t">감사 계약의 수행</div><div class="d">4/3</div></div>
+            <div class="isqm-row pending"><div class="ck">!</div><div class="t">인적 자원 관리</div><div class="d">검토 중</div></div>
+            <div class="isqm-row"><div class="ck">✓</div><div class="t">정보 및 의사소통</div><div class="d">4/2</div></div>
+            <div class="isqm-row"><div class="ck">✓</div><div class="t">모니터링과 교정 프로세스</div><div class="d">4/1</div></div>
+            <div class="isqm-row warn"><div class="ck">!</div><div class="t">품질관리보고서 작성</div><div class="d">마감 D-12</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>품질관리 이슈 로그 <span class="tag">최근 30일</span></h3>
+        <div class="incident-list">
+          <div class="inc-item">
+            <div class="inc-head">
+              <span class="inc-sev mid">MEDIUM</span>
+              <span class="inc-title">연결감사 대상 종속회사 중요성 금액 재검토 필요</span>
+              <span class="inc-date">04/03</span>
+            </div>
+            <div class="inc-desc">㈜베타홀딩스 연결감사 — 해외 자회사 2개사 개별 중요성 재설정 완료, 인차지와 매니저 간 크로스 리뷰 진행 중.</div>
+          </div>
+          <div class="inc-item">
+            <div class="inc-head">
+              <span class="inc-sev lo">LOW</span>
+              <span class="inc-title">독립성 자가점검 미회신 구성원 2명</span>
+              <span class="inc-date">04/02</span>
+            </div>
+            <div class="inc-desc">4월 1일 발송된 분기별 독립성 확인서 중 2건 미회신. 리마인드 발송 완료.</div>
+          </div>
+          <div class="inc-item">
+            <div class="inc-head">
+              <span class="inc-sev hi">HIGH</span>
+              <span class="inc-title">품질관리본부 요청사항 — 교육시간 의무 미달 구성원 3명</span>
+              <span class="inc-date">03/28</span>
+            </div>
+            <div class="inc-desc">2025년 교육 의무시간(40h) 미달 구성원 3명 확인. 2026년 상반기 중 보충 교육 수강 계획 수립 필요.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 7. APP VIEWER (SH Audit Platform iframe) ═══ -->
+    <div class="view" id="v-auditapp">
+      <div class="app-viewer">
+        <div class="app-viewer-bar">
+          <button class="back-btn" onclick="exitApp()"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>포털로 돌아가기</button>
+          <div class="app-viewer-title"><span class="dot"></span>SH Audit Platform</div>
+          <span class="app-viewer-ver">v4.0 · 성현회계법인</span>
+        </div>
+        <iframe id="auditAppFrame" src="about:blank"></iframe>
+        <div class="app-loading"><div class="spinner"></div><div class="ld-text">로딩 중...</div></div>
+      </div>
+    </div>
+
+    <!-- ═══ 8. APP VIEWER (K-IFRS 1118호 분석기 iframe) ═══ -->
+    <div class="view" id="v-ifrs18app">
+      <div class="app-viewer">
+        <div class="app-viewer-bar">
+          <button class="back-btn" onclick="exitApp()"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>포털로 돌아가기</button>
+          <div class="app-viewer-title"><span class="dot" style="background:var(--red)"></span>K-IFRS 제1118호 재무제표 분석기</div>
+          <span class="app-viewer-ver">v1.0 · BDO 성현회계법인</span>
+        </div>
+        <iframe id="ifrs18AppFrame" src="about:blank"></iframe>
+        <div class="app-loading"><div class="spinner"></div><div class="ld-text">로딩 중...</div></div>
+      </div>
+    </div>
+
+    <!-- ═══ 9. APP VIEWER (금융기관 조회 Streamlit iframe) ═══ -->
+    <div class="view" id="v-financeapp">
+      <div class="app-viewer">
+        <div class="app-viewer-bar">
+          <button class="back-btn" onclick="exitApp()"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>포털로 돌아가기</button>
+          <div class="app-viewer-title"><span class="dot" style="background:var(--ok)"></span>금융기관 조회</div>
+          <span class="app-viewer-ver">v2.3 · 성현회계법인</span>
+        </div>
+        <iframe id="financeAppFrame" src="about:blank"></iframe>
+        <div class="app-loading"><div class="spinner"></div><div class="ld-text">로딩 중...</div></div>
+      </div>
+    </div>
+
+    <!-- ═══ 10. APP VIEWER (XBRL Comparator iframe) ═══ -->
+    <div class="view" id="v-xbrlapp">
+      <div class="app-viewer">
+        <div class="app-viewer-bar">
+          <button class="back-btn" onclick="exitApp()"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>포털로 돌아가기</button>
+          <div class="app-viewer-title"><span class="dot" style="background:var(--blue)"></span>XBRL Comparator</div>
+          <span class="app-viewer-ver">v1.0 · 성현회계법인</span>
+        </div>
+        <iframe id="xbrlAppFrame" src="about:blank"></iframe>
+        <div class="app-loading"><div class="spinner"></div><div class="ld-text">로딩 중...</div></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="footer">
+  <span>© 성현회계법인 · SH Portal (Mockup) · v0.2 Concept &nbsp;|&nbsp; <b>BDO</b> Member Firm · People Helping People Achieve Their Dreams</span>
+  <span>AX 대전환 기획서 · 2026 파트너총회 발표자료 부속</span>
+</div>
+
+<script>
+// ── 네비게이션 ──
+const layoutEl=document.querySelector('.layout');
+const auditFrame=document.getElementById('auditAppFrame');
+const ifrs18Frame=document.getElementById('ifrs18AppFrame');
+const financeFrame=document.getElementById('financeAppFrame');
+const xbrlFrame=document.getElementById('xbrlAppFrame');
+
+// 앱별 URL 설정 (NAS vs 로컬 PC 자동 감지)
+const isNAS=location.hostname!=='localhost'&&location.hostname!=='127.0.0.1'&&!location.protocol.startsWith('file');
+const baseDir=location.href.substring(0,location.href.lastIndexOf('/')+1);
+
+const APP_URLS={
+  auditapp: isNAS ? '/audit/index.html' : baseDir+'data_structuring_app/재무제표_구조화_v4.html',
+  ifrs18app: isNAS ? '/ifrs18/index.html' : baseDir+'ifrs18_app/ifrs18_analyzer_app.html',
+  financeapp: isNAS ? '/data/' : 'http://localhost:8501/',
+  xbrlapp: 'http://192.168.100.25:4000/'
+};
+// iframe 앱 뷰 (포털 안에서 열기)
+const APP_VIEWS={auditapp:auditFrame, ifrs18app:ifrs18Frame, financeapp:financeFrame, xbrlapp:xbrlFrame};
+
+function go(view){
+  // 1118호도 포털 안 iframe으로 열림(상단 '포털로 돌아가기' 바 유지).
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  const el=document.getElementById('v-'+view); if(el) el.classList.add('on');
+  document.querySelectorAll('.side-item[data-view]').forEach(s=>{
+    s.classList.toggle('active', s.dataset.view===view);
+  });
+
+  // 앱 뷰어 모드: 사이드바 숨기고 전체 영역 사용
+  if(APP_VIEWS[view]){
+    layoutEl.classList.add('app-mode');
+    const frame=APP_VIEWS[view];
+    const viewer=frame.closest('.app-viewer');
+    // 최초 로딩 시에만 스피너 표시 → iframe load 완료 시 숨김(최소 500ms 노출로 깜빡임 방지)
+    if(frame.src==='about:blank'||frame.src===window.location.href){
+      if(viewer){
+        viewer.classList.add('loading');
+        const t0=Date.now();
+        frame.addEventListener('load',function onl(){
+          frame.removeEventListener('load',onl);
+          setTimeout(function(){viewer.classList.remove('loading');},Math.max(0,500-(Date.now()-t0)));
+        });
+      }
+      frame.src=APP_URLS[view];
+    }
+  } else {
+    layoutEl.classList.remove('app-mode');
+  }
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function exitApp(){
+  go('dashboard');
+}
+document.querySelectorAll('[data-view]').forEach(el=>{
+  el.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();go(el.dataset.view);});
+});
+
+// ── 개발 모드 감지 ──
+// URL에 ?dev 붙이면 → 로그인 → 비밀번호 입력 → 포털 대시보드
+// 일반 접속: 로그인 → IFRS 1118호 앱으로 바로 이동
+const DEV_MODE=new URLSearchParams(location.search).has('dev');
+
+// ── 개발자 비밀번호 (간단 해시) ──
+// 비밀번호: 1111 (변경하려면 아래 해시를 교체)
+const DEV_PW_HASH='MTExMQ=='; // base64 of '1111'
+function checkDevPw(input){return btoa(input)===DEV_PW_HASH;}
+
+// ── 개발자 모달 ──
+const devModal=document.getElementById('devModal');
+const devPwInput=document.getElementById('devPwInput');
+const devEnterBtn=document.getElementById('devEnterBtn');
+const devErrorMsg=document.getElementById('devErrorMsg');
+
+function showDevModal(){
+  devModal.classList.remove('hidden');
+  setTimeout(()=>devPwInput.focus(),100);
+}
+function tryDevLogin(){
+  const pw=devPwInput.value;
+  if(!pw){devErrorMsg.textContent='비밀번호를 입력해 주세요.';return;}
+  if(checkDevPw(pw)){
+    devModal.style.transition='opacity .3s ease';
+    devModal.style.opacity='0';
+    setTimeout(()=>{devModal.classList.add('hidden');},300);
+    // 포털 대시보드 진입 성공
+  } else {
+    devPwInput.classList.add('error');
+    devErrorMsg.textContent='비밀번호가 올바르지 않습니다.';
+    setTimeout(()=>devPwInput.classList.remove('error'),400);
+    devPwInput.value='';
+    devPwInput.focus();
+  }
+}
+devEnterBtn.addEventListener('click',tryDevLogin);
+devPwInput.addEventListener('keydown',e=>{if(e.key==='Enter')tryDevLogin();});
+
+// ── 로그인 ──
+const loginScreen=document.getElementById('loginScreen');
+function enterPortal(){
+  if(!DEV_MODE){
+    // 일반 모드: 로그인 화면 위에서 바로 IFRS 앱으로 이동 (포털 노출 없음)
+    window.location.replace(APP_URLS['ifrs18app']);
+    return;
+  }
+  // 개발 모드: 로그인 페이드 → 비밀번호 입력 → 포털 대시보드
+  loginScreen.style.transition='opacity .4s ease';
+  loginScreen.style.opacity='0';
+  setTimeout(()=>{
+    loginScreen.classList.add('hidden');
+    showDevModal();
+  },400);
+}
+document.getElementById('btnSsoGoogle').addEventListener('click',enterPortal);
+document.getElementById('btnSsoMs').addEventListener('click',enterPortal);
+document.querySelectorAll('#loginScreen .sso-btn').forEach(b=>b.addEventListener('click',enterPortal));
+
+// ── [임시 백도어] 로그인 카드 레드 점 5번 클릭 → 포털 메인(대시보드) 진입 ──
+// ※ MS SSO 로그인 개발 완료 후 이 블록 전체를 삭제할 것
+(function(){
+  const dot=document.getElementById('lcDot');
+  if(!dot) return;
+  let cnt=0, timer=null;
+  dot.addEventListener('click',function(){
+    cnt++;
+    clearTimeout(timer);
+    timer=setTimeout(function(){cnt=0;},1500); // 1.5초 내 연속 클릭만 카운트
+    if(cnt>=5){
+      cnt=0;
+      loginScreen.style.transition='opacity .4s ease';
+      loginScreen.style.opacity='0';
+      setTimeout(function(){
+        loginScreen.classList.add('hidden');
+        go('dashboard');
+      },400);
+    }
+  });
+})();
+
+// ── Stepper ──
+document.querySelectorAll('.step').forEach((s,i,arr)=>{
+  s.addEventListener('click',()=>{
+    arr.forEach((x,j)=>{
+      x.classList.remove('active','done');
+      if(j<i) x.classList.add('done');
+      if(j===i) x.classList.add('active');
+    });
+  });
+});
+// ── 라디오 pill ──
+document.querySelectorAll('.radio-row').forEach(row=>{
+  row.querySelectorAll('.radio-pill').forEach(p=>{
+    p.addEventListener('click',()=>{
+      row.querySelectorAll('.radio-pill').forEach(x=>x.classList.remove('on'));
+      p.classList.add('on');
+    });
+  });
+});
+
+// ── 조서 트리 그룹 접기/펴기 ──
+document.querySelectorAll('.tree-group').forEach(g=>{
+  g.addEventListener('click',()=>g.classList.toggle('collapsed'));
+});
+// ── 조서 트리 노드 선택 ──
+document.querySelectorAll('.tree-node').forEach(n=>{
+  n.addEventListener('click',e=>{
+    e.stopPropagation();
+    document.querySelectorAll('.tree-node').forEach(x=>x.classList.remove('active'));
+    n.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
