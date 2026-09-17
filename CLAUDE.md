@@ -75,6 +75,7 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
 
 - `openApp(id, origin)` / `closeApp` / `minApp` / `maxApp` / `snapTo` — 창 시스템. `wins` Map이 열린 창 상태.
 - `renderGrid()` / `renderDock()` / `saveLayout()` / `loadLayout()` — 홈 배치. 저장 키는 `store`가 `sh-final-20260916:` 접두어로 localStorage에 씀.
+- **Dock = 최근 사용한 앱 4개** (`DOCK_RECENT=true`, `DOCK_N=4`, 2026-09-17). `openApp()`·`triggerDownload()`·Dock의 메모 클릭이 `noteRecent(id)`를 불러 맨 앞으로 올리고 `sh-portal:<id>:recent` 키에 저장. 4개가 안 차면 `DOCK_DEFAULT`(리뷰함·일정·팀·메모)로 채움. 칼(`ai`)은 제외. 이 모드에서는 Dock 아이콘 드래그·Dock에 놓기가 꺼져 있음(`DOCK_RECENT=false`로 되돌리면 예전 수동 Dock).
 - `openKal()` / 칼 답변은 키워드 규칙. `USER` 상수가 표시 이름·이메일.
 - 프로필 메뉴 "로그아웃"은 토스트만 띄웁니다 (로그인 화면이 없으므로).
 

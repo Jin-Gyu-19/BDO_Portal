@@ -1487,6 +1487,7 @@ const dlBadge=id=>{ const a=APPS[id]; if(!a||!a.dl||!a.dl.file) return '';
 function triggerDownload(id){ const a=APPS[id]; if(!a||!a.dl||!a.dl.file) return;
   const l=document.createElement('a'); l.href=dlUrl(a.dl); l.download=dlName(a.dl); l.rel='noopener';
   document.body.appendChild(l); l.click(); l.remove();
+  noteRecent(id);
   if(typeof toast==='function') toast(a.name+' 다운로드를 시작합니다 · '+dlName(a.dl)); }
 const memoTitle=m=>esc((m.t.split('\n')[0].trim()||'새 메모').slice(0,60));
 const memoBody =m=>esc(m.t.split('\n').slice(1).join(' ').trim().slice(0,80));
@@ -2200,6 +2201,21 @@ const row=(k,r,c0,ids)=>ids.map((id,i)=>({k,id,r,c:c0+i,rs:1,cs:1}));
 const LAYOUT_DEFAULT=[{"k":"z","id":"audit","r":1,"c":5,"rs":1,"cs":6},{"k":"a","id":"shaudit","r":1,"c":10,"rs":1,"cs":1},{"k":"z","id":"admin","r":2,"c":7,"rs":1,"cs":4},{"k":"z","id":"tax","r":2,"c":5,"rs":1,"cs":2},{"k":"w","id":"team","r":1,"c":3,"rs":1,"cs":2},{"k":"w","id":"timesheet","r":2,"c":3,"rs":2,"cs":2},{"k":"w","id":"notice","r":4,"c":1,"rs":2,"cs":4},{"k":"w","id":"memo","r":3,"c":1,"rs":1,"cs":2},{"k":"w","id":"dday","r":1,"c":1,"rs":2,"cs":2},{"k":"a","id":"jet","r":1,"c":5,"rs":1,"cs":1},{"k":"a","id":"footing","r":1,"c":6,"rs":1,"cs":1},{"k":"a","id":"fin","r":1,"c":8,"rs":1,"cs":1},{"k":"a","id":"taxagent","r":2,"c":5,"rs":1,"cs":1},{"k":"z","id":"ai","r":3,"c":5,"rs":1,"cs":5},{"k":"a","id":"dsdroll","r":3,"c":5,"rs":1,"cs":1},{"k":"a","id":"pdfguard","r":3,"c":8,"rs":1,"cs":1},{"k":"a","id":"claudeexcel","r":3,"c":6,"rs":1,"cs":1},{"k":"a","id":"k1118","r":3,"c":7,"rs":1,"cs":1},{"k":"a","id":"notice","r":2,"c":7,"rs":1,"cs":1},{"k":"a","id":"settings","r":2,"c":9,"rs":1,"cs":1},{"k":"a","id":"expense","r":2,"c":8,"rs":1,"cs":1},{"k":"a","id":"markettool","r":1,"c":7,"rs":1,"cs":1},{"k":"a","id":"dart","r":1,"c":9,"rs":1,"cs":1},{"k":"a","id":"room","r":2,"c":10,"rs":1,"cs":1}];
 const DOCK_DEFAULT=["rev","cal","team","memo"];
 const DOCK_MAX=10;
+/* ── Dock = 최근 사용한 앱 4개 (2026-09-17). 앱을 열거나 내려받으면 맨 앞으로 오고, 계정별로 이 브라우저에 기억된다.
+      아직 4개가 안 찼으면 DOCK_DEFAULT로 채운다. 이 모드에서는 Dock을 손으로 끌어 편집하지 않는다. ── */
+const DOCK_RECENT=true, DOCK_N=4;
+const RKEY='sh-portal:'+USER.id+':recent';
+let recent=[];
+try{ const r=JSON.parse(store.get(RKEY)||'[]'); if(Array.isArray(r)) recent=r.filter(id=>typeof id==='string').slice(0,DOCK_N); }catch(e){}
+function noteRecent(id){
+  if(!DOCK_RECENT || !APPS[id] || id==='ai') return;   /* 칼은 플로팅 버튼이 따로 있으므로 제외 */
+  recent=[id, ...recent.filter(x=>x!==id)].slice(0,DOCK_N);
+  store.set(RKEY,JSON.stringify(recent)); renderDock();
+}
+const dockApps=()=>{ if(!DOCK_RECENT) return dockOrder;
+  const ids=recent.filter(id=>APPS[id]);
+  DOCK_DEFAULT.forEach(id=>{ if(ids.length<DOCK_N && APPS[id] && !ids.includes(id)) ids.push(id); });
+  return ids; };
 const WG_DEF_COLS={dday:2,notice:4,memo:2,kal:2,team:2,timesheet:2};   /* 축소 비율 기준 */
 
 let layout=LAYOUT_DEFAULT.map(o=>({...o}));
@@ -2334,7 +2350,7 @@ function fitWidgets(){ hgrid.querySelectorAll('.wg').forEach(fitWidget); }
 function paintKalWidget(){ hgrid.querySelectorAll('.wg[data-id="kal"]').forEach(trimKalWidget); }
 function renderDock(){
   dock.querySelectorAll('[data-id]').forEach(n=>n.remove());
-  dockOrder.forEach(id=>{
+  dockApps().forEach(id=>{
     const a=APPS[id]; if(!a) return;
     const el=document.createElement('button');
     el.className='dk'; el.dataset.dock=id; el.dataset.id=id;
@@ -2466,7 +2482,7 @@ function moveDrag(e){
   clearSwapHint();
 
   /* 앱 아이콘은 Dock에도 놓을 수 있다 */
-  if(item.k==='a' && hit(dock,e.clientX,e.clientY,18) && dockOrder.length<DOCK_MAX){
+  if(!DOCK_RECENT && item.k==='a' && hit(dock,e.clientX,e.clientY,18) && dockOrder.length<DOCK_MAX){
     const kids=[...dock.querySelectorAll('[data-id]')];
     dock.insertBefore(slot, kids[indexAt(dock,e.clientX,e.clientY)]||null);
     slot.classList.remove('bad');
@@ -2569,7 +2585,7 @@ document.addEventListener('pointerdown',e=>{
   if(compact){ longPress(e); return; }         /* 좁은 화면: 끌어 옮기기 대신 길게 눌러 메뉴 */
   const rsz=e.target.closest('.rsz');
   if(rsz){ e.preventDefault(); e.stopPropagation(); startResize(e,rsz); return; }
-  const el=e.target.closest('.hgrid [data-uid],.dk[data-id]');
+  const el=e.target.closest(DOCK_RECENT?'.hgrid [data-uid]':'.hgrid [data-uid],.dk[data-id]');
   if(!el||e.button) return;
   const sx=e.clientX, sy=e.clientY;
   let started=false;
@@ -2693,7 +2709,8 @@ const frameBody=(id,a)=>`<div class="wbody frame"><iframe class="appframe" src="
   `<div class="app-loading"><div class="spinner"></div><span>${a.name} 불러오는 중…</span></div></div>`;
 function openApp(id,origin){
   const a=APPS[id]; if(!a) return;
-  if(id==='ai'){ openKal(); return; }   /* 칼은 우측 하단 플로팅 챗봇으로 연다 */
+  if(id==='ai'){ openKal(); return; }
+  noteRecent(id);   /* 칼은 우측 하단 플로팅 챗봇으로 연다 */
   if(wins.has(id)){
     const w=wins.get(id);
     if(w.state==='min'){ w.el.style.display='flex'; w.el.classList.remove('min'); w.state='normal'; }
@@ -3554,7 +3571,7 @@ document.addEventListener('click',e=>{
   const d=e.target.closest('[data-dock]');
   if(d){ const id=d.dataset.dock;
     if(Date.now()-peekAt<450) return;          /* Dock을 불러낸 탭이 올라오는 아이콘에 닿는 것을 막는다 */
-    if(id==='memo'){ toggleStickies(); return; }   /* Dock의 메모는 바탕의 스티커를 켜고 끈다 */
+    if(id==='memo'){ toggleStickies(); noteRecent('memo'); return; }   /* Dock의 메모는 바탕의 스티커를 켜고 끈다 */
     const dr=rectOf(d);
     if(wins.has(id) && wins.get(id).state!=='min' && wins.get(id).el.classList.contains('active')) minApp(id);
     else openApp(id,dr);
