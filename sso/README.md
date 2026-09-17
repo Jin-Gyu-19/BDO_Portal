@@ -24,7 +24,7 @@
 ## 1. 파일 올리기 (DSM File Station 또는 scp -O)
 NAS `/volume1/sh-pf/docker/sh-platform/sso/` 에:
 - `docker-compose.sso.yml`
-- `.env.sso` (`.env.sso.example` 을 복사해 값 채운 것 — 권한 600 권장: `chmod 600 .env.sso`)
+- `.env.sso` (`.env.sso.example` 을 복사해 값 5개 채운 것 — `chmod 600 .env.sso`)
 
 ## 2. oauth2-proxy 띄우기 (nginx 는 아직 그대로)
 ```

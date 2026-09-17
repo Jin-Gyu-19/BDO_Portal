@@ -29,8 +29,7 @@ services:
       # ── Entra ID (OIDC, 단일 테넌트) ──
       OAUTH2_PROXY_PROVIDER: "oidc"
       OAUTH2_PROXY_PROVIDER_DISPLAY_NAME: "Microsoft 365"
-      OAUTH2_PROXY_OIDC_ISSUER_URL: "https://login.microsoftonline.com/${TENANT_ID}/v2.0"
-      OAUTH2_PROXY_REDIRECT_URL: "${PORTAL_URL}/oauth2/callback"
+      # OIDC_ISSUER_URL · REDIRECT_URL · CLIENT_ID · CLIENT_SECRET · COOKIE_SECRET 는 .env.sso 에서 (compose 치환 아님)
       OAUTH2_PROXY_SCOPE: "openid profile email"
       OAUTH2_PROXY_EMAIL_DOMAINS: "*"                       # 테넌트 자체가 제한이므로 도메인은 전부 허용
       OAUTH2_PROXY_OIDC_EMAIL_CLAIM: "preferred_username"    # Entra는 email 클레임이 비는 계정이 있어 UPN 사용

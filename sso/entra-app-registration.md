@@ -46,11 +46,11 @@
 
 ## 정리: `.env.sso` 에 들어갈 값
 ```
-TENANT_ID=                  ← 1. 디렉터리(테넌트) ID
-OAUTH2_PROXY_CLIENT_ID=     ← 1. 애플리케이션(클라이언트) ID
-OAUTH2_PROXY_CLIENT_SECRET= ← 2. 클라이언트 비밀 값
-OAUTH2_PROXY_COOKIE_SECRET= ← 아래 명령으로 생성
-PORTAL_URL=https://192.168.100.25:8081
+OAUTH2_PROXY_OIDC_ISSUER_URL=https://login.microsoftonline.com/<테넌트 ID>/v2.0
+OAUTH2_PROXY_CLIENT_ID=<애플리케이션(클라이언트) ID>
+OAUTH2_PROXY_CLIENT_SECRET=<클라이언트 비밀 값>
+OAUTH2_PROXY_REDIRECT_URL=https://192.168.100.25:8081/oauth2/callback
+OAUTH2_PROXY_COOKIE_SECRET=<아래 명령으로 생성>
 ```
 쿠키 비밀 생성 (PC 또는 NAS 아무 데서나):
 ```
