@@ -62,10 +62,11 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
 - 로딩 스피너 `.app-loading`은 iframe `load` 시(최소 0.5초 노출) 또는 15초 후 제거.
 - 창 이동·크기조정 중에는 `body.winDrag`로 모든 iframe의 포인터 이벤트를 끊습니다.
 - 나머지 21개 앱(리뷰함·TAX Agent·JET Tool 등)은 목업 창입니다. 실제 서비스가 생기면 해당 항목에 `url:`만 넣으면 됩니다.
+- **다운로드형 앱**(설치 파일·엑셀 매크로 등): 항목에 `dl:{file:'JET_Tool_v1.2.xlsm', ver:'1.2'}`를 넣으면 홈·Dock 아이콘 **우측 하단에 작은 다운로드 배지**(`.dlb`)가 붙습니다. 배지를 누르면 `triggerDownload()`가 NAS의 `/downloads/<file>`을 바로 내려받고, 아이콘 본체는 평소대로 창을 엽니다. 파일은 NAS `/volume1/sh-pf/docker/nginx-html/portal/downloads/`에 DSM File Station으로 올립니다(nginx 루트가 `portal/`이라 설정 변경 불필요). 편집 모드(`body.editing`)에서는 배지를 숨깁니다.
 
 ### 앱을 추가/연결할 때 손대야 하는 곳
 
-1. `const APPS = {` — 항목 추가 (`name, sub, short, bg, w, h`, 실제 앱이면 `url`)
+1. `const APPS = {` — 항목 추가 (`name, sub, short, bg, w, h`, 실제 앱이면 `url`, 다운로드형이면 `dl:{file,ver}`)
 2. `const APP_CAT` — 카테고리 (`audit`/`tax`/`admin`/`ai`/`adv`)
 3. `const APP_ICON` — `ICONS`의 그림 키 매핑 (없으면 `short` 글자 타일로 표시)
 4. 홈 기본 배치에 올리려면 `LAYOUT_DEFAULT` **그리고** `finalMemory` 안의 JSON 스냅샷 **둘 다**에 `{"k":"a","id":"<앱키>",r,c,rs,cs}` 추가. `finalMemory`가 localStorage 없을 때의 실제 기본값이라 여기 빠지면 홈에 안 나옵니다. 그룹(`k:"z"`) 칸 범위 안에 놓아야 그 그룹에 속합니다.

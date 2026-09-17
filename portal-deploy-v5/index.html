@@ -536,6 +536,16 @@ border-left:.5px solid transparent;transition:background .12s,color .12s}
 .app-loading .spinner{width:36px;height:36px;border:3px solid var(--line);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 body.winDrag iframe{pointer-events:none}
+/* ── 다운로드 배지 (아이콘 우측 하단) ── */
+.dlb{position:absolute;right:-7px;bottom:-7px;width:24px;height:24px;border-radius:50%;background:#fff;color:var(--red);
+display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;
+box-shadow:0 2px 6px rgba(14,22,30,.28),0 0 0 1.5px rgba(255,255,255,.9);transition:transform .15s cubic-bezier(.3,1.4,.5,1),background .15s,color .15s}
+.dlb .ic{width:13px;height:13px;stroke-width:2.6}
+.dlb:hover,.dlb:focus-visible{transform:scale(1.18);background:var(--red);color:#fff;outline:none}
+.dk .dlb{right:-5px;bottom:-5px;width:20px;height:20px}
+.dk .dlb .ic{width:11px;height:11px}
+.ap.soon .dlb{opacity:1}
+body.editing .dlb{display:none}
 .wbody::-webkit-scrollbar{width:9px;height:9px}
 .wbody::-webkit-scrollbar-thumb{background:rgba(0,0,0,.2);border-radius:9px;border:2.5px solid #fff}
 .rs{position:absolute;z-index:5}
@@ -1461,6 +1471,23 @@ function loadMemos(){
 }
 function saveMemos(){ store.set(MKEY,JSON.stringify(memos)); }
 const esc=t=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* ── 실제 앱 주소: NAS(nginx)에서 열면 상대 경로, 파일을 로컬에서 열면 NAS 절대 주소 ── */
+const NAS_BASE='http://192.168.100.25:8080';
+const onNAS=location.protocol.startsWith('http') && location.hostname!=='localhost' && location.hostname!=='127.0.0.1';
+const appUrl=a=>!a.url ? null : /^https?:/i.test(a.url) ? a.url : (onNAS ? a.url : NAS_BASE+a.url);
+/* ── 다운로드형 앱: APPS 항목에 dl:{file:'파일명', ver?, date?} — 파일은 NAS의 portal/downloads/ 폴더에 둔다.
+      홈·Dock 아이콘 우측 하단에 작은 다운로드 배지가 붙고, 배지를 누르면 바로 내려받는다 (아이콘 본체는 평소대로 창을 연다) ── */
+const DL_DIR='/downloads/';
+const dlUrl=d=>/^https?:/i.test(d.file) ? d.file : ((onNAS?'':NAS_BASE)+DL_DIR+encodeURIComponent(d.file));
+const dlName=d=>String(d.file).split('/').pop();
+const dlBadge=id=>{ const a=APPS[id]; if(!a||!a.dl||!a.dl.file) return '';
+  const tip=a.name+' 다운로드 · '+dlName(a.dl)+(a.dl.ver?' (v'+a.dl.ver+')':'');
+  return `<span class="dlb" data-dl="${id}" role="button" tabindex="0" title="${esc(tip)}" aria-label="${esc(tip)}">`+
+    `<svg class="ic" viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg></span>`; };
+function triggerDownload(id){ const a=APPS[id]; if(!a||!a.dl||!a.dl.file) return;
+  const l=document.createElement('a'); l.href=dlUrl(a.dl); l.download=dlName(a.dl); l.rel='noopener';
+  document.body.appendChild(l); l.click(); l.remove();
+  if(typeof toast==='function') toast(a.name+' 다운로드를 시작합니다 · '+dlName(a.dl)); }
 const memoTitle=m=>esc((m.t.split('\n')[0].trim()||'새 메모').slice(0,60));
 const memoBody =m=>esc(m.t.split('\n').slice(1).join(' ').trim().slice(0,80));
 const fmtMemoTs=ts=>{ const d=new Date(ts), now=new Date();
@@ -2221,7 +2248,7 @@ function makeItem(o){
     el.className='ap'+(a.soon?' soon':'');
     el.dataset.open=o.id; el.setAttribute('aria-label',a.name);
     el.innerHTML=`<div class="ish"><div class="icon${hasIco(o.id)?' img':''}" style="--g:${a.bg};${a.fg?`color:${a.fg}`:''};${icoBg(o.id)}">
-      ${iconFace(o.id)}</div>${a.badge?`<span class="bd tn">${a.badge}</span>`:''}</div>
+      ${iconFace(o.id)}</div>${a.badge?`<span class="bd tn">${a.badge}</span>`:''}${dlBadge(o.id)}</div>
       <div class="nm">${a.name}${a.soon?'<br>('+a.sub+')':''}</div>`;
   }
   return el;
@@ -2315,7 +2342,7 @@ function renderDock(){
     if(a.fg) el.style.color=a.fg;
     el.setAttribute('aria-label',a.name);
     el.innerHTML=`<span class="dksurf${hasIco(id)?' img':''}" style="${icoBg(id)}"></span><span class="dkl">${dockFace(id)}</span>`+
-      `<span class="run"></span><span class="tip">${a.name}</span>`;
+      `<span class="run"></span><span class="tip">${a.name}</span>`+dlBadge(id);
     dock.appendChild(el);
   });
   markDock();
@@ -2537,6 +2564,7 @@ function startResize(e,handle){
 }
 
 document.addEventListener('pointerdown',e=>{
+  if(e.target.closest('.dlb')) return;                /* 다운로드 배지는 끌지 않는다 */
   if(e.target.closest('.kinw,.kchips,.klines')) return;   /* 칼 위젯의 입력칸·칩·대화 영역은 끌지 않는다(스크롤) */
   if(compact){ longPress(e); return; }         /* 좁은 화면: 끌어 옮기기 대신 길게 눌러 메뉴 */
   const rsz=e.target.closest('.rsz');
@@ -2661,10 +2689,6 @@ function focusTop(){
   wins.forEach(v=>v.el.classList.remove('active'));
   if(top) focusWin(top);
 }
-/* ── 실제 앱 주소: NAS(nginx)에서 열면 상대 경로, 파일을 로컬에서 열면 NAS 절대 주소 ── */
-const NAS_BASE='http://192.168.100.25:8080';
-const onNAS=location.protocol.startsWith('http') && location.hostname!=='localhost' && location.hostname!=='127.0.0.1';
-const appUrl=a=>!a.url ? null : /^https?:/i.test(a.url) ? a.url : (onNAS ? a.url : NAS_BASE+a.url);
 const frameBody=(id,a)=>`<div class="wbody frame"><iframe class="appframe" src="${appUrl(a)}" title="${a.name}" allow="clipboard-read; clipboard-write; fullscreen"></iframe>`+
   `<div class="app-loading"><div class="spinner"></div><span>${a.name} 불러오는 중…</span></div></div>`;
 function openApp(id,origin){
@@ -3521,6 +3545,8 @@ document.addEventListener('click',e=>{
   const kgo=e.target.closest('.wg [data-kgo]');
   if(kgo){ const inp=kgo.parentElement.querySelector('.kin'); if(inp.value.trim()){ kalSend(inp.value); inp.value=''; } else inp.focus(); return; }
   if(e.target.closest('.wg .kin,.wg .klines')) return;   /* 입력칸·대화 기록을 눌러도 대화창이 열리지 않는다 */
+  const dlb=e.target.closest('.dlb');
+  if(dlb){ e.preventDefault(); e.stopPropagation(); triggerDownload(dlb.dataset.dl); return; }   /* 배지 → 창 대신 바로 다운로드 */
   const o=e.target.closest('[data-open]');
   if(o){ openApp(o.dataset.open, rectOf(o.querySelector('.ish')||o)); return; }
   const d=e.target.closest('[data-dock]');
