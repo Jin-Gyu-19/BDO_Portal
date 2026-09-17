@@ -555,6 +555,8 @@ body.editing .dlb{display:none}
 .auth-gate .ag-btn{margin-top:6px;padding:12px 22px;border-radius:12px;background:var(--red);color:#fff;font-size:calc(12px * var(--fz));font-weight:700;box-shadow:0 8px 20px rgba(232,26,59,.28)}
 .auth-gate .ag-btn:hover{transform:translateY(-1px)}
 .auth-gate .ag-skip{font-size:calc(10.5px * var(--fz));color:var(--txt3);text-decoration:underline;cursor:pointer}
+.wctl .relogin{margin-right:6px;opacity:.75}
+.wctl .relogin:hover{opacity:1;color:var(--red)}
 .wbody::-webkit-scrollbar{width:9px;height:9px}
 .wbody::-webkit-scrollbar-thumb{background:rgba(0,0,0,.2);border-radius:9px;border:2.5px solid #fff}
 .rs{position:absolute;z-index:5}
@@ -2750,7 +2752,9 @@ function authRelease(id){ const w=wins.get(id); if(!w) return; const el=w.el, fr
   if(fr && !fr.getAttribute('src')){ const box=fr.parentElement; box.insertAdjacentHTML('beforeend',`<div class="app-loading"><div class="spinner"></div><span>${esc(APPS[id].name)} 불러오는 중…</span></div>`);
     const t0=Date.now(), done=()=>{ const l=el.querySelector('.app-loading'); if(l) l.remove(); };
     fr.addEventListener('load',()=>setTimeout(done,Math.max(0,500-(Date.now()-t0))),{once:true}); setTimeout(done,15000);
-    fr.src=fr.dataset.src; } }
+    fr.src=fr.dataset.src; }
+  else if(fr){ fr.src=fr.getAttribute('src'); }   /* 다시 로그인 후: 같은 주소를 새로 불러온다 */ }
+function authRelogin(id){ const a=APPS[id]; if(!a) return; setAuthDone(id,false); toast('팝업에서 로그인한 뒤 창을 닫으면 다시 불러옵니다'); authLogin(id); }
 let authPop=null, authPopTimer=null;
 function authLogin(id){ const a=APPS[id]; if(!a) return;
   const W=560,H=680, L=Math.max(0,(screen.width-W)/2), T=Math.max(0,(screen.height-H)/2);
@@ -2786,6 +2790,7 @@ function openApp(id,origin){
       <div class="tt"><span class="mk${hasIco(id)?' img':''}" style="background:${a.bg};${a.fg?`color:${a.fg}`:''};${icoBg(id)}">${hasIco(id)?'':a.short.slice(0,4)}</span>
         <span class="n">${a.name}</span><span class="s">${a.sub||''}</span></div>
       <div class="wctl">
+        ${a.auth==='popup'?`<button class="relogin" data-act="relogin" title="다시 로그인 — 로그인이 풀려 화면이 비면 누르세요" aria-label="다시 로그인"><svg viewBox="0 0 12 12"><rect x="2.5" y="5.5" width="7" height="5" rx="1"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5"/></svg></button>`:''}
         <button data-act="min" title="최소화" aria-label="최소화"><svg viewBox="0 0 12 12"><path d="M2 6h8"/></svg></button>
         <button data-act="max" title="최대화" aria-label="최대화"><svg viewBox="0 0 12 12"><rect x="2.4" y="2.4" width="7.2" height="7.2"/></svg></button>
         <button class="close" data-act="close" title="닫기" aria-label="닫기"><svg viewBox="0 0 12 12"><path d="M2.6 2.6l6.8 6.8M9.4 2.6l-6.8 6.8"/></svg></button>
@@ -2905,7 +2910,7 @@ function bindWindow(id,el){
   el.querySelector('.wctl').addEventListener('click',e=>{
     const b=e.target.closest('[data-act]'); if(!b) return;
     e.stopPropagation();
-    ({close:closeApp,min:minApp,max:maxApp})[b.dataset.act](id);
+    ({close:closeApp,min:minApp,max:maxApp,relogin:authRelogin})[b.dataset.act](id);
   });
 
   /* 타이틀바 드래그 + 스냅 */
