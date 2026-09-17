@@ -2775,7 +2775,7 @@ const authGate=(id,a)=>`<div class="auth-gate" data-auth-gate="${id}">
     <button type="button" class="ag-btn" data-auth-login="${id}">로그인 창 열기</button>
     <span class="ag-skip" data-auth-skip="${id}">이미 로그인했어요 · 바로 열기</span>
   </div>`;
-const frameBody=(id,a)=>{ const gate=a.auth==='popup' && !authDone(id);
+const frameBody=(id,a)=>{ const gate=a.auth==='popup' && !authDone(id) && !USER.sso;   /* 포털에 SSO로 로그인했으면 같은 MS 세션이라 바로 연다 */
   return `<div class="wbody frame"><iframe class="appframe" ${gate?'data-src':'src'}="${appUrl(a)}" title="${esc(a.name)}" allow="clipboard-read; clipboard-write; fullscreen"></iframe>`+
   (gate?authGate(id,a):`<div class="app-loading"><div class="spinner"></div><span>${esc(a.name)} 불러오는 중…</span></div>`)+`</div>`; };
 /* 게이트 해제: iframe을 실제로 로드하고 스피너를 붙인다 */
