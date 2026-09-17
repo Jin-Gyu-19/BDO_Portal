@@ -1481,9 +1481,9 @@ const USER={id:'yoon.gb', name:'윤길배', title:'대표이사', firm:'성현�
     const pu=String(u.preferredUsername||'').trim(), em=String(u.email||'').trim();
     const mail=(pu.includes('@')?pu:em.includes('@')?em:pu||em).toLowerCase(); if(!mail) return;
     const full=(em && !em.includes('@')) ? em : mail.split('@')[0];
-    /* 표시 이름이 '김진규 [Jinkyu Kim]' 처럼 영문을 함께 담고 있으면 한글 부분만 쓴다 */
-    let name=full.replace(/\s*[\[(（].*$/,'').trim();
-    const ko=name.match(/[가-힣]+(?:\s+[가-힣]+)*/); if(ko) name=ko[0]; if(!name) name=full;
+    /* 표시 이름이 '김진규 [Jinkyu Kim]' 이든 'Jinkyu Kim [김진규]' 이든, 한글 부분이 있으면 그것만 쓴다 */
+    const ko=full.match(/[가-힣]+(?:\s+[가-힣]+)*/);
+    let name=ko ? ko[0] : full.replace(/\s*[\[(（].*$/,'').trim(); if(!name) name=full;
     const groups=Array.isArray(u.groups)?u.groups:[];
     Object.assign(USER,{ id:mail, mail, name, fullName:full, init:name.replace(/\s+/g,'').slice(0,2), title:'', admin:groups.includes('Admin'), sso:true });
   }catch(e){}
