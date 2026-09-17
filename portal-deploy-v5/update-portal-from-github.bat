@@ -66,11 +66,11 @@ findstr /C:"</html>" "%TMP_FILE%" >nul || (echo [ERROR] File looks truncated ^(n
 echo       OK - !SIZE! bytes
 
 REM --- show which commit this is (best effort, needs internet) ---
-powershell -NoProfile -Command "try { $c=(Invoke-RestMethod -Uri '%API_URL%' -Headers @{'User-Agent'='sh-portal-updater'})[0]; Write-Host ('      Commit : ' + $c.sha.Substring(0,7) + '  ' + $c.commit.author.date); Write-Host ('      Message: ' + ($c.commit.message -split \"`n\")[0]) } catch { Write-Host '      (commit info unavailable)' }"
+powershell -NoProfile -Command "try { $c=(Invoke-RestMethod -Uri '%API_URL%' -Headers @{'User-Agent'='sh-portal-updater'})[0]; Write-Host ('      Commit : ' + $c.sha.Substring(0,7) + '  ' + $c.commit.author.date); Write-Host ('      Message: ' + ($c.commit.message -split [char]10)[0]) } catch { Write-Host '      (commit info unavailable)' }"
 echo.
 
 echo [2/3] Uploading to NAS and replacing... (enter NAS password ONCE)
-ssh -p %NAS_PORT% %NAS_USER%@%NAS_HOST% "cd %REMOTE_DIR% && cat > index.html.new && got=$(wc -c < index.html.new) && if [ \"$got\" -ne !SIZE! ]; then echo \"  [ERROR] size mismatch: got $got expected !SIZE!\"; rm -f index.html.new; exit 2; fi && if [ -f index.html ]; then cp index.html index.html.bak_%TS% && echo '  [OK] backup: index.html.bak_%TS%'; else echo '  [INFO] no existing index.html - new deploy'; fi && mv index.html.new index.html && echo '  [OK] replaced' && n=0; for f in $(ls -1r index.html.bak_* 2>/dev/null); do n=$((n+1)); if [ $n -gt %MAX_BAK% ]; then rm -f \"$f\" && echo \"  [CLEAN] removed old backup: $f\"; fi; done; echo '  [OK] backups kept:'; ls -1r index.html.bak_* 2>/dev/null | sed 's/^/         /'" < "%TMP_FILE%"
+ssh -p %NAS_PORT% %NAS_USER%@%NAS_HOST% "cd %REMOTE_DIR% && cat > index.html.new && got=$(wc -c < index.html.new) && if [ $got -ne !SIZE! ]; then echo '  [ERROR] size mismatch: got '$got' expected !SIZE!'; rm -f index.html.new; exit 2; fi && if [ -f index.html ]; then cp index.html index.html.bak_%TS% && echo '  [OK] backup: index.html.bak_%TS%'; else echo '  [INFO] no existing index.html - new deploy'; fi && mv index.html.new index.html && echo '  [OK] replaced' && n=0; for f in $(ls -1r index.html.bak_* 2>/dev/null); do n=$((n+1)); if [ $n -gt %MAX_BAK% ]; then rm -f $f && echo '  [CLEAN] removed old backup: '$f; fi; done; echo '  [OK] backups kept:'; for f in $(ls -1r index.html.bak_* 2>/dev/null); do echo '         '$f; done" < "%TMP_FILE%"
 if errorlevel 1 (
   echo.
   echo [ERROR] Upload/replace failed. Nothing was changed if you see 'size mismatch';

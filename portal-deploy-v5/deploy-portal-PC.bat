@@ -50,7 +50,7 @@ if errorlevel 1 (
 
 echo.
 echo [2/2] Backup and replace... (enter NAS password again)
-ssh -p %NAS_PORT% %NAS_USER%@%NAS_HOST% "cd %REMOTE_DIR% && if [ -f index.html ]; then cp index.html index.html.bak_%TS% && echo '  [OK] backup: index.html.bak_%TS%'; else echo '  [INFO] no existing index.html - new deploy'; fi && mv index.html.new index.html && echo '  [OK] replaced' && n=0; for f in $(ls -1r index.html.bak_* 2>/dev/null); do n=$((n+1)); if [ $n -gt %MAX_BAK% ]; then rm -f \"$f\" && echo \"  [CLEAN] removed old backup: $f\"; fi; done; echo '  [OK] backups kept:'; ls -1r index.html.bak_* 2>/dev/null | sed 's/^/         /'"
+ssh -p %NAS_PORT% %NAS_USER%@%NAS_HOST% "cd %REMOTE_DIR% && if [ -f index.html ]; then cp index.html index.html.bak_%TS% && echo '  [OK] backup: index.html.bak_%TS%'; else echo '  [INFO] no existing index.html - new deploy'; fi && mv index.html.new index.html && echo '  [OK] replaced' && n=0; for f in $(ls -1r index.html.bak_* 2>/dev/null); do n=$((n+1)); if [ $n -gt %MAX_BAK% ]; then rm -f $f && echo '  [CLEAN] removed old backup: '$f; fi; done; echo '  [OK] backups kept:'; for f in $(ls -1r index.html.bak_* 2>/dev/null); do echo '         '$f; done"
 if errorlevel 1 (
   echo.
   echo [ERROR] ssh replace failed. Temp file may remain: %REMOTE_DIR%/index.html.new
