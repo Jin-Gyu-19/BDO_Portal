@@ -13,7 +13,7 @@
 | `docs/` | 작업 인수인계서, NAS 인프라 변경보고서(SH-AX-INFRA-001) | 배경·제약 사항 |
 | `infra/reference/` | 초기 인프라 구축본(compose, nginx.conf, .env.example) | 운영본과 다름. 참고만 |
 | `design-new/` | 새 포털 디자인 원본(CDN판, 2026-09-16 수령). 배포본은 이 파일에 앱 연결만 얹은 것 | diff 기준점. 수정하지 말 것 |
-| `sso/` | MS SSO 구성: oauth2-proxy compose·`.env.sso.example`·SSO판 nginx `default.conf`·Entra 앱 등록 절차·적용 순서(README) | NAS 적용 대기 |
+| `sso/` | MS SSO 구성: oauth2-proxy compose·`.env.sso.example`·SSO판 nginx `default.conf`·Entra 앱 등록 절차·적용 순서(README) | **NAS 적용 완료(2026-09-18)** — NAS의 실제 파일과 동일하게 유지할 것 |
 
 이전 디자인 시안(sample-1~21, plans/A·A-2·A-3, TODO.md)은 2026-09-16에 저장소에서 삭제했습니다. 필요하면 커밋 `33a3b0e` 이전 이력에서 꺼낼 수 있습니다.
 
@@ -133,7 +133,11 @@ Synology는 SFTP 하위시스템이 비활성이라 옵션 없이 쓰면 `subsys
 - `portal-deploy-v5/index.html`은 **2026-09-16 새 디자인으로 전면 교체**되었고 아직 **미배포**입니다. `deploy-portal-PC.bat`으로 올리면 NAS 포털이 새 디자인으로 바뀝니다. 이전 BDO 레드 사이드바 디자인은 git 이력(커밋 `d92fbc6` 시점)에 있습니다.
 - 새 디자인 전환으로 로그인 화면·1118호 직행·임시 백도어·`?dev` 모드는 **모두 사라졌습니다.** 접속하면 바로 홈입니다.
 - 롤백은 git 이력 또는 NAS의 `index.html.bak_*`(배포 스크립트가 자동 생성)으로 합니다.
-- **HTTPS 전환 완료(2026-09-17).** DSM 역방향 프록시 8081 → 8080 동작 확인. **MS SSO 적용 준비 완료 — `sso/README.md` 순서로 NAS 적용 대기.** 방식: DSM 역방향 프록시가 https를 종단 — `HTTPS 8081 → http://localhost:8080`(포털·감사플랫폼·1118호·금융기관 조회, WebSocket 헤더 켜기), `HTTPS 4001 → http://localhost:4000`(XBRL). 우리 nginx 컨테이너·compose는 그대로. 포털은 `extUrl()`로 http/https 양쪽에서 동작하므로 파일 수정 없이 두 주소 모두 사용 가능. 인증서는 DSM 제어판 → 보안 → 인증서에서 다른 https 페이지와 같은 것을 배정. 회의실(:3501 SSO)은 https로 바꿔도 iframe 불가(MS 로그인 페이지 프레임 거부) — 정적 HTML로 대체.
+- **MS SSO 적용 완료 (2026-09-18 새벽).** NAS에 `sh-oauth2-proxy` 컨테이너 가동(`/volume1/sh-pf/docker/sh-platform/sso/`), nginx `default.conf`는 SSO판으로 교체됨(백업 `default.conf.bak_20260917_224603`). `https://192.168.100.25:8081/` 접속 시 Microsoft 인증 → 포털에 로그인 사용자 이름(한글)·이메일 표시 확인. Entra 앱은 새로 만든 **"SH Potal"**(클라이언트 ID `68c537dc-…`), 회의실 앱과 별개.
+- **미해결 ①**: `/oauth2/userinfo`에 `groups`가 없음 → App Role `Admin`이 토큰에 안 실림 → 프로필에 "· 관리자" 미표시. 확인할 것: 역할을 만든 앱과 `.env.sso`의 클라이언트 ID 앱이 같은지(앱 등록 검색창에 ID 붙여넣기), 엔터프라이즈 앱 사용자 및 그룹에 `Admin` 배정이 그 앱에 있는지. 같다면 반영 지연 → 로그아웃 후 재로그인.
+- **미해결 ②**: 인증서가 자체서명이라 브라우저에 "안전하지 않음". 방향(`portal.bdo.kr` DNS + Let's Encrypt / Synology DDNS / 사내 CA) 미정.
+- **미확인**: DB 백업(`sh-db-backup`) compose 수정 후 `Up` 상태이나 수동 백업(`/backup.sh run`) 성공 여부 미확인(Synology 브리지에서 `postgres` 호스트 접근이 안 될 수 있음). `.env`·`.env.sso` `chmod 600` 재실행 필요(붙여넣기 잘림). Entra 앱 이름 "SH Potal" → "SH Portal" 오타 수정 권장.
+- HTTPS 전환 완료(2026-09-17). DSM 역방향 프록시 8081 → 8080 동작 확인. 방식: DSM 역방향 프록시가 https를 종단 — `HTTPS 8081 → http://localhost:8080`(포털·감사플랫폼·1118호·금융기관 조회, WebSocket 헤더 켜기), `HTTPS 4001 → http://localhost:4000`(XBRL). 우리 nginx 컨테이너·compose는 그대로. 포털은 `extUrl()`로 http/https 양쪽에서 동작하므로 파일 수정 없이 두 주소 모두 사용 가능. 인증서는 DSM 제어판 → 보안 → 인증서에서 다른 https 페이지와 같은 것을 배정. 회의실(:3501 SSO)은 https로 바꿔도 iframe 불가(MS 로그인 페이지 프레임 거부) — 정적 HTML로 대체.
 
 ### 최근 적용된 변경 (2026-09-16)
 1. 새 디자인(`design-new/` CDN판)으로 포털 전면 교체
