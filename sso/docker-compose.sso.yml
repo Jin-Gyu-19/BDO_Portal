@@ -32,9 +32,11 @@ services:
       # OIDC_ISSUER_URL · REDIRECT_URL · CLIENT_ID · CLIENT_SECRET · COOKIE_SECRET 는 .env.sso 에서 (compose 치환 아님)
       OAUTH2_PROXY_SCOPE: "openid profile email"
       OAUTH2_PROXY_EMAIL_DOMAINS: "*"                       # 테넌트 자체가 제한이므로 도메인은 전부 허용
-      OAUTH2_PROXY_OIDC_EMAIL_CLAIM: "preferred_username"    # Entra는 email 클레임이 비는 계정이 있어 UPN 사용
+      # oauth2-proxy 는 userinfo.user 에 항상 sub(고유 ID)를 넣고 표시 이름을 따로 주지 않는다.
+      # 그래서 "email" 자리에 표시 이름(name 클레임)을 싣고, 실제 이메일은 preferredUsername(UPN)으로 받는다.
+      # 포털(loadSsoUser)은 email→이름, preferredUsername→이메일/저장키 로 해석한다.
+      OAUTH2_PROXY_OIDC_EMAIL_CLAIM: "name"
       OAUTH2_PROXY_INSECURE_OIDC_ALLOW_UNVERIFIED_EMAIL: "true"   # Entra는 email_verified 클레임을 주지 않음
-      OAUTH2_PROXY_USER_ID_CLAIM: "name"                     # X-Auth-Request-User / userinfo.user = 표시 이름
       OAUTH2_PROXY_OIDC_GROUPS_CLAIM: "roles"                # 앱 역할(App Role) → groups 로 전달 ('Admin')
       OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: "true"              # 중간 버튼 화면 없이 바로 Microsoft 로그인
       # ── 세션·쿠키 ──
