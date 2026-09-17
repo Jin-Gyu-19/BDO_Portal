@@ -13,6 +13,7 @@
 | `docs/` | 작업 인수인계서, NAS 인프라 변경보고서(SH-AX-INFRA-001) | 배경·제약 사항 |
 | `infra/reference/` | 초기 인프라 구축본(compose, nginx.conf, .env.example) | 운영본과 다름. 참고만 |
 | `design-new/` | 새 포털 디자인 원본(CDN판, 2026-09-16 수령). 배포본은 이 파일에 앱 연결만 얹은 것 | diff 기준점. 수정하지 말 것 |
+| `sso/` | MS SSO 구성: oauth2-proxy compose·`.env.sso.example`·SSO판 nginx `default.conf`·Entra 앱 등록 절차·적용 순서(README) | NAS 적용 대기 |
 
 이전 디자인 시안(sample-1~21, plans/A·A-2·A-3, TODO.md)은 2026-09-16에 저장소에서 삭제했습니다. 필요하면 커밋 `33a3b0e` 이전 이력에서 꺼낼 수 있습니다.
 
@@ -79,7 +80,8 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
 - `renderGrid()` / `renderDock()` / `saveLayout()` / `loadLayout()` — 홈 배치. 저장 키는 `store`가 `sh-final-20260916:` 접두어로 localStorage에 씀.
 - **Dock = 최근 사용한 앱 4개** (`DOCK_RECENT=true`, `DOCK_N=4`, 2026-09-17). `openApp()`·`triggerDownload()`·Dock의 메모 클릭이 `noteRecent(id)`를 불러 맨 앞으로 올리고 `sh-portal:<id>:recent` 키에 저장. 4개가 안 차면 `DOCK_DEFAULT`(리뷰함·일정·팀·메모)로 채움. 칼(`ai`)은 제외. 이 모드에서는 Dock 아이콘 드래그·Dock에 놓기가 꺼져 있음(`DOCK_RECENT=false`로 되돌리면 예전 수동 Dock).
 - `openKal()` / 칼 답변은 키워드 규칙. `USER` 상수가 표시 이름·이메일.
-- 프로필 메뉴 "로그아웃"은 토스트만 띄웁니다 (로그인 화면이 없으므로).
+- **SSO 사용자**: 스크립트 맨 앞 `loadSsoUser()`가 `/oauth2/userinfo`를 **동기 XHR**로 읽어 `USER`를 덮어씀(id·mail=UPN 소문자, name=표시 이름, admin=`groups`에 `Admin`, sso=true). 저장 키(`LKEY`·`MKEY`·`RKEY`·`KKEY`)가 `USER.id`로 만들어지므로 **계정별 배치**가 됨. 프록시가 없으면(404·로컬 파일) 목업 윤길배 유지. `paintUser()`가 인사말·프로필 버튼·프로필 카드에 반영하고 `body.is-admin`/`is-sso` 클래스를 붙임.
+- 프로필 메뉴 "로그아웃": SSO면 `ssoLogout()` → `/oauth2/sign_out?rd=<MS logout>` → 포털 복귀. 아니면 토스트만.
 
 ---
 
@@ -130,7 +132,7 @@ Synology는 SFTP 하위시스템이 비활성이라 옵션 없이 쓰면 `subsys
 - `portal-deploy-v5/index.html`은 **2026-09-16 새 디자인으로 전면 교체**되었고 아직 **미배포**입니다. `deploy-portal-PC.bat`으로 올리면 NAS 포털이 새 디자인으로 바뀝니다. 이전 BDO 레드 사이드바 디자인은 git 이력(커밋 `d92fbc6` 시점)에 있습니다.
 - 새 디자인 전환으로 로그인 화면·1118호 직행·임시 백도어·`?dev` 모드는 **모두 사라졌습니다.** 접속하면 바로 홈입니다.
 - 롤백은 git 이력 또는 NAS의 `index.html.bak_*`(배포 스크립트가 자동 생성)으로 합니다.
-- **HTTPS 전환 진행 중 (2026-09-17 결정).** 방식: DSM 역방향 프록시가 https를 종단 — `HTTPS 8081 → http://localhost:8080`(포털·감사플랫폼·1118호·금융기관 조회, WebSocket 헤더 켜기), `HTTPS 4001 → http://localhost:4000`(XBRL). 우리 nginx 컨테이너·compose는 그대로. 포털은 `extUrl()`로 http/https 양쪽에서 동작하므로 파일 수정 없이 두 주소 모두 사용 가능. 인증서는 DSM 제어판 → 보안 → 인증서에서 다른 https 페이지와 같은 것을 배정. 회의실(:3501 SSO)은 https로 바꿔도 iframe 불가(MS 로그인 페이지 프레임 거부) — 정적 HTML로 대체.
+- **HTTPS 전환 완료(2026-09-17).** DSM 역방향 프록시 8081 → 8080 동작 확인. **MS SSO 적용 준비 완료 — `sso/README.md` 순서로 NAS 적용 대기.** 방식: DSM 역방향 프록시가 https를 종단 — `HTTPS 8081 → http://localhost:8080`(포털·감사플랫폼·1118호·금융기관 조회, WebSocket 헤더 켜기), `HTTPS 4001 → http://localhost:4000`(XBRL). 우리 nginx 컨테이너·compose는 그대로. 포털은 `extUrl()`로 http/https 양쪽에서 동작하므로 파일 수정 없이 두 주소 모두 사용 가능. 인증서는 DSM 제어판 → 보안 → 인증서에서 다른 https 페이지와 같은 것을 배정. 회의실(:3501 SSO)은 https로 바꿔도 iframe 불가(MS 로그인 페이지 프레임 거부) — 정적 HTML로 대체.
 
 ### 최근 적용된 변경 (2026-09-16)
 1. 새 디자인(`design-new/` CDN판)으로 포털 전면 교체
@@ -146,8 +148,8 @@ Synology는 SFTP 하위시스템이 비활성이라 옵션 없이 쓰면 `subsys
    - 방식: oauth2-proxy 컨테이너 + nginx `auth_request`, 기존 Redis를 세션 저장소로 재활용
    - 권한: Entra 보안그룹 `SH-Platform-Admins` 멤버 = 관리자, 그 외 전원 일반
    - 범위: 전체 게이트(미로그인 시 모든 앱 차단)
-   - ⚠️ **선행조건 — HTTPS 필수.** Entra ID는 localhost 외 http redirect URI를 허용하지 않아, 현재 `http://192.168.100.25:8080`으로는 앱 등록 자체가 불가합니다. HTTPS를 안 하기로 한 상태라 이 충돌을 먼저 풀어야 합니다 (도메인·인증서 확보 또는 다른 인증 방식).
-2. SSO 완료 후 → `USER` 상수(이름·이메일·이니셜)를 로그인 정보로 채우고, 프로필 메뉴 로그아웃을 실제 로그아웃(`/oauth2/sign_out`)으로 연결
+   - 결정(2026-09-17): 관리자 판별은 **Entra App Role `Admin`**(그룹 `SH-Platform-Admins` 배정), 1차 게이트는 포털·감사·1118호·금융기관(XBRL·회의실은 2차), 홈 배치는 **계정별**. HTTPS는 8081로 확보됨. 구성 파일은 `sso/`에 있고 포털 코드는 반영 완료. 남은 것: Entra 앱 등록 → `.env.sso` → NAS 적용(`sso/README.md`).
+2. (완료) 포털 `USER`를 SSO 사용자로 채우고 로그아웃 연결 — NAS 적용 후 실제 동작 확인 필요
 3. 홈 위젯·목업 앱·칼 답변을 실데이터로 연동 (백엔드 필요)
 4. `sh_audit` 아이콘이 'Ai' 그림이라 SH Audit Platform과 안 어울림 — 전용 아이콘 교체 검토
 

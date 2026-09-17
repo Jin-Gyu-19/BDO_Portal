@@ -1,0 +1,59 @@
+# ============================================================
+#  SH Portal SSO — oauth2-proxy (Microsoft Entra ID)
+#  NAS 경로: /volume1/sh-pf/docker/sh-platform/sso/docker-compose.sso.yml
+#
+#  실행:  cd /volume1/sh-pf/docker/sh-platform/sso && sudo docker-compose -f docker-compose.sso.yml up -d
+#  중지:  sudo docker-compose -f docker-compose.sso.yml down
+#  로그:  sudo docker logs -f sh-oauth2-proxy
+#
+#  - 메인 스택(docker-compose.yml)과 별개 프로젝트. nginx·postgres·redis·streamlit 컨테이너는 건드리지 않는다.
+#  - Synology Docker는 bridge 통신이 안 되므로 nginx와 같이 host 네트워크로 띄우고,
+#    nginx는 127.0.0.1:4180 으로, oauth2-proxy는 127.0.0.1:6379(sh-redis) 로 접근한다.
+#  - 세션은 기존 sh-redis(DB 1)에 저장 → 컨테이너를 재시작해도 로그인 유지.
+# ============================================================
+version: "3.9"
+
+services:
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.8.1
+    container_name: sh-oauth2-proxy
+    restart: unless-stopped
+    network_mode: host
+    env_file: .env.sso
+    environment:
+      TZ: Asia/Seoul
+      # ── 리슨: nginx(host 모드)만 접근하도록 loopback ──
+      OAUTH2_PROXY_HTTP_ADDRESS: "127.0.0.1:4180"
+      OAUTH2_PROXY_REVERSE_PROXY: "true"
+      OAUTH2_PROXY_PROXY_PREFIX: "/oauth2"
+      # ── Entra ID (OIDC, 단일 테넌트) ──
+      OAUTH2_PROXY_PROVIDER: "oidc"
+      OAUTH2_PROXY_PROVIDER_DISPLAY_NAME: "Microsoft 365"
+      OAUTH2_PROXY_OIDC_ISSUER_URL: "https://login.microsoftonline.com/${TENANT_ID}/v2.0"
+      OAUTH2_PROXY_REDIRECT_URL: "${PORTAL_URL}/oauth2/callback"
+      OAUTH2_PROXY_SCOPE: "openid profile email"
+      OAUTH2_PROXY_EMAIL_DOMAINS: "*"                       # 테넌트 자체가 제한이므로 도메인은 전부 허용
+      OAUTH2_PROXY_OIDC_EMAIL_CLAIM: "preferred_username"    # Entra는 email 클레임이 비는 계정이 있어 UPN 사용
+      OAUTH2_PROXY_INSECURE_OIDC_ALLOW_UNVERIFIED_EMAIL: "true"   # Entra는 email_verified 클레임을 주지 않음
+      OAUTH2_PROXY_USER_ID_CLAIM: "name"                     # X-Auth-Request-User / userinfo.user = 표시 이름
+      OAUTH2_PROXY_OIDC_GROUPS_CLAIM: "roles"                # 앱 역할(App Role) → groups 로 전달 ('Admin')
+      OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: "true"              # 중간 버튼 화면 없이 바로 Microsoft 로그인
+      # ── 세션·쿠키 ──
+      OAUTH2_PROXY_SESSION_STORE_TYPE: "redis"
+      OAUTH2_PROXY_REDIS_CONNECTION_URL: "redis://127.0.0.1:6379/1"
+      OAUTH2_PROXY_COOKIE_NAME: "_sh_portal"
+      OAUTH2_PROXY_COOKIE_SECURE: "true"
+      OAUTH2_PROXY_COOKIE_HTTPONLY: "true"
+      OAUTH2_PROXY_COOKIE_SAMESITE: "lax"
+      OAUTH2_PROXY_COOKIE_EXPIRE: "12h"
+      OAUTH2_PROXY_COOKIE_REFRESH: "0"
+      # ── nginx auth_request 연동: 사용자 정보 헤더 + /oauth2/userinfo ──
+      OAUTH2_PROXY_SET_XAUTHREQUEST: "true"
+      OAUTH2_PROXY_PASS_ACCESS_TOKEN: "false"
+      OAUTH2_PROXY_PASS_USER_HEADERS: "true"
+      # ── 로그아웃 후 Microsoft 로그아웃 페이지로 보내기 위해 허용 ──
+      OAUTH2_PROXY_WHITELIST_DOMAINS: "login.microsoftonline.com"
+      # ── 로그 ──
+      OAUTH2_PROXY_REQUEST_LOGGING: "false"
+      OAUTH2_PROXY_STANDARD_LOGGING: "true"
+      OAUTH2_PROXY_AUTH_LOGGING: "true"
