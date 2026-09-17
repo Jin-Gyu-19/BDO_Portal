@@ -86,6 +86,7 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
 1. GitHub `claude/awesome-hopper-cmd4wg` 브랜치의 `portal-deploy-v5/index.html`을 raw로 내려받음 (캐시 우회)
 2. 검사: 200KB 이상 · `<title>SH Portal` 포함 · `</html>`로 끝남. 하나라도 실패하면 배포 안 함
 3. ssh 한 번(비밀번호 1회)으로 NAS에 전송 → 바이트 수 대조 → 원본 `index.html.bak_타임스탬프` 백업 → 교체. 크기 불일치면 아무것도 안 바꿈
+4. NAS의 백업은 **최신 5개만 유지**(`MAX_BAK`), 더 오래된 `index.html.bak_*`는 자동 삭제. 실행 끝에 남은 백업 목록과 롤백 명령을 출력
 
 즉 흐름은 **여기서 푸시 → 사용자가 PC에서 .bat 더블클릭 → 비밀번호 1회**. 배포 브랜치를 바꾸려면 .bat 상단 `GH_BRANCH`만 수정. nginx 재시작 불필요(정적 파일).
 

@@ -7,6 +7,7 @@ REM   1) Downloads the latest portal index.html from GitHub
 REM   2) Checks the file (size, <title>, </html>)
 REM   3) Uploads it to NAS over ssh (ONE password prompt),
 REM      backs up the current file, then replaces it
+REM   4) Keeps only the newest MAX_BAK backups on NAS (older ones deleted)
 REM   - No git clone needed. Keep this .bat anywhere on your PC.
 REM   - Needs: Windows 10+ (curl.exe + OpenSSH client are built in)
 REM   - ASCII only in this file (Korean cmd reads .bat as CP949)
@@ -22,6 +23,7 @@ set "NAS_HOST=192.168.100.25"
 set "NAS_PORT=3907"
 set "REMOTE_DIR=/volume1/sh-pf/docker/nginx-html/portal"
 set "MIN_BYTES=200000"
+set "MAX_BAK=5"
 
 set "RAW_URL=https://raw.githubusercontent.com/%GH_OWNER%/%GH_REPO%/%GH_BRANCH%/%GH_PATH%"
 set "API_URL=https://api.github.com/repos/%GH_OWNER%/%GH_REPO%/commits?sha=%GH_BRANCH%&path=%GH_PATH%&per_page=1"
@@ -33,7 +35,7 @@ echo ============================================
 echo   SH Portal - update NAS from GitHub
 echo   Branch : %GH_BRANCH%
 echo   Target : %NAS_USER%@%NAS_HOST%:%REMOTE_DIR%/index.html
-echo   Backup : index.html.bak_%TS%
+echo   Backup : index.html.bak_%TS%  (keep newest %MAX_BAK%)
 echo ============================================
 echo.
 
@@ -68,7 +70,7 @@ powershell -NoProfile -Command "try { $c=(Invoke-RestMethod -Uri '%API_URL%' -He
 echo.
 
 echo [2/3] Uploading to NAS and replacing... (enter NAS password ONCE)
-ssh -p %NAS_PORT% %NAS_USER%@%NAS_HOST% "cd %REMOTE_DIR% && cat > index.html.new && got=$(wc -c < index.html.new) && if [ \"$got\" -ne !SIZE! ]; then echo \"  [ERROR] size mismatch: got $got expected !SIZE!\"; rm -f index.html.new; exit 2; fi && if [ -f index.html ]; then cp index.html index.html.bak_%TS% && echo '  [OK] backup: index.html.bak_%TS%'; else echo '  [INFO] no existing index.html - new deploy'; fi && mv index.html.new index.html && echo '  [OK] replaced'" < "%TMP_FILE%"
+ssh -p %NAS_PORT% %NAS_USER%@%NAS_HOST% "cd %REMOTE_DIR% && cat > index.html.new && got=$(wc -c < index.html.new) && if [ \"$got\" -ne !SIZE! ]; then echo \"  [ERROR] size mismatch: got $got expected !SIZE!\"; rm -f index.html.new; exit 2; fi && if [ -f index.html ]; then cp index.html index.html.bak_%TS% && echo '  [OK] backup: index.html.bak_%TS%'; else echo '  [INFO] no existing index.html - new deploy'; fi && mv index.html.new index.html && echo '  [OK] replaced' && n=0; for f in $(ls -1r index.html.bak_* 2>/dev/null); do n=$((n+1)); if [ $n -gt %MAX_BAK% ]; then rm -f \"$f\" && echo \"  [CLEAN] removed old backup: $f\"; fi; done; echo '  [OK] backups kept:'; ls -1r index.html.bak_* 2>/dev/null | sed 's/^/         /'" < "%TMP_FILE%"
 if errorlevel 1 (
   echo.
   echo [ERROR] Upload/replace failed. Nothing was changed if you see 'size mismatch';
