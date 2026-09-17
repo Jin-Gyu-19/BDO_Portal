@@ -3188,7 +3188,7 @@ function paintLib(){
   libbody.innerHTML=`<div class="studioShell">${nav}<main class="studioApps">${zbody}</main></div>`;
 }
 function openLib(){ closeSpot(); paintLib(); lib.classList.add('on'); setTimeout(()=>libq.focus(),30); }
-function closeLib(){ lib.classList.remove('on'); libq.blur(); }
+function closeLib(){ lib.classList.remove('on'); libq.blur(); libq.value=''; }   /* 검색어를 남기지 않는다 — 다음에 열 때 '일치하는 항목 없음'으로 보이던 문제 */
 document.getElementById('dockLib').addEventListener('click',e=>{ e.stopPropagation(); libOpen()?closeLib():openLib(); });
 document.getElementById('libx').addEventListener('click',closeLib);
 libq.addEventListener('input',paintLib);
@@ -3214,7 +3214,9 @@ libbody.addEventListener('click',e=>{
   const c=e.target.closest('[data-lcat]');
   if(c){
     const v=c.dataset.lcat;
+    const prev=libTab;
     if(v==='__wg'){ libTab='wg'; } else if(v==='__zone'){ libTab='zone'; } else { libTab='app'; libCat=v; }
+    if(libTab!==prev) libq.value='';          /* 탭이 바뀌면 검색 대상도 바뀌므로 검색어 초기화 */
     paintLib(); return;
   }
   const o=e.target.closest('[data-lopen]');
@@ -3278,7 +3280,7 @@ libbody.addEventListener('submit',e=>{
 });
 /* 홈에서 특정 그룹 이름을 바로 고칠 수 있게 서랍의 그룹 탭을 연다 */
 function openZoneEditor(id){
-  setLibTab('zone'); openLib();
+  setLibTab('zone'); libq.value=''; openLib();
   setTimeout(()=>{ const i=libbody.querySelector(`[data-zname="${id}"]`); if(i){ i.focus(); i.select(); } },60);
 }
 
