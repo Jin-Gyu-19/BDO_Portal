@@ -56,13 +56,14 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
 | `k1118` | K-IFRS 1118호 자동화 Tool | `/ifrs18/index.html` | 정적 HTML |
 | `fin` | 금융기관 조회 | `/data/` | Streamlit 프록시 |
 | `xbrl` | XBRL Comparator | `extUrl(4000,4001)` → http면 `http://<접속호스트>:4000/`, https면 `https://<접속호스트>:4001/` | **외부 포트 직접 연결.** 포털을 여는 프로토콜·호스트를 따라감 (DSM 역방향 프록시 4001 → localhost:4000 전제) |
-| `room` | 회의실 예약 | `/room/index.html` | 정적 HTML — NAS `nginx-html/portal/room/index.html`에 File Station으로 올림 (사용자가 올릴 예정). `:3501` SSO(https) 버전은 iframe 불가라 쓰지 않음 |
+| `room` | 회의실 예약 | `https://192.168.100.25:3501/` | **외부 포트(https, MS SSO 적용) + `auth:'popup'`.** MS 로그인 페이지는 iframe 안에서 열리지 않으므로, 첫 열기 때 창 안에 안내(`.auth-gate`)를 띄우고 "로그인 창 열기"로 팝업에서 로그인 → 팝업이 닫히면 iframe 로드. 같은 호스트라 로그인 쿠키가 iframe에도 적용됨. 완료 표시는 `sessionStorage`(`sh-portal:auth:room`, 탭 세션 동안 유지). 포털을 https(8081)로 열어야 동작 |
 
 - `url`이 있는 앱은 `openApp()`에서 목업 `body()` 대신 `frameBody()`가 만든 iframe 창으로 열립니다. 창 크기는 `w:1600,h:1000`으로 잡아 화면에 거의 꽉 차게(최대화·이동·닫기 가능) 열립니다.
 - 주소 해석은 `appUrl()`: NAS(nginx)에서 열면 상대 경로, 파일을 로컬에서 열면 `NAS_BASE`(`http://192.168.100.25:8080`) 절대 주소.
 - 로딩 스피너 `.app-loading`은 iframe `load` 시(최소 0.5초 노출) 또는 15초 후 제거.
 - 창 이동·크기조정 중에는 `body.winDrag`로 모든 iframe의 포인터 이벤트를 끊습니다.
 - 나머지 20개 앱(리뷰함·TAX Agent·JET Tool 등)은 목업 창입니다. 실제 서비스가 생기면 해당 항목에 `url:`만 넣으면 됩니다.
+- **SSO 앱**(`auth:'popup'`): `frameBody()`가 iframe에 `src` 대신 `data-src`를 두고 `.auth-gate`를 띄움. `authLogin()`이 팝업을 열고 닫힘을 감지해 `authRelease()`로 iframe을 로드. "이미 로그인했어요"는 게이트를 건너뜀. 다른 SSO 앱이 생기면 항목에 `auth:'popup'`만 추가.
 - **다운로드형 앱**(설치 파일·엑셀 매크로 등): 항목에 `dl:{file:'JET_Tool_v1.2.xlsm', ver:'1.2'}`를 넣으면 홈·Dock 아이콘 **우측 하단에 작은 다운로드 배지**(`.dlb`)가 붙습니다. 배지를 누르면 `triggerDownload()`가 NAS의 `/downloads/<file>`을 바로 내려받고, 아이콘 본체는 평소대로 창을 엽니다. 파일은 NAS `/volume1/sh-pf/docker/nginx-html/portal/downloads/`에 DSM File Station으로 올립니다(nginx 루트가 `portal/`이라 설정 변경 불필요). 편집 모드(`body.editing`)에서는 배지를 숨깁니다.
 
 ### 앱을 추가/연결할 때 손대야 하는 곳

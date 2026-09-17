@@ -546,6 +546,15 @@ box-shadow:0 2px 6px rgba(14,22,30,.28),0 0 0 1.5px rgba(255,255,255,.9);transit
 .dk .dlb .ic{width:11px;height:11px}
 .ap.soon .dlb{opacity:1}
 body.editing .dlb{display:none}
+/* ── SSO 앱: 팝업 로그인 안내 (iframe 안에서는 Microsoft 로그인 화면이 열리지 않으므로) ── */
+.auth-gate{position:absolute;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:3;padding:40px;text-align:center}
+.auth-gate .ag-ico{width:64px;height:64px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:#F3F4F6;color:var(--ink)}
+.auth-gate .ag-ico .ic{width:28px;height:28px;stroke-width:1.8}
+.auth-gate .ag-t{font-size:calc(14px * var(--fz));font-weight:700;color:var(--ink)}
+.auth-gate .ag-d{font-size:calc(11px * var(--fz));color:var(--txt2);line-height:1.7;max-width:420px}
+.auth-gate .ag-btn{margin-top:6px;padding:12px 22px;border-radius:12px;background:var(--red);color:#fff;font-size:calc(12px * var(--fz));font-weight:700;box-shadow:0 8px 20px rgba(232,26,59,.28)}
+.auth-gate .ag-btn:hover{transform:translateY(-1px)}
+.auth-gate .ag-skip{font-size:calc(10.5px * var(--fz));color:var(--txt3);text-decoration:underline;cursor:pointer}
 .wbody::-webkit-scrollbar{width:9px;height:9px}
 .wbody::-webkit-scrollbar-thumb{background:rgba(0,0,0,.2);border-radius:9px;border:2.5px solid #fff}
 .rs{position:absolute;z-index:5}
@@ -1979,7 +1988,7 @@ const APPS = {
       <div class="cal" style="margin-top:18px"><div class="hd"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>
       <div class="bd">${cells}</div></div>
     </div>`}},
-  room:{name:'회의실 예약', sub:'회의실 예약', short:'예약', bg:G.room, w:1600, h:1000, url:'/room/index.html', body:()=>`
+  room:{name:'회의실 예약', sub:'회의실 예약 시스템', short:'예약', bg:G.room, w:1600, h:1000, url:'https://192.168.100.25:3501/', auth:'popup', body:()=>`
     <div class="pad">
       <div class="h1">회의실 예약<span>.</span></div>
       <div class="hsub">4월 5일 (일) · 예약하면 내 일정에 자동으로 추가됩니다</div>
@@ -2722,8 +2731,38 @@ function focusTop(){
   wins.forEach(v=>v.el.classList.remove('active'));
   if(top) focusWin(top);
 }
-const frameBody=(id,a)=>`<div class="wbody frame"><iframe class="appframe" src="${appUrl(a)}" title="${a.name}" allow="clipboard-read; clipboard-write; fullscreen"></iframe>`+
-  `<div class="app-loading"><div class="spinner"></div><span>${a.name} 불러오는 중…</span></div></div>`;
+/* SSO(팝업 로그인) 앱: 이 브라우저 세션에서 로그인을 마쳤다고 표시해 두면 다음부터는 바로 iframe으로 연다 */
+const authDone=id=>{ try{ return sessionStorage.getItem('sh-portal:auth:'+id)==='1'; }catch(e){ return false; } };
+const setAuthDone=(id,v)=>{ try{ v?sessionStorage.setItem('sh-portal:auth:'+id,'1'):sessionStorage.removeItem('sh-portal:auth:'+id); }catch(e){} };
+const authGate=(id,a)=>`<div class="auth-gate" data-auth-gate="${id}">
+    <div class="ag-ico"><svg class="ic" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+    <div class="ag-t">${esc(a.name)}은(는) Microsoft 로그인이 필요합니다</div>
+    <div class="ag-d">로그인 화면은 창 안에서 열리지 않아 별도 창으로 띄웁니다.<br>로그인이 끝나면 그 창을 닫아 주세요. 여기에 바로 표시됩니다.</div>
+    <button type="button" class="ag-btn" data-auth-login="${id}">로그인 창 열기</button>
+    <span class="ag-skip" data-auth-skip="${id}">이미 로그인했어요 · 바로 열기</span>
+  </div>`;
+const frameBody=(id,a)=>{ const gate=a.auth==='popup' && !authDone(id);
+  return `<div class="wbody frame"><iframe class="appframe" ${gate?'data-src':'src'}="${appUrl(a)}" title="${esc(a.name)}" allow="clipboard-read; clipboard-write; fullscreen"></iframe>`+
+  (gate?authGate(id,a):`<div class="app-loading"><div class="spinner"></div><span>${esc(a.name)} 불러오는 중…</span></div>`)+`</div>`; };
+/* 게이트 해제: iframe을 실제로 로드하고 스피너를 붙인다 */
+function authRelease(id){ const w=wins.get(id); if(!w) return; const el=w.el, fr=el.querySelector('iframe.appframe'), g=el.querySelector('.auth-gate');
+  if(g) g.remove(); setAuthDone(id,true);
+  if(fr && !fr.getAttribute('src')){ const box=fr.parentElement; box.insertAdjacentHTML('beforeend',`<div class="app-loading"><div class="spinner"></div><span>${esc(APPS[id].name)} 불러오는 중…</span></div>`);
+    const t0=Date.now(), done=()=>{ const l=el.querySelector('.app-loading'); if(l) l.remove(); };
+    fr.addEventListener('load',()=>setTimeout(done,Math.max(0,500-(Date.now()-t0))),{once:true}); setTimeout(done,15000);
+    fr.src=fr.dataset.src; } }
+let authPop=null, authPopTimer=null;
+function authLogin(id){ const a=APPS[id]; if(!a) return;
+  const W=560,H=680, L=Math.max(0,(screen.width-W)/2), T=Math.max(0,(screen.height-H)/2);
+  authPop=window.open(appUrl(a),'sh-portal-auth-'+id,`width=${W},height=${H},left=${L},top=${T},resizable=yes,scrollbars=yes`);
+  if(!authPop){ toast('팝업이 차단되었습니다. 주소창의 팝업 차단을 허용해 주세요'); return; }
+  clearInterval(authPopTimer);
+  authPopTimer=setInterval(()=>{ if(!authPop || authPop.closed){ clearInterval(authPopTimer); authPop=null; authRelease(id); } },500);
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-auth-login]'); if(b){ e.stopPropagation(); authLogin(b.dataset.authLogin); return; }
+  const k=e.target.closest('[data-auth-skip]'); if(k){ e.stopPropagation(); authRelease(k.dataset.authSkip); }
+},true);
 function openApp(id,origin){
   const a=APPS[id]; if(!a) return;
   if(id==='ai'){ openKal(); return; }
@@ -2760,7 +2799,7 @@ function openApp(id,origin){
   document.body.appendChild(el);
   /* 실제 앱: iframe 로드 완료 시 스피너 해제 (최소 0.5초 노출로 깜빡임 방지) */
   const fr=el.querySelector('iframe.appframe');
-  if(fr){ const t0=Date.now(); const done=()=>{ const l=el.querySelector('.app-loading'); if(l) l.remove(); };
+  if(fr && fr.getAttribute('src')){ const t0=Date.now(); const done=()=>{ const l=el.querySelector('.app-loading'); if(l) l.remove(); };
     fr.addEventListener('load',()=>setTimeout(done, Math.max(0,500-(Date.now()-t0))),{once:true});
     setTimeout(done,15000); }   /* 15초 안에 응답이 없으면 스피너를 걷어 브라우저 오류 화면이 보이게 */
   syncThemeUI();                              /* 설정 창의 배경 카드 선택 상태 반영 */
