@@ -1491,7 +1491,7 @@ const USER={id:'yoon.gb', name:'윤길배', title:'대표이사', firm:'성현�
 /* SSO 사용자를 화면(인사말·프로필 버튼·프로필 메뉴)에 반영 */
 function paintUser(){
   const set=(sel,txt)=>document.querySelectorAll(sel).forEach(el=>{ el.textContent=txt; });
-  set('.greet h1 em',USER.name); set('#profBtn .av',USER.init); set('#profBtn .nm',USER.name);
+  set('.greet h1 em',USER.name); set('#profBtn .av',USER.init); set('#profBtn .nm',USER.fullName||USER.name);   /* 인사말은 한글만, 우측 상단은 전체 표시 이름 */
   const pb=document.getElementById('profBtn'); if(pb) pb.setAttribute('aria-label',USER.name+' 계정 메뉴');
   set('#pmenu .card .av',USER.init); set('#pmenu .card .n',(USER.fullName||USER.name)+(USER.admin?' · 관리자':USER.sso?'':' CPA'));
   const m=document.querySelector('#pmenu .card .m'); if(m) m.innerHTML=esc(USER.firm)+(USER.title?' · '+esc(USER.title):'')+'<br>'+esc(USER.mail);
