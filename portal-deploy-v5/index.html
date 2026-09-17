@@ -1462,7 +1462,7 @@ function greetText(d=new Date()){
   if(h>=5 && h<12)  return day===1 ? '님, 활기찬 한 주 시작하세요' : '님, 좋은 아침입니다';
   if(h>=12 && h<14) return '님, 점심식사는 하셨나요?';
   if(h>=14 && h<18) return day===5 ? '님, 즐거운 주말 앞두고 계시네요' : '님, 즐거운 오후입니다';
-  if(h>=18 && h<22) return '님, 오늘도 수고 많으셨습니다';
+  if(h>=18 && h<20) return '님, 오늘도 수고 많으셨습니다';
   return '님, 늦은 시간까지 고생이 많으십니다';
 }
 function paintGreet(){ const t=document.getElementById('greetTail'); if(t) t.textContent=greetText(); }
