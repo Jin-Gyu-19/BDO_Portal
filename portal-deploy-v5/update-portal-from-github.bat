@@ -24,6 +24,7 @@ set "NAS_PORT=3907"
 set "REMOTE_DIR=/volume1/sh-pf/docker/nginx-html/portal"
 set "MIN_BYTES=200000"
 set "MAX_BAK=5"
+set "SCRIPT_VER=v3 (2026-09-17)"
 
 set "RAW_URL=https://raw.githubusercontent.com/%GH_OWNER%/%GH_REPO%/%GH_BRANCH%/%GH_PATH%"
 set "API_URL=https://api.github.com/repos/%GH_OWNER%/%GH_REPO%/commits?sha=%GH_BRANCH%&path=%GH_PATH%&per_page=1"
@@ -32,7 +33,7 @@ set "TMP_FILE=%TEMP%\sh-portal-index.html"
 for /f %%I in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd_HHmmss"') do set "TS=%%I"
 
 echo ============================================
-echo   SH Portal - update NAS from GitHub
+echo   SH Portal - update NAS from GitHub  [%SCRIPT_VER%]
 echo   Branch : %GH_BRANCH%
 echo   Target : %NAS_USER%@%NAS_HOST%:%REMOTE_DIR%/index.html
 echo   Backup : index.html.bak_%TS%  (keep newest %MAX_BAK%)
