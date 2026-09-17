@@ -81,6 +81,7 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
 - **Dock = 최근 사용한 앱 4개** (`DOCK_RECENT=true`, `DOCK_N=4`, 2026-09-17). `openApp()`·`triggerDownload()`·Dock의 메모 클릭이 `noteRecent(id)`를 불러 맨 앞으로 올리고 `sh-portal:<id>:recent` 키에 저장. 4개가 안 차면 `DOCK_DEFAULT`(리뷰함·일정·팀·메모)로 채움. 칼(`ai`)은 제외. 이 모드에서는 Dock 아이콘 드래그·Dock에 놓기가 꺼져 있음(`DOCK_RECENT=false`로 되돌리면 예전 수동 Dock).
 - `openKal()` / 칼 답변은 키워드 규칙. `USER` 상수가 표시 이름·이메일.
 - **SSO 사용자**: 스크립트 맨 앞 `loadSsoUser()`가 `/oauth2/userinfo`를 **동기 XHR**로 읽어 `USER`를 덮어씀(id·mail=`preferredUsername`(UPN) 소문자, name=`email` 항목 — oauth2-proxy 설정 `OIDC_EMAIL_CLAIM=name` 으로 표시 이름을 email 자리에 실음. `user`는 sub 라 쓰지 않음, admin=`groups`에 `Admin`, sso=true). 저장 키(`LKEY`·`MKEY`·`RKEY`·`KKEY`)가 `USER.id`로 만들어지므로 **계정별 배치**가 됨. 프록시가 없으면(404·로컬 파일) 목업 윤길배 유지. `paintUser()`가 인사말·프로필 버튼·프로필 카드에 반영하고 `body.is-admin`/`is-sso` 클래스를 붙임.
+- **내 홈 배치 저장/불러오기**(프로필 메뉴, `data-portal-backup`): `portalBackupDownload()`가 배치·Dock·배경·그룹·메모·최근 앱을 JSON 파일로 내려받고, `portalBackupImport()`가 검증 후 `store.set`(접두어 키)으로 복원하고 새로고침. 다른 PC로 옮길 때 씀. 화면엔 버튼 없음(메뉴에서만).
 - 프로필 메뉴 "로그아웃": SSO면 `ssoLogout()` → `/oauth2/sign_out?rd=<MS logout>` → 포털 복귀. 아니면 토스트만.
 
 ---
