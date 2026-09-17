@@ -55,7 +55,7 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
 | `shaudit` | SH Audit Platform | `/audit/index.html` | 정적 HTML |
 | `k1118` | K-IFRS 1118호 자동화 Tool | `/ifrs18/index.html` | 정적 HTML |
 | `fin` | 금융기관 조회 | `/data/` | Streamlit 프록시 |
-| `xbrl` | XBRL Comparator | `http://192.168.100.25:4000/` | **외부 포트 직접 연결** |
+| `xbrl` | XBRL Comparator | `extUrl(4000,4443)` → http면 `http://<접속호스트>:4000/`, https면 `https://<접속호스트>:4443/` | **외부 포트 직접 연결.** 포털을 여는 프로토콜·호스트를 따라감 (DSM 역방향 프록시 4443 → localhost:4000 전제) |
 | `room` | 회의실 예약 | `/room/index.html` | 정적 HTML — NAS `nginx-html/portal/room/index.html`에 File Station으로 올림 (사용자가 올릴 예정). `:3501` SSO(https) 버전은 iframe 불가라 쓰지 않음 |
 
 - `url`이 있는 앱은 `openApp()`에서 목업 `body()` 대신 `frameBody()`가 만든 iframe 창으로 열립니다. 창 크기는 `w:1600,h:1000`으로 잡아 화면에 거의 꽉 차게(최대화·이동·닫기 가능) 열립니다.
@@ -129,7 +129,7 @@ Synology는 SFTP 하위시스템이 비활성이라 옵션 없이 쓰면 `subsys
 - `portal-deploy-v5/index.html`은 **2026-09-16 새 디자인으로 전면 교체**되었고 아직 **미배포**입니다. `deploy-portal-PC.bat`으로 올리면 NAS 포털이 새 디자인으로 바뀝니다. 이전 BDO 레드 사이드바 디자인은 git 이력(커밋 `d92fbc6` 시점)에 있습니다.
 - 새 디자인 전환으로 로그인 화면·1118호 직행·임시 백도어·`?dev` 모드는 **모두 사라졌습니다.** 접속하면 바로 홈입니다.
 - 롤백은 git 이력 또는 NAS의 `index.html.bak_*`(배포 스크립트가 자동 생성)으로 합니다.
-- HTTPS 전환 계획 없음 — 당분간 `http://192.168.100.25:8080` 그대로 운영합니다 (2026-09-16 확인).
+- **HTTPS 전환 진행 중 (2026-09-17 결정).** 방식: DSM 역방향 프록시가 https를 종단 — `HTTPS 8443 → http://localhost:8080`(포털·감사플랫폼·1118호·금융기관 조회, WebSocket 헤더 켜기), `HTTPS 4443 → http://localhost:4000`(XBRL). 우리 nginx 컨테이너·compose는 그대로. 포털은 `extUrl()`로 http/https 양쪽에서 동작하므로 파일 수정 없이 두 주소 모두 사용 가능. 인증서는 DSM 제어판 → 보안 → 인증서에서 다른 https 페이지와 같은 것을 배정. 회의실(:3501 SSO)은 https로 바꿔도 iframe 불가(MS 로그인 페이지 프레임 거부) — 정적 HTML로 대체.
 
 ### 최근 적용된 변경 (2026-09-16)
 1. 새 디자인(`design-new/` CDN판)으로 포털 전면 교체

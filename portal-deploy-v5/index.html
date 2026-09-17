@@ -1486,6 +1486,12 @@ const esc=t=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&qu
 const NAS_BASE='http://192.168.100.25:8080';
 const onNAS=location.protocol.startsWith('http') && location.hostname!=='localhost' && location.hostname!=='127.0.0.1';
 const appUrl=a=>!a.url ? null : /^https?:/i.test(a.url) ? a.url : (onNAS ? a.url : NAS_BASE+a.url);
+/* ── 별도 포트로 도는 앱(XBRL 등): 포털을 https로 열었으면 https 포트(DSM 역방향 프록시), http면 원래 포트.
+      호스트는 지금 접속한 주소를 그대로 따라가므로 IP든 도메인이든 그대로 동작한다 (파일로 열면 NAS IP·http) ── */
+const extUrl=(httpPort,httpsPort)=>{
+  const host=(!location.hostname||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))?'192.168.100.25':location.hostname;
+  return location.protocol==='https:' ? `https://${host}:${httpsPort}/` : `http://${host}:${httpPort}/`;
+};
 /* ── 다운로드형 앱: APPS 항목에 dl:{file:'파일명', ver?, date?} — 파일은 NAS의 portal/downloads/ 폴더에 둔다.
       홈·Dock 아이콘 우측 하단에 작은 다운로드 배지가 붙고, 배지를 누르면 바로 내려받는다 (아이콘 본체는 평소대로 창을 연다) ── */
 const DL_DIR='/downloads/';
@@ -1914,7 +1920,7 @@ const APPS = {
           .map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td class="tn">${r[2]}</td><td><span class="tagp ${r[4]}">${r[3]}</span></td></tr>`).join('')}
       </table>
     </div>`},
-  xbrl:{name:'XBRL Comparator', sub:'v1.0', short:'XBRL', bg:G.xbrl, w:1600, h:1000, url:'http://192.168.100.25:4000/', body:()=>`
+  xbrl:{name:'XBRL Comparator', sub:'v1.0', short:'XBRL', bg:G.xbrl, w:1600, h:1000, get url(){ return extUrl(4000,4443); }, body:()=>`
     <div class="pad">
       <div class="h1">공시 정합성 비교<span>.</span></div>
       <div class="hsub">㈜베타홀딩스 · 감사보고서 XBRL vs 사업보고서 IXD</div>
