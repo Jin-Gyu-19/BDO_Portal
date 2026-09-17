@@ -1480,9 +1480,12 @@ const USER={id:'yoon.gb', name:'윤길배', title:'대표이사', firm:'성현�
        설정이 달라 email 에 진짜 이메일이 오면 그대로 이메일로 쓰고, 이름은 UPN 앞부분으로 대신한다. */
     const pu=String(u.preferredUsername||'').trim(), em=String(u.email||'').trim();
     const mail=(pu.includes('@')?pu:em.includes('@')?em:pu||em).toLowerCase(); if(!mail) return;
-    const name=(em && !em.includes('@')) ? em : mail.split('@')[0];
+    const full=(em && !em.includes('@')) ? em : mail.split('@')[0];
+    /* 표시 이름이 '김진규 [Jinkyu Kim]' 처럼 영문을 함께 담고 있으면 한글 부분만 쓴다 */
+    let name=full.replace(/\s*[\[(（].*$/,'').trim();
+    const ko=name.match(/[가-힣]+(?:\s+[가-힣]+)*/); if(ko) name=ko[0]; if(!name) name=full;
     const groups=Array.isArray(u.groups)?u.groups:[];
-    Object.assign(USER,{ id:mail, mail, name, init:name.replace(/\s+/g,'').slice(0,2), title:'', admin:groups.includes('Admin'), sso:true });
+    Object.assign(USER,{ id:mail, mail, name, fullName:full, init:name.replace(/\s+/g,'').slice(0,2), title:'', admin:groups.includes('Admin'), sso:true });
   }catch(e){}
 })();
 /* SSO 사용자를 화면(인사말·프로필 버튼·프로필 메뉴)에 반영 */
@@ -1490,7 +1493,7 @@ function paintUser(){
   const set=(sel,txt)=>document.querySelectorAll(sel).forEach(el=>{ el.textContent=txt; });
   set('.greet h1 em',USER.name); set('#profBtn .av',USER.init); set('#profBtn .nm',USER.name);
   const pb=document.getElementById('profBtn'); if(pb) pb.setAttribute('aria-label',USER.name+' 계정 메뉴');
-  set('#pmenu .card .av',USER.init); set('#pmenu .card .n',USER.name+(USER.admin?' · 관리자':USER.sso?'':' CPA'));
+  set('#pmenu .card .av',USER.init); set('#pmenu .card .n',(USER.fullName||USER.name)+(USER.admin?' · 관리자':USER.sso?'':' CPA'));
   const m=document.querySelector('#pmenu .card .m'); if(m) m.innerHTML=esc(USER.firm)+(USER.title?' · '+esc(USER.title):'')+'<br>'+esc(USER.mail);
   document.body.classList.toggle('is-admin',!!USER.admin); document.body.classList.toggle('is-sso',!!USER.sso);
 }
