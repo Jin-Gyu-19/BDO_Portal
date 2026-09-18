@@ -35,7 +35,8 @@ if ! pg_dump --no-password -f "$TMP"; then
   exit 1
 fi
 SIZE_BYTES=$(wc -c < "$TMP")
-if [ "$SIZE_BYTES" -lt 1024 ]; then
+# pg_dump 머리말만 있어도 ~600바이트. 그보다 작으면 깨진 덤프로 본다 (빈 DB도 통과)
+if [ "$SIZE_BYTES" -lt 300 ]; then
   rm -f "$TMP"
   echo "[backup] ❌ FAILED: dump too small (${SIZE_BYTES} bytes)"
   exit 1
