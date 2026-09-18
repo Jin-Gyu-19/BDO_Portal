@@ -3,7 +3,12 @@
 NAS 경로: `/volume1/sh-pf/docker/nginx-html/portal/downloads/`
 (포털이 `/downloads/<파일명>`으로 내려받음. nginx 설정 변경 불필요. 이 폴더는 `.bat` 배포 대상이 아니며 **DSM File Station으로 직접** 올린다.)
 
-## 새 파일 붙이는 법 (포털 재배포 없음)
+## 새 파일 붙이는 법 ① — 포털에서 (관리자, 권장)
+
+프로필 메뉴 → **다운로드 파일 관리** (설정 창 아래쪽). 앱 줄에서 "파일 선택…" → 버전 입력 → "저장". 파일이 NAS `downloads/`에 올라가고 `manifest.json`이 갱신되어 모든 사용자에게 배지가 바로 붙는다. "해제"는 배지만 끄고(파일은 남음), "서버의 파일"에서 안 쓰는 파일을 삭제할 수 있다.
+전제: NAS nginx 에 쓰기 설정 적용(`sso/README.md` 5번) + 로그인 사용자가 App Role `Admin`.
+
+## 새 파일 붙이는 법 ② — 손으로 (File Station, 포털 재배포 없음)
 
 1. File Station으로 이 폴더에 파일 업로드 (예: `JET_Tool_v1.3.xlsm`)
 2. 같은 폴더의 `manifest.json`을 열어 해당 앱 줄을 고침 (File Station → 우클릭 → 텍스트 편집기)

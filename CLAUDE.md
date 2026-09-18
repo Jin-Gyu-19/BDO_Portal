@@ -15,7 +15,7 @@
 | `infra/reference/` | 초기 인프라 구축본(compose, nginx.conf, .env.example) | 운영본과 다름. 참고만 |
 | `design-new/` | 새 포털 디자인 원본(CDN판, 2026-09-16 수령). 배포본은 이 파일에 앱 연결만 얹은 것 | diff 기준점. 수정하지 말 것 |
 | `infra/db-backup/` | 수리된 `backup.sh`(NAS `scripts/backup.sh`와 동일하게 유지) + 수리 경위 | 2026-09-18 적용 |
-| `sso/` | MS SSO 구성: oauth2-proxy compose·`.env.sso.example`·SSO판 nginx `default.conf`·Entra 앱 등록 절차·적용 순서(README) | **NAS 적용 완료(2026-09-18)** — NAS의 실제 파일과 동일하게 유지할 것 |
+| `sso/` | MS SSO 구성: oauth2-proxy compose·`.env.sso.example`·SSO판 nginx `default.conf`(+`/downloads/` 쓰기 location)·Entra 앱 등록 절차·적용 순서(README) | **NAS 적용 완료(2026-09-18)** — NAS의 실제 파일과 동일하게 유지할 것. `/downloads/` 쓰기 설정은 **NAS 미적용**(README 5번) |
 
 이전 디자인 시안(sample-1~21, plans/A·A-2·A-3, TODO.md)은 2026-09-16에 저장소에서 삭제했습니다. 필요하면 커밋 `33a3b0e` 이전 이력에서 꺼낼 수 있습니다.
 
@@ -45,7 +45,7 @@
 
 ## 포털 구조 (핵심) — 2026-09-16 새 디자인
 
-`portal-deploy-v5/index.html` — **단일 HTML 파일**(약 650KB, 아이콘 PNG/WebP 60개 내장, Pretendard 폰트는 jsdelivr CDN). 백엔드·DB·빌드 과정 없음. 정적 파일입니다 (네트워크 호출은 `/oauth2/userinfo`(SSO 사용자)와 `/downloads/manifest.json`(다운로드 배지 목록) 두 개뿐, 둘 다 없으면 조용히 건너뜀).
+`portal-deploy-v5/index.html` — **단일 HTML 파일**(약 650KB, 아이콘 PNG/WebP 60개 내장, Pretendard 폰트는 jsdelivr CDN). 백엔드·DB·빌드 과정 없음. 정적 파일입니다 (네트워크 호출은 `/oauth2/userinfo`(SSO 사용자)·`/downloads/manifest.json`(다운로드 배지 목록), 그리고 관리자 전용 다운로드 관리 화면의 `/downloads/` PUT/DELETE 뿐. 없으면 조용히 건너뜀).
 
 iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페이스·타임시트·메모·공지)과 앱 아이콘이 10×5 격자에 놓이고, 앱을 누르면 창이 열립니다. 하단 Dock, ⌘K 검색, "홈 편집" 서랍, 스티커 메모, AI 칼 플로팅 챗봇이 있습니다. **로그인 화면은 없습니다. 접속하면 바로 홈**입니다 (2026-09-16 결정. 인증은 SSO 도입 때 nginx 단에서 처리).
 
@@ -69,6 +69,7 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
 - **SSO 앱**(`auth:'popup'`): `frameBody()`가 iframe에 `src` 대신 `data-src`를 두고 `.auth-gate`를 띄움. `authLogin()`이 팝업을 열고 닫힘을 감지해 `authRelease()`로 iframe을 로드. "이미 로그인했어요"는 게이트를 건너뜀. **포털에 SSO로 로그인한 상태(`USER.sso`)면 게이트를 띄우지 않고 바로 iframe** — 같은 Entra 앱·같은 MS 세션이라 회의실의 MS 리다이렉트가 화면 없이 통과함. 창 제목줄의 자물쇠 버튼(`data-act="relogin"`)이 `authRelogin()` → 팝업 로그인 후 iframe을 새로 불러옴(로그인이 풀려 화면이 빌 때). 다른 SSO 앱이 생기면 항목에 `auth:'popup'`만 추가.
 - **다운로드형 앱**(설치 파일·엑셀 매크로 등): 홈·Dock 아이콘 **우측 하단에 작은 다운로드 배지**(`.dlb`)가 붙습니다. 배지를 누르면 `triggerDownload()`가 NAS의 `/downloads/<file>`을 바로 내려받고, 아이콘 본체는 평소대로 창을 엽니다. 파일은 NAS `/volume1/sh-pf/docker/nginx-html/portal/downloads/`에 DSM File Station으로 올립니다(nginx 루트가 `portal/`이라 설정 변경 불필요). 편집 모드(`body.editing`)에서는 배지를 숨깁니다.
   - **목록은 NAS의 `portal/downloads/manifest.json`로 관리**(2026-09-18): `{"jet":{"file":"JET_Tool_v1.2.xlsm","ver":"1.2"}}` 형식. `loadDlManifest()`가 포털이 열릴 때 한 번 읽어 `APPS[키].dl`을 채우고 홈·Dock을 다시 그림. **파일 올리고 json 한 줄 고치면 포털 재배포 없이 배지가 붙음.** 404·형식 오류면 조용히 무시. `file:""`면 그 앱 배지 끔. 코드의 `dl:{file,ver}` 항목도 여전히 동작(manifest가 덮어씀). 예시·앱 키 표는 `portal-deploy-v5/downloads/README.md`.
+  - **관리자 화면**(2026-09-18): 프로필 메뉴 "다운로드 파일 관리"(`data-mact="dladmin"`, `body.is-admin`일 때만 표시) → 설정 창의 `#dlAdmin` 섹션(`dlAdminHtml()`). "파일 선택…→저장"이 `dlApi()`로 **브라우저에서 nginx에 직접** `PUT /downloads/<파일명>` → `PUT /downloads/manifest.json` 하고 `applyDlManifest()`로 즉시 반영. "해제"는 manifest에서 키 제거, "서버의 파일" 목록은 `GET /downloads/`(nginx autoindex JSON), 삭제는 `DELETE`. 쓰기는 nginx가 `/_dlw/downloads/`로 넘겨 `auth_request /oauth2/auth_admin`(oauth2-proxy `?allowed_groups=Admin`)으로 관리자만 통과(`sso/nginx-default.conf`, 적용 절차 `sso/README.md` 5번). NAS 폴더는 `chmod 777 downloads`(컨테이너 nginx 사용자가 씀).
 
 ### 앱을 추가/연결할 때 손대야 하는 곳
 
