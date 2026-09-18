@@ -39,7 +39,7 @@
 | 항목 | 값 |
 |---|---|
 | NAS | `192.168.100.25` (SSH 포트 `3907`, 계정 `jinkyu.kim`) |
-| 포털 URL | `http://192.168.100.25:8080/` |
+| 포털 URL | `https://192.168.100.25:8080/` (2026-09-18 포트 교체: DSM https 8080 → nginx 컨테이너 http 8081. http 8081로 직접 오면 301) |
 | 포털 배포 경로 | `/volume1/sh-pf/docker/nginx-html/portal/index.html` |
 
 ---
@@ -60,7 +60,7 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
 | `k1118` | K-IFRS 1118호 자동화 Tool | `/ifrs18/index.html` | 정적 HTML |
 | `fin` | 금융기관 조회 | `/data/` | Streamlit 프록시 |
 | `xbrl` | XBRL Comparator | `extUrl(4000,4001)` → http면 `http://<접속호스트>:4000/`, https면 `https://<접속호스트>:4001/` | **외부 포트 직접 연결.** 포털을 여는 프로토콜·호스트를 따라감 (DSM 역방향 프록시 4001 → localhost:4000 전제) |
-| `room` | 회의실 예약 | `https://192.168.100.25:3501/` | **외부 포트(https, MS SSO 적용) + `auth:'popup'`.** MS 로그인 페이지는 iframe 안에서 열리지 않으므로, 첫 열기 때 창 안에 안내(`.auth-gate`)를 띄우고 "로그인 창 열기"로 팝업에서 로그인 → 팝업이 닫히면 iframe 로드. 같은 호스트라 로그인 쿠키가 iframe에도 적용됨. 완료 표시는 `sessionStorage`(`sh-portal:auth:room`, 탭 세션 동안 유지). 포털을 https(8081)로 열어야 동작 |
+| `room` | 회의실 예약 | `https://192.168.100.25:3501/` | **외부 포트(https, MS SSO 적용) + `auth:'popup'`.** MS 로그인 페이지는 iframe 안에서 열리지 않으므로, 첫 열기 때 창 안에 안내(`.auth-gate`)를 띄우고 "로그인 창 열기"로 팝업에서 로그인 → 팝업이 닫히면 iframe 로드. 같은 호스트라 로그인 쿠키가 iframe에도 적용됨. 완료 표시는 `sessionStorage`(`sh-portal:auth:room`, 탭 세션 동안 유지). 포털을 https(8080)로 열어야 동작 |
 
 - `url`이 있는 앱은 `openApp()`에서 목업 `body()` 대신 `frameBody()`가 만든 iframe 창으로 열립니다. 창 크기는 `w:1600,h:1000`으로 잡아 화면에 거의 꽉 차게(최대화·이동·닫기 가능) 열립니다.
 - 주소 해석은 `appUrl()`: NAS(nginx)에서 열면 상대 경로, 파일을 로컬에서 열면 `NAS_BASE`(`http://192.168.100.25:8080`) 절대 주소.
@@ -144,6 +144,7 @@ Synology는 SFTP 하위시스템이 비활성이라 옵션 없이 쓰면 `subsys
 - **미해결 ②**: 인증서가 자체서명이라 브라우저에 "안전하지 않음". 방향(`portal.bdo.kr` DNS + Let's Encrypt / Synology DDNS / 사내 CA) 미정.
 - **DB 백업 수리 완료(2026-09-18)**: `sh-db-backup`을 host 모드(`127.0.0.1:5433`)로 바꾸고 `scripts/backup.sh`를 `infra/db-backup/backup.sh`로 교체. 수동 백업 성공·cron(02:00) 등록 확인. `sh_platform` DB는 **테이블이 없는 빈 상태**(어떤 앱도 아직 DB를 쓰지 않음). 자세한 경위는 `infra/db-backup/README.md`.
 - **미확인**: `.env`·`.env.sso` `chmod 600` 실행 여부. Entra 앱 이름은 "BDO Korea Portal"로 정리됨.
+- **포트 교체(2026-09-18)**: 외부에서 8080만 열려 있어 정식 주소를 `https://192.168.100.25:8080`으로. DSM 역방향 프록시 `HTTPS 8080 → http://localhost:8081`, nginx 컨테이너 `listen 8081`(301 대상·`X-Forwarded-Host`·oauth2-proxy `REDIRECT_URL`·Entra 리디렉션 URI·포털 `NAS_BASE` 모두 8080). 절차는 `sso/README.md` 6번. 아래 8081 서술은 교체 전 기록.
 - HTTPS 전환 완료(2026-09-17). DSM 역방향 프록시 8081 → 8080 동작 확인. 방식: DSM 역방향 프록시가 https를 종단 — `HTTPS 8081 → http://localhost:8080`(포털·감사플랫폼·1118호·금융기관 조회, WebSocket 헤더 켜기), `HTTPS 4001 → http://localhost:4000`(XBRL). 우리 nginx 컨테이너·compose는 그대로. 포털은 `extUrl()`로 http/https 양쪽에서 동작하므로 파일 수정 없이 두 주소 모두 사용 가능. 인증서는 DSM 제어판 → 보안 → 인증서에서 다른 https 페이지와 같은 것을 배정. 회의실(:3501 SSO)은 https로 바꿔도 iframe 불가(MS 로그인 페이지 프레임 거부) — 정적 HTML로 대체.
 
 ### 최근 적용된 변경 (2026-09-16)
@@ -160,7 +161,7 @@ Synology는 SFTP 하위시스템이 비활성이라 옵션 없이 쓰면 `subsys
    - 방식: oauth2-proxy 컨테이너 + nginx `auth_request`, 기존 Redis를 세션 저장소로 재활용
    - 권한: Entra 보안그룹 `SH-Platform-Admins` 멤버 = 관리자, 그 외 전원 일반
    - 범위: 전체 게이트(미로그인 시 모든 앱 차단)
-   - 결정(2026-09-17): 관리자 판별은 **Entra App Role `Admin`**(그룹 `SH-Platform-Admins` 배정), 1차 게이트는 포털·감사·1118호·금융기관(XBRL·회의실은 2차), 홈 배치는 **계정별**. HTTPS는 8081로 확보됨. 구성 파일은 `sso/`에 있고 포털 코드는 반영 완료. **2026-09-18 NAS 적용·관리자 판별까지 완료**(적용 절차는 `sso/README.md`). 남은 것: XBRL(`/xbrl/`)·회의실 2차 게이트, 인증서(미해결 ②).
+   - 결정(2026-09-17): 관리자 판별은 **Entra App Role `Admin`**(그룹 `SH-Platform-Admins` 배정), 1차 게이트는 포털·감사·1118호·금융기관(XBRL·회의실은 2차), 홈 배치는 **계정별**. HTTPS는 8080으로 확보됨(2026-09-18 교체 전 8081). 구성 파일은 `sso/`에 있고 포털 코드는 반영 완료. **2026-09-18 NAS 적용·관리자 판별까지 완료**(적용 절차는 `sso/README.md`). 남은 것: XBRL(`/xbrl/`)·회의실 2차 게이트, 인증서(미해결 ②).
 2. (완료) 포털 `USER`를 SSO 사용자로 채우고 로그아웃 연결 — NAS 적용 후 실제 동작 확인 필요
 3. 홈 위젯·목업 앱·칼 답변을 실데이터로 연동 (백엔드 필요)
 4. `sh_audit` 아이콘이 'Ai' 그림이라 SH Audit Platform과 안 어울림 — 전용 아이콘 교체 검토

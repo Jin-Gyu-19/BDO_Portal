@@ -1539,7 +1539,7 @@ function loadMemos(){
 function saveMemos(){ store.set(MKEY,JSON.stringify(memos)); }
 const esc=t=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 /* ── 실제 앱 주소: NAS(nginx)에서 열면 상대 경로, 파일을 로컬에서 열면 NAS 절대 주소 ── */
-const NAS_BASE='http://192.168.100.25:8080';
+const NAS_BASE='https://192.168.100.25:8080';   /* 2026-09-18 포트 교체: https 8080 (DSM) → nginx http 8081 */
 const onNAS=location.protocol.startsWith('http') && location.hostname!=='localhost' && location.hostname!=='127.0.0.1';
 const appUrl=a=>!a.url ? null : /^https?:/i.test(a.url) ? a.url : (onNAS ? a.url : NAS_BASE+a.url);
 /* ── 별도 포트로 도는 앱(XBRL 등): 포털을 https로 열었으면 https 포트(DSM 역방향 프록시), http면 원래 포트.

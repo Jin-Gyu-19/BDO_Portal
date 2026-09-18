@@ -2,7 +2,7 @@
 
 테넌트 `bdo.kr` · 등록 화면: https://entra.microsoft.com → **ID → 애플리케이션 → 앱 등록**
 > **결정(2026-09-17): 회의실 예약 시스템(:3501)의 앱 등록을 그대로 재사용합니다.** 새 앱을 만들지 않고 그 앱에
-> ① 리디렉션 URI `https://192.168.100.25:8081/oauth2/callback` 추가 ② 앱 역할 `Admin` 추가·그룹 배정 ③ 포털용 클라이언트 비밀 새로 생성
+> ① 리디렉션 URI `https://192.168.100.25:8080/oauth2/callback` 추가 ② 앱 역할 `Admin` 추가·그룹 배정 ③ 포털용 클라이언트 비밀 새로 생성
 > 만 하면 됩니다. 같은 앱이라 포털 로그인 후 회의실이 창 안에서 화면 없이 통과됩니다. 아래 1절의 '앱 등록'은 건너뛰고 개요에서 ID만 복사하세요.
 
 ## 1. 앱 등록
@@ -10,7 +10,7 @@
 |---|---|
 | 이름 | `SH Portal` |
 | 지원되는 계정 유형 | **이 조직 디렉터리의 계정만** (단일 테넌트) |
-| 리디렉션 URI | 플랫폼 **웹**, `https://192.168.100.25:8081/oauth2/callback` |
+| 리디렉션 URI | 플랫폼 **웹**, `https://192.168.100.25:8080/oauth2/callback` (2026-09-18 포트 교체. 그 전엔 8081) |
 
 등록 후 **개요** 화면에서 복사:
 - 애플리케이션(클라이언트) ID → `.env.sso` 의 `OAUTH2_PROXY_CLIENT_ID`
@@ -49,7 +49,7 @@
 OAUTH2_PROXY_OIDC_ISSUER_URL=https://login.microsoftonline.com/<테넌트 ID>/v2.0
 OAUTH2_PROXY_CLIENT_ID=<애플리케이션(클라이언트) ID>
 OAUTH2_PROXY_CLIENT_SECRET=<클라이언트 비밀 값>
-OAUTH2_PROXY_REDIRECT_URL=https://192.168.100.25:8081/oauth2/callback
+OAUTH2_PROXY_REDIRECT_URL=https://192.168.100.25:8080/oauth2/callback
 OAUTH2_PROXY_COOKIE_SECRET=<아래 명령으로 생성>
 ```
 쿠키 비밀 생성 (PC 또는 NAS 아무 데서나):

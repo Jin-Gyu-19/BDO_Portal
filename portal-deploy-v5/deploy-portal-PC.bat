@@ -63,7 +63,7 @@ echo.
 echo ============================================
 echo   DONE!
 echo   In browser press Ctrl+F5, then open:
-echo     http://%NAS_HOST%:8080/
+echo     https://%NAS_HOST%:8080/
 echo.
 echo   To restore on NAS:
 echo     cp %REMOTE_DIR%/index.html.bak_%TS% %REMOTE_DIR%/index.html
