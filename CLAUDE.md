@@ -134,11 +134,12 @@ Synology는 SFTP 하위시스템이 비활성이라 옵션 없이 쓰면 `subsys
 - `portal-deploy-v5/index.html`은 **2026-09-16 새 디자인으로 전면 교체**되었고 아직 **미배포**입니다. `deploy-portal-PC.bat`으로 올리면 NAS 포털이 새 디자인으로 바뀝니다. 이전 BDO 레드 사이드바 디자인은 git 이력(커밋 `d92fbc6` 시점)에 있습니다.
 - 새 디자인 전환으로 로그인 화면·1118호 직행·임시 백도어·`?dev` 모드는 **모두 사라졌습니다.** 접속하면 바로 홈입니다.
 - 롤백은 git 이력 또는 NAS의 `index.html.bak_*`(배포 스크립트가 자동 생성)으로 합니다.
-- **MS SSO 적용 완료 (2026-09-18 새벽).** NAS에 `sh-oauth2-proxy` 컨테이너 가동(`/volume1/sh-pf/docker/sh-platform/sso/`), nginx `default.conf`는 SSO판으로 교체됨(백업 `default.conf.bak_20260917_224603`). `https://192.168.100.25:8081/` 접속 시 Microsoft 인증 → 포털에 로그인 사용자 이름(한글)·이메일 표시 확인. Entra 앱은 새로 만든 **"SH Potal"**(클라이언트 ID `68c537dc-…`), 회의실 앱과 별개.
-- **미해결 ①**: `/oauth2/userinfo`에 `groups`가 없음 → App Role `Admin`이 토큰에 안 실림 → 프로필에 "· 관리자" 미표시. 확인할 것: 역할을 만든 앱과 `.env.sso`의 클라이언트 ID 앱이 같은지(앱 등록 검색창에 ID 붙여넣기), 엔터프라이즈 앱 사용자 및 그룹에 `Admin` 배정이 그 앱에 있는지. 같다면 반영 지연 → 로그아웃 후 재로그인.
+- **MS SSO 적용 완료 (2026-09-18 새벽).** NAS에 `sh-oauth2-proxy` 컨테이너 가동(`/volume1/sh-pf/docker/sh-platform/sso/`), nginx `default.conf`는 SSO판으로 교체됨(백업 `default.conf.bak_20260917_224603`). `https://192.168.100.25:8081/` 접속 시 Microsoft 인증 → 포털에 로그인 사용자 이름(한글)·이메일 표시 확인. Entra 앱은 새로 만든 **"BDO Korea Portal"**(클라이언트 ID `68c537dc-…`), 회의실 앱과 별개.
+- **관리자 판별 해결(2026-09-18)**: 프로필 카드에 "김진규 [Jinkyu Kim] · 관리자" 표시 확인. 원인은 엔터프라이즈 앱 "사용자 및 그룹"의 배정이 App Role이 아닌 **"기본 액세스"**로 잡혀 있던 것 → 배정을 삭제하고 역할 `Admin`을 골라 다시 배정하니 `roles` 클레임이 실림. 같은 증상이 나면 이 순서로: 앱 등록 → 개요의 "로컬 디렉터리의 관리되는 애플리케이션" 링크로 **그 클라이언트 ID의** 엔터프라이즈 앱에 들어가 → 사용자 및 그룹에서 배정 삭제 → "사용자/그룹 추가"에서 역할을 명시적으로 선택해 재배정 → 포털 로그아웃 후 재로그인. 진단용으로 열었던 `https://jwt.ms` 리디렉션 URI와 "ID 토큰" 암시적 허용은 제거함.
+- **미해결 ①**(닫힘) — 위 항목으로 대체.
 - **미해결 ②**: 인증서가 자체서명이라 브라우저에 "안전하지 않음". 방향(`portal.bdo.kr` DNS + Let's Encrypt / Synology DDNS / 사내 CA) 미정.
 - **DB 백업 수리 완료(2026-09-18)**: `sh-db-backup`을 host 모드(`127.0.0.1:5433`)로 바꾸고 `scripts/backup.sh`를 `infra/db-backup/backup.sh`로 교체. 수동 백업 성공·cron(02:00) 등록 확인. `sh_platform` DB는 **테이블이 없는 빈 상태**(어떤 앱도 아직 DB를 쓰지 않음). 자세한 경위는 `infra/db-backup/README.md`.
-- **미확인**: `.env`·`.env.sso` `chmod 600` 실행 여부. Entra 앱 이름 "SH Potal" → "SH Portal" 오타 수정 권장.
+- **미확인**: `.env`·`.env.sso` `chmod 600` 실행 여부. Entra 앱 이름은 "BDO Korea Portal"로 정리됨.
 - HTTPS 전환 완료(2026-09-17). DSM 역방향 프록시 8081 → 8080 동작 확인. 방식: DSM 역방향 프록시가 https를 종단 — `HTTPS 8081 → http://localhost:8080`(포털·감사플랫폼·1118호·금융기관 조회, WebSocket 헤더 켜기), `HTTPS 4001 → http://localhost:4000`(XBRL). 우리 nginx 컨테이너·compose는 그대로. 포털은 `extUrl()`로 http/https 양쪽에서 동작하므로 파일 수정 없이 두 주소 모두 사용 가능. 인증서는 DSM 제어판 → 보안 → 인증서에서 다른 https 페이지와 같은 것을 배정. 회의실(:3501 SSO)은 https로 바꿔도 iframe 불가(MS 로그인 페이지 프레임 거부) — 정적 HTML로 대체.
 
 ### 최근 적용된 변경 (2026-09-16)
@@ -155,7 +156,7 @@ Synology는 SFTP 하위시스템이 비활성이라 옵션 없이 쓰면 `subsys
    - 방식: oauth2-proxy 컨테이너 + nginx `auth_request`, 기존 Redis를 세션 저장소로 재활용
    - 권한: Entra 보안그룹 `SH-Platform-Admins` 멤버 = 관리자, 그 외 전원 일반
    - 범위: 전체 게이트(미로그인 시 모든 앱 차단)
-   - 결정(2026-09-17): 관리자 판별은 **Entra App Role `Admin`**(그룹 `SH-Platform-Admins` 배정), 1차 게이트는 포털·감사·1118호·금융기관(XBRL·회의실은 2차), 홈 배치는 **계정별**. HTTPS는 8081로 확보됨. 구성 파일은 `sso/`에 있고 포털 코드는 반영 완료. 남은 것: Entra 앱 등록 → `.env.sso` → NAS 적용(`sso/README.md`).
+   - 결정(2026-09-17): 관리자 판별은 **Entra App Role `Admin`**(그룹 `SH-Platform-Admins` 배정), 1차 게이트는 포털·감사·1118호·금융기관(XBRL·회의실은 2차), 홈 배치는 **계정별**. HTTPS는 8081로 확보됨. 구성 파일은 `sso/`에 있고 포털 코드는 반영 완료. **2026-09-18 NAS 적용·관리자 판별까지 완료**(적용 절차는 `sso/README.md`). 남은 것: XBRL(`/xbrl/`)·회의실 2차 게이트, 인증서(미해결 ②).
 2. (완료) 포털 `USER`를 SSO 사용자로 채우고 로그아웃 연결 — NAS 적용 후 실제 동작 확인 필요
 3. 홈 위젯·목업 앱·칼 답변을 실데이터로 연동 (백엔드 필요)
 4. `sh_audit` 아이콘이 'Ai' 그림이라 SH Audit Platform과 안 어울림 — 전용 아이콘 교체 검토
