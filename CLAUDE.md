@@ -9,7 +9,8 @@
 
 | 경로 | 내용 | 비고 |
 |---|---|---|
-| `portal-deploy-v5/` | **포털 본체(`index.html`) + 배포 스크립트(`deploy-portal-PC.bat`) + 현행 nginx 라우팅(`default.conf`)** | ★ 포털 작업은 여기서 |
+| `portal-deploy-v5/` | **포털 본체(`index.html`) + 배포 스크립트(`update-portal-from-github.bat`·`deploy-portal-PC.bat`) + 현행 nginx 라우팅(`default.conf`)** | ★ 포털 작업은 여기서 |
+| `portal-deploy-v5/downloads/` | 다운로드 배지 목록 `manifest.json` 예시 + 사용법(README) | NAS `portal/downloads/`에 File Station으로 직접 관리. `.bat` 배포 대상 아님 |
 | `docs/` | 작업 인수인계서, NAS 인프라 변경보고서(SH-AX-INFRA-001) | 배경·제약 사항 |
 | `infra/reference/` | 초기 인프라 구축본(compose, nginx.conf, .env.example) | 운영본과 다름. 참고만 |
 | `design-new/` | 새 포털 디자인 원본(CDN판, 2026-09-16 수령). 배포본은 이 파일에 앱 연결만 얹은 것 | diff 기준점. 수정하지 말 것 |
@@ -44,7 +45,7 @@
 
 ## 포털 구조 (핵심) — 2026-09-16 새 디자인
 
-`portal-deploy-v5/index.html` — **단일 HTML 파일**(약 650KB, 아이콘 PNG/WebP 60개 내장, Pretendard 폰트는 jsdelivr CDN). 백엔드·DB·빌드 과정 없음. `fetch`/API 호출 없는 정적 파일입니다.
+`portal-deploy-v5/index.html` — **단일 HTML 파일**(약 650KB, 아이콘 PNG/WebP 60개 내장, Pretendard 폰트는 jsdelivr CDN). 백엔드·DB·빌드 과정 없음. 정적 파일입니다 (네트워크 호출은 `/oauth2/userinfo`(SSO 사용자)와 `/downloads/manifest.json`(다운로드 배지 목록) 두 개뿐, 둘 다 없으면 조용히 건너뜀).
 
 iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페이스·타임시트·메모·공지)과 앱 아이콘이 10×5 격자에 놓이고, 앱을 누르면 창이 열립니다. 하단 Dock, ⌘K 검색, "홈 편집" 서랍, 스티커 메모, AI 칼 플로팅 챗봇이 있습니다. **로그인 화면은 없습니다. 접속하면 바로 홈**입니다 (2026-09-16 결정. 인증은 SSO 도입 때 nginx 단에서 처리).
 
@@ -66,11 +67,12 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
 - 창 이동·크기조정 중에는 `body.winDrag`로 모든 iframe의 포인터 이벤트를 끊습니다.
 - 나머지 20개 앱(리뷰함·TAX Agent·JET Tool 등)은 목업 창입니다. 실제 서비스가 생기면 해당 항목에 `url:`만 넣으면 됩니다.
 - **SSO 앱**(`auth:'popup'`): `frameBody()`가 iframe에 `src` 대신 `data-src`를 두고 `.auth-gate`를 띄움. `authLogin()`이 팝업을 열고 닫힘을 감지해 `authRelease()`로 iframe을 로드. "이미 로그인했어요"는 게이트를 건너뜀. **포털에 SSO로 로그인한 상태(`USER.sso`)면 게이트를 띄우지 않고 바로 iframe** — 같은 Entra 앱·같은 MS 세션이라 회의실의 MS 리다이렉트가 화면 없이 통과함. 창 제목줄의 자물쇠 버튼(`data-act="relogin"`)이 `authRelogin()` → 팝업 로그인 후 iframe을 새로 불러옴(로그인이 풀려 화면이 빌 때). 다른 SSO 앱이 생기면 항목에 `auth:'popup'`만 추가.
-- **다운로드형 앱**(설치 파일·엑셀 매크로 등): 항목에 `dl:{file:'JET_Tool_v1.2.xlsm', ver:'1.2'}`를 넣으면 홈·Dock 아이콘 **우측 하단에 작은 다운로드 배지**(`.dlb`)가 붙습니다. 배지를 누르면 `triggerDownload()`가 NAS의 `/downloads/<file>`을 바로 내려받고, 아이콘 본체는 평소대로 창을 엽니다. 파일은 NAS `/volume1/sh-pf/docker/nginx-html/portal/downloads/`에 DSM File Station으로 올립니다(nginx 루트가 `portal/`이라 설정 변경 불필요). 편집 모드(`body.editing`)에서는 배지를 숨깁니다.
+- **다운로드형 앱**(설치 파일·엑셀 매크로 등): 홈·Dock 아이콘 **우측 하단에 작은 다운로드 배지**(`.dlb`)가 붙습니다. 배지를 누르면 `triggerDownload()`가 NAS의 `/downloads/<file>`을 바로 내려받고, 아이콘 본체는 평소대로 창을 엽니다. 파일은 NAS `/volume1/sh-pf/docker/nginx-html/portal/downloads/`에 DSM File Station으로 올립니다(nginx 루트가 `portal/`이라 설정 변경 불필요). 편집 모드(`body.editing`)에서는 배지를 숨깁니다.
+  - **목록은 NAS의 `portal/downloads/manifest.json`로 관리**(2026-09-18): `{"jet":{"file":"JET_Tool_v1.2.xlsm","ver":"1.2"}}` 형식. `loadDlManifest()`가 포털이 열릴 때 한 번 읽어 `APPS[키].dl`을 채우고 홈·Dock을 다시 그림. **파일 올리고 json 한 줄 고치면 포털 재배포 없이 배지가 붙음.** 404·형식 오류면 조용히 무시. `file:""`면 그 앱 배지 끔. 코드의 `dl:{file,ver}` 항목도 여전히 동작(manifest가 덮어씀). 예시·앱 키 표는 `portal-deploy-v5/downloads/README.md`.
 
 ### 앱을 추가/연결할 때 손대야 하는 곳
 
-1. `const APPS = {` — 항목 추가 (`name, sub, short, bg, w, h`, 실제 앱이면 `url`, 다운로드형이면 `dl:{file,ver}`)
+1. `const APPS = {` — 항목 추가 (`name, sub, short, bg, w, h`, 실제 앱이면 `url`. 다운로드형은 코드보다 NAS `downloads/manifest.json`에 넣는 것을 우선)
 2. `const APP_CAT` — 카테고리 (`audit`/`tax`/`admin`/`ai`/`adv`)
 3. `const APP_ICON` — `ICONS`의 그림 키 매핑 (없으면 `short` 글자 타일로 표시)
 4. 홈 기본 배치에 올리려면 `LAYOUT_DEFAULT` **그리고** `finalMemory` 안의 JSON 스냅샷 **둘 다**에 `{"k":"a","id":"<앱키>",r,c,rs,cs}` 추가. `finalMemory`가 localStorage 없을 때의 실제 기본값이라 여기 빠지면 홈에 안 나옵니다. 그룹(`k:"z"`) 칸 범위 안에 놓아야 그 그룹에 속합니다.
