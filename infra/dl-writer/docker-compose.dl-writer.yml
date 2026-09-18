@@ -1,0 +1,26 @@
+# ============================================================
+#  SH Portal — 다운로드 파일 쓰기 전용 미니 nginx (dl-writer)
+#  NAS 경로: /volume1/sh-pf/docker/sh-platform/dl-writer/docker-compose.dl-writer.yml
+#
+#  실행:  cd /volume1/sh-pf/docker/sh-platform/dl-writer && sudo docker-compose -f docker-compose.dl-writer.yml up -d
+#  중지:  sudo docker-compose -f docker-compose.dl-writer.yml down
+#  로그:  sudo docker logs -f sh-dl-writer
+#
+#  왜 따로 띄우나: 메인 nginx(sh-nginx)는 포털 폴더를 읽기 전용(:ro)으로 마운트하고 있어 파일을 못 쓴다.
+#  compose 의 nginx 서비스는 건드리지 않는 것이 규칙이므로, downloads 폴더만 쓰기 가능하게 마운트한
+#  작은 nginx 를 host 모드 127.0.0.1:4181 에 띄우고, 메인 nginx 가 관리자 확인(auth_request) 후
+#  PUT/DELETE 만 여기로 넘긴다. 외부에서 4181 로 직접 접근할 수 없다(loopback 리슨).
+# ============================================================
+version: "3.9"
+
+services:
+  dl-writer:
+    image: nginx:alpine
+    container_name: sh-dl-writer
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      TZ: Asia/Seoul
+    volumes:
+      - ./dl-writer.conf:/etc/nginx/conf.d/default.conf:ro
+      - /volume1/sh-pf/docker/nginx-html/portal/downloads:/srv/downloads

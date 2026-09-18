@@ -55,20 +55,26 @@ sudo docker exec sh-nginx nginx -s reload                         # 무중단 �
 6. `curl -s http://127.0.0.1:8080/health` → `{"status":"ok",...,"version":"v6-sso"}`
 
 ## 5. 다운로드 파일 쓰기 허용 (2026-09-18 추가 — 포털 "다운로드 파일 관리")
-포털 설정 창의 **다운로드 파일 관리**(관리자 전용)가 브라우저에서 nginx 로 직접 PUT/DELETE 한다.
-`nginx-default.conf` 에 `/downloads/`(읽기·JSON 목록) 와 `/_dlw/downloads/`(쓰기, `auth_request /oauth2/auth_admin` = oauth2-proxy `?allowed_groups=Admin`) 가 들어 있다.
+포털 설정 창의 **다운로드 파일 관리**(관리자 전용)가 브라우저에서 PUT/DELETE 한다.
+`sh-nginx` 는 포털 폴더를 **읽기 전용(:ro)** 으로 마운트하고 있어 직접 못 쓴다(확인: `sudo docker inspect sh-nginx --format '{{range .Mounts}}{{.Destination}} rw={{.RW}}{{"\n"}}{{end}}'` → `/usr/share/nginx/html rw=false`).
+compose 의 nginx 는 건드리지 않으므로, `downloads` 폴더만 쓰기 가능하게 마운트한 미니 nginx **`sh-dl-writer`**(host 모드, `127.0.0.1:4181`, `infra/dl-writer/`)를 띄우고
+메인 nginx 의 `/_dlw/downloads/` 가 `auth_request /oauth2/auth_admin`(oauth2-proxy `?allowed_groups=Admin`) 통과 후 거기로 프록시한다. 읽기·목록(JSON)은 메인 nginx 의 `/downloads/`.
 ```
-# (0) 포털 폴더가 컨테이너에 쓰기 가능한지 — /usr/share/nginx/html 줄이 rw=true 여야 함
-sudo docker inspect sh-nginx --format '{{range .Mounts}}{{.Destination}} rw={{.RW}}{{"\n"}}{{end}}'
-# (1) downloads 폴더: nginx 워커(컨테이너의 nginx 사용자)가 쓸 수 있게
+# (1) downloads 폴더: 컨테이너의 nginx 사용자가 쓸 수 있게
 cd /volume1/sh-pf/docker/nginx-html/portal && mkdir -p downloads && sudo chmod 777 downloads && sudo chmod 666 downloads/manifest.json 2>/dev/null; ls -ld downloads
-# (2) 설정 교체 (3번 절차와 동일: 백업 → 복사 → 검사 → reload)
+# (2) dl-writer 띄우기
+sudo mkdir -p /volume1/sh-pf/docker/sh-platform/dl-writer && cd /volume1/sh-pf/docker/sh-platform/dl-writer
+RAW=https://raw.githubusercontent.com/Jin-Gyu-19/BDO_Portal/claude/awesome-hopper-cmd4wg/infra/dl-writer
+sudo curl -fsSL -o docker-compose.dl-writer.yml $RAW/docker-compose.dl-writer.yml && sudo curl -fsSL -o dl-writer.conf $RAW/dl-writer.conf
+sudo docker-compose -f docker-compose.dl-writer.yml up -d && sleep 3 && sudo docker ps --filter name=sh-dl-writer && sudo docker logs --tail 5 sh-dl-writer
+# (3) 메인 nginx 설정 교체 (3번 절차와 동일: 백업 → 복사 → 검사 → reload)
 cd /volume1/sh-pf/docker/sh-platform/nginx && sudo cp default.conf default.conf.bak_$(date +%Y%m%d_%H%M%S)
 curl -fsSL -o /tmp/default.conf https://raw.githubusercontent.com/Jin-Gyu-19/BDO_Portal/claude/awesome-hopper-cmd4wg/sso/nginx-default.conf && sudo cp /tmp/default.conf default.conf
 sudo docker exec sh-nginx nginx -t && sudo docker exec sh-nginx nginx -s reload
 ```
 확인: 포털 → 프로필 메뉴 → "다운로드 파일 관리" → 파일 선택 → 저장 → 아이콘에 배지. 관리자가 아니면 메뉴 자체가 안 보이고, 직접 PUT 해도 401.
-한도: 파일 500MB(`client_max_body_size`). DSM 역방향 프록시(8081)에 별도 본문 한도가 있으면 413 이 날 수 있음 — 그때 DSM 쪽을 조정.
+한도: 파일 500MB(`client_max_body_size`, 양쪽 nginx). DSM 역방향 프록시(8081)에 별도 본문 한도가 있으면 413 이 날 수 있음 — 그때 DSM 쪽을 조정.
+되돌리기: `cd /volume1/sh-pf/docker/sh-platform/dl-writer && sudo docker-compose -f docker-compose.dl-writer.yml down` (메인 nginx 는 그대로 둬도 저장 시 502 만 남).
 
 ## 롤백 (즉시)
 ```
