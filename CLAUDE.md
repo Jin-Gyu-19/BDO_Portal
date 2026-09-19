@@ -60,7 +60,7 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
 | `k1118` | K-IFRS 1118호 자동화 Tool | `/ifrs18/index.html` | 정적 HTML |
 | `fin` | 금융기관 조회 | `/data/` | Streamlit 프록시 |
 | `xbrl` | XBRL Comparator | `extUrl(4000,4001)` → http면 `http://<접속호스트>:4000/`, https면 `https://<접속호스트>:4001/` | **외부 포트 직접 연결.** 포털을 여는 프로토콜·호스트를 따라감 (DSM 역방향 프록시 4001 → localhost:4000 전제) |
-| `room` | 회의실 예약 | `https://192.168.100.25:3501/` | **외부 포트(https, MS SSO 적용) + `auth:'popup'`.** MS 로그인 페이지는 iframe 안에서 열리지 않으므로, 첫 열기 때 창 안에 안내(`.auth-gate`)를 띄우고 "로그인 창 열기"로 팝업에서 로그인 → 팝업이 닫히면 iframe 로드. 같은 호스트라 로그인 쿠키가 iframe에도 적용됨. 완료 표시는 `sessionStorage`(`sh-portal:auth:room`, 탭 세션 동안 유지). 포털을 https(8080)로 열어야 동작 |
+| `room` | 회의실 예약 | `extUrl(3500,3501)` → https면 `https://<접속호스트>:3501/` (2026-09-19: IP 고정에서 접속 호스트 따라가기로. VPN처럼 다른 호스트로 열면 크롬이 '공용 페이지→사설망' 차단) | **외부 포트(https, MS SSO 적용) + `auth:'popup'`.** MS 로그인 페이지는 iframe 안에서 열리지 않으므로, 첫 열기 때 창 안에 안내(`.auth-gate`)를 띄우고 "로그인 창 열기"로 팝업에서 로그인 → 팝업이 닫히면 iframe 로드. 같은 호스트라 로그인 쿠키가 iframe에도 적용됨. 완료 표시는 `sessionStorage`(`sh-portal:auth:room`, 탭 세션 동안 유지). 포털을 https(8080)로 열어야 동작 |
 
 - `url`이 있는 앱은 `openApp()`에서 목업 `body()` 대신 `frameBody()`가 만든 iframe 창으로 열립니다. 창 크기는 `w:1600,h:1000`으로 잡아 화면에 거의 꽉 차게(최대화·이동·닫기 가능) 열립니다.
 - 주소 해석은 `appUrl()`: NAS(nginx)에서 열면 상대 경로, 파일을 로컬에서 열면 `NAS_BASE`(`http://192.168.100.25:8080`) 절대 주소.
