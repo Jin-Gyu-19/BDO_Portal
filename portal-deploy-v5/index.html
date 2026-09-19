@@ -1563,7 +1563,8 @@ const extUrl=(httpPort,httpsPort)=>{
 const DL_DIR='/downloads/';
 const dlUrl=d=>/^https?:/i.test(d.file) ? d.file : ((onNAS?'':NAS_BASE)+DL_DIR+encodeURIComponent(d.file));
 const dlName=d=>String(d.file).split('/').pop();
-const dlBadge=id=>{ const a=APPS[id]; if(!a||!a.dl||!a.dl.file) return '';
+const dlDirect=a=>!!(a&&a.dl&&a.dl.file&&!a.url);   /* 파일만 있고 열 창이 없는 앱: 아이콘 자체가 다운로드 */
+const dlBadge=id=>{ const a=APPS[id]; if(!a||!a.dl||!a.dl.file||dlDirect(a)) return '';   /* 배지는 창도 있고 파일도 있는 앱에만 */
   const tip=a.name+' 다운로드 · '+dlName(a.dl)+(a.dl.ver?' (v'+a.dl.ver+')':'');
   return `<span class="dlb" data-dl="${id}" role="button" tabindex="0" title="${esc(tip)}" aria-label="${esc(tip)}">`+
     `<svg class="ic" viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg></span>`; };
@@ -1633,7 +1634,7 @@ function dlAdminRow(id){
 function dlAdminHtml(){
   const ids=Object.keys(APPS).filter(id=>!DLA_HIDE.has(id));
   return `<div class="sh" id="dlAdmin" style="margin-top:22px"><h3>앱 관리 · 이름 · 다운로드 파일</h3><a href="#" data-dla="none">관리자 전용</a></div>
-    <div class="m" style="margin:-4px 0 10px;line-height:1.5">✎ 로 앱 이름·부제를 바꿀 수 있습니다(모든 사용자에게 적용). 파일을 고르고 저장하면 NAS의 <b>portal/downloads/</b>에 올라가고, 모든 사용자의 홈·Dock 아이콘에 다운로드 배지가 바로 붙습니다. 파일명에 버전을 넣어 두는 것을 권장합니다 (예: JET_Tool_v1.2.xlsm).</div>
+    <div class="m" style="margin:-4px 0 10px;line-height:1.5">✎ 로 앱 이름·부제를 바꿀 수 있습니다(모든 사용자에게 적용). 파일을 고르고 저장하면 NAS의 <b>portal/downloads/</b>에 올라가고, 그 앱은 아이콘을 누르면 바로 내려받습니다(열 창이 있는 앱은 아이콘 우측 아래 배지로). 파일명에 버전을 넣어 두는 것을 권장합니다 (예: JET_Tool_v1.2.xlsm).</div>
     <div class="rows" style="margin-bottom:20px">${ids.map(dlAdminRow).join('')}</div>
     <div class="sh"><h3>서버의 파일</h3><a href="#" data-dla="refresh">새로고침</a></div>
     <div class="rows" id="dlaFiles" style="margin-bottom:20px"><div class="r" style="grid-template-columns:1fr"><div class="m">불러오는 중…</div></div></div>`;
@@ -2977,6 +2978,7 @@ document.addEventListener('click',e=>{
 function openApp(id,origin){
   const a=APPS[id]; if(!a) return;
   if(id==='ai'){ openKal(); return; }
+  if(dlDirect(a)){ triggerDownload(id); return; }   /* 다운로드형(창 없음): 아이콘을 누르면 바로 내려받는다 (2026-09-19) */
   noteRecent(id);   /* 칼은 우측 하단 플로팅 챗봇으로 연다 */
   if(wins.has(id)){
     const w=wins.get(id);
