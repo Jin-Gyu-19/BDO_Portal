@@ -96,7 +96,7 @@ sudo docker exec sh-nginx nginx -t && sudo docker exec sh-nginx nginx -s reload
 포털은 `/fonts/PretendardVariable.woff2` 를 먼저 찾고 없으면 CDN 으로 폴백하므로, 파일을 한 번만 올려두면 된다. nginx 엔 `/fonts/` 캐시 location 이 추가됐다.
 ```
 sudo mkdir -p /volume1/sh-pf/docker/nginx-html/portal/fonts && cd /volume1/sh-pf/docker/nginx-html/portal/fonts
-sudo curl -fsSL -o PretendardVariable.woff2 https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/woff2/PretendardVariable.woff2 && ls -l
+sudo curl -fsSL -o PretendardVariable.woff2 https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/variable/woff2/PretendardVariable.woff2 && ls -l
 # 약 2MB 면 정상. 그다음 nginx 설정 교체(3번 절차: 백업 → 복사 → nginx -t → reload)
 ```
 
