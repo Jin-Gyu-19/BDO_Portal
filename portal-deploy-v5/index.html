@@ -2150,7 +2150,7 @@ const APPS = {
       <div class="cal" style="margin-top:18px"><div class="hd"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>
       <div class="bd">${cells}</div></div>
     </div>`}},
-  room:{name:'회의실 예약', sub:'회의실 예약 시스템', short:'예약', bg:G.room, w:1600, h:1000, get url(){ return extUrl(3500,3501); }, auth:'popup', body:()=>`   /* 접속 호스트를 따라감(XBRL과 동일) — IP 고정이면 VPN 등 다른 호스트로 열었을 때 크롬 사설망 차단 */
+  room:{name:'회의실 예약', sub:'회의실 예약 시스템', short:'예약', bg:G.room, w:1600, h:1000, get url(){ return extUrl(3500,3501)+'?embed=1'; }, auth:'popup',   /* ?embed=1: 회의실 앱이 자기 상단 바(로고·사용자·로그아웃)를 숨기는 임베드 모드 */ body:()=>`   /* 접속 호스트를 따라감(XBRL과 동일) — IP 고정이면 VPN 등 다른 호스트로 열었을 때 크롬 사설망 차단 */
     <div class="pad">
       <div class="h1">회의실 예약<span>.</span></div>
       <div class="hsub">4월 5일 (일) · 예약하면 내 일정에 자동으로 추가됩니다</div>
