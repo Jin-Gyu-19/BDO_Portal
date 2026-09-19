@@ -39,6 +39,8 @@ NAS 경로: `/volume1/sh-pf/docker/nginx-html/portal/downloads/`
 | `ifrs18wp` | IFRS18_wp | `startend` | Start and End |
 | `qms` | QMS 자동화 | `prerisk` | 계약전위험평가조서 자동화 도구 |
 | `enreport` | 영문보고서 초안 작성 자동화 Tool | `vuln` | 취약점 진단 |
+| `koaudrep` | 국문감사보고서 대사검증 | `enaudrep` | 영문감사보고서 대사검증 |
+| `enwriter` | 영문보고서 작성도구 | | |
 | `shaudit` | SH Audit Platform | `fin` | 금융기관 조회 |
 | `dart` | Open DART API 조회 | `taxagent` | TAX Agent |
 | `rev` | 리뷰함 | `expense` | 경비청구 |
