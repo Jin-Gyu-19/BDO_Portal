@@ -100,18 +100,26 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
 
 ## 배포 방법
 
-**기본: `portal-deploy-v5/update-portal-from-github.bat`** (Windows PC에서 더블클릭, 저장소 클론 불필요)
+**기본: `portal-deploy-v5/update-all-from-github.bat`** (2026-09-19 신설. Windows PC에서 더블클릭, **비밀번호 1회로 포털 + 앱 페이지 전부**)
+
+포털 `index.html`과 `apps/*.html` 4종을 GitHub에서 받아 각각 검사(크기·`<title>`·`</html>`)한 뒤, **tar로 묶어 ssh 한 번**에 보냅니다. 원격에서 풀고 → 크기 대조 → `index.html.bak_타임스탬프` 백업 → 교체 → 앱 권한(`chmod 644`) 정리 → 백업 최신 5개만 유지. 크기가 안 맞으면 아무것도 바꾸지 않습니다(`index.html.new` 삭제 후 종료). Windows 10 1803+ 내장 `tar.exe` 사용.
+
+아래 두 개는 **예비**(tar가 없거나 합본이 실패할 때)로 남겨둡니다.
+
+**예비 1: `portal-deploy-v5/update-portal-from-github.bat`** (포털만, 비밀번호 1회)
 
 1. GitHub `claude/awesome-hopper-cmd4wg` 브랜치의 `portal-deploy-v5/index.html`을 raw로 내려받음 (캐시 우회)
 2. 검사: 200KB 이상 · `<title>SH Portal` 포함 · `</html>`로 끝남. 하나라도 실패하면 배포 안 함
 3. ssh 한 번(비밀번호 1회)으로 NAS에 전송 → 바이트 수 대조 → 원본 `index.html.bak_타임스탬프` 백업 → 교체. 크기 불일치면 아무것도 안 바꿈
 4. NAS의 백업은 **최신 5개만 유지**(`MAX_BAK`), 더 오래된 `index.html.bak_*`는 자동 삭제. 실행 끝에 남은 백업 목록과 롤백 명령을 출력
 
-즉 흐름은 **여기서 푸시 → 사용자가 PC에서 .bat 더블클릭 → 비밀번호 1회**. 배포 브랜치를 바꾸려면 .bat 상단 `GH_BRANCH`만 수정. nginx 재시작 불필요(정적 파일).
+즉 흐름은 **여기서 푸시 → 사용자가 PC에서 .bat 더블클릭 → 비밀번호 1회**. 배포 브랜치를 바꾸려면 .bat 상단 `GH_BRANCH`만 수정(합본은 `GH_BRANCH`·`APPS` 목록). **앱 HTML을 `apps/`에 추가하면 합본 .bat의 `APPS` 변수에도 파일명을 넣어야 배포됩니다.** nginx 재시작 불필요(정적 파일).
 
-**앱 페이지: `portal-deploy-v5/update-apps-from-github.bat`** (2026-09-19) — `portal-deploy-v5/apps/*.html` 4개를 GitHub에서 받아 NAS `portal/apps/`에 올립니다. 크기·`</html>` 검사 후 ssh(폴더 준비) → `scp -O`(전송)라 **비밀번호 2회**. 포털 본체와 별개이므로 앱 HTML이 바뀔 때만 실행하면 됩니다. nginx는 `location /`의 root가 `portal/`이라 `/apps/`도 자동 서빙되고 SSO 게이트가 그대로 걸립니다(설정 변경 불필요).
+**예비 2: `portal-deploy-v5/update-apps-from-github.bat`** — 앱 페이지만 올립니다(ssh 폴더 준비 → `scp -O`, 비밀번호 2회).
 
-**예비: `portal-deploy-v5/deploy-portal-PC.bat`** — .bat과 같은 폴더의 `index.html`(로컬 클론본)을 scp로 올림. GitHub에 접근이 안 될 때만.
+nginx는 `location /`의 root가 `portal/`이라 `/apps/`도 자동 서빙되고 SSO 게이트가 그대로 걸립니다(설정 변경 불필요).
+
+**예비 3: `portal-deploy-v5/deploy-portal-PC.bat`** — .bat과 같은 폴더의 `index.html`(로컬 클론본)을 scp로 올림. GitHub에 접근이 안 될 때만.
 
 이 저장소(클라우드 세션)에서는 NAS에 접근할 수 없습니다. 여기서는 코드·문서 작업까지만 하고, 배포는 데스크톱에서 합니다.
 
