@@ -546,6 +546,7 @@ box-shadow:0 2px 6px rgba(14,22,30,.28),0 0 0 1.5px rgba(255,255,255,.9);transit
 .dk .dlb .ic{width:11px;height:11px}
 .ap.soon .dlb{opacity:1}
 body.editing .dlb{display:none}
+body:not(.user-ready) .greet h1,body:not(.user-ready) #profBtn{visibility:hidden}   /* 사용자 이름 채우기 전 */
 .pmenu .mi.adm{display:none}body.is-admin .pmenu .mi.adm{display:flex}   /* 관리자에게만 */
 /* ── SSO 앱: 팝업 로그인 안내 (iframe 안에서는 Microsoft 로그인 화면이 열리지 않으므로) ── */
 .auth-gate{position:absolute;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:3;padding:40px;text-align:center}
@@ -1338,15 +1339,15 @@ background:color-mix(in srgb,var(--ok) 12%,var(--menuBg));color:var(--ok);font-s
     <button class="sact" id="resetLayout" title="아이콘·위젯 배치를 기본값으로">
       <svg class="ic" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
       배치 초기화</button>
-    <button class="prof" id="profBtn" aria-haspopup="true" aria-expanded="false" aria-label="윤길배 계정 메뉴">
-      <span class="av">윤길</span><span class="nm">윤길배</span>
+    <button class="prof" id="profBtn" aria-haspopup="true" aria-expanded="false" aria-label="계정 메뉴">
+      <span class="av"></span><span class="nm"></span>
     </button>
   </div>
 </div>
 
 <div class="home" id="home">
   <div class="greet">
-      <h1><em>윤길배</em><span class="tail" id="greetTail">님, 좋은 아침입니다</span></h1>
+      <h1><em></em><span class="tail" id="greetTail"></span></h1>
   </div>
   <div class="hgrid" id="hgrid"></div>
 </div>
@@ -1399,7 +1400,7 @@ background:color-mix(in srgb,var(--ok) 12%,var(--menuBg));color:var(--ok);font-s
 <div class="pmenu" id="pmenu">
   <div class="card">
     <div class="av">윤길</div>
-    <div><div class="n">윤길배 CPA</div><div class="m">성현회계법인 · 대표이사<br>yoon.gb@shcpa.kr</div></div>
+    <div><div class="n"></div><div class="m"></div></div>
   </div>
   <button class="mi" data-mact="profile">
     <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>내 프로필</button>
@@ -1501,8 +1502,10 @@ function paintUser(){
   set('.greet h1 em',USER.name); set('#profBtn .av',USER.init); set('#profBtn .nm',USER.fullName||USER.name);   /* 인사말은 한글만, 우측 상단은 전체 표시 이름 */
   const pb=document.getElementById('profBtn'); if(pb) pb.setAttribute('aria-label',USER.name+' 계정 메뉴');
   set('#pmenu .card .av',USER.init); set('#pmenu .card .n',(USER.fullName||USER.name)+(USER.admin?' · 관리자':USER.sso?'':' CPA'));
-  const m=document.querySelector('#pmenu .card .m'); if(m) m.innerHTML=esc(USER.firm)+(USER.title?' · '+esc(USER.title):'')+'<br>'+esc(USER.mail);
+  const e=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));   /* esc 는 아래에서 정의되므로 여기선 자체 이스케이프 */
+  const m=document.querySelector('#pmenu .card .m'); if(m) m.innerHTML=e(USER.firm)+(USER.title?' · '+e(USER.title):'')+'<br>'+e(USER.mail);
   document.body.classList.toggle('is-admin',!!USER.admin); document.body.classList.toggle('is-sso',!!USER.sso);
+  document.body.classList.add('user-ready');   /* 이름이 채워지기 전엔 인사말·프로필을 숨겨 목업 이름이 비치지 않게 */
 }
 /* 로그아웃: oauth2-proxy 세션 종료 → Microsoft 세션도 종료 → 포털로 복귀 */
 function ssoLogout(){
@@ -1522,7 +1525,7 @@ function greetText(d=new Date()){
 }
 function paintGreet(){ const t=document.getElementById('greetTail'); if(t) t.textContent=greetText(); }
 paintGreet(); setInterval(paintGreet,60*1000);
-document.addEventListener('DOMContentLoaded',paintUser);   /* 마크업이 다 그려진 뒤 사용자 표시 */
+if(document.getElementById('profBtn')) paintUser(); else document.addEventListener('DOMContentLoaded',paintUser);   /* 스크립트가 마크업 뒤에 있으므로 즉시 칠하고, 아니면 DOM 준비 후 */
 /* 저장소가 막힌 환경(샌드박스 iframe·앱 웹뷰)에서도 페이지가 죽지 않도록 */
 const finalMemory={"sh-portal:yoon.gb:v7":"{\"user\":\"yoon.gb@shcpa.kr\",\"layout\":[{\"k\":\"z\",\"id\":\"audit\",\"r\":1,\"c\":5,\"rs\":1,\"cs\":6},{\"k\":\"a\",\"id\":\"shaudit\",\"r\":1,\"c\":10,\"rs\":1,\"cs\":1},{\"k\":\"z\",\"id\":\"admin\",\"r\":2,\"c\":7,\"rs\":1,\"cs\":4},{\"k\":\"z\",\"id\":\"tax\",\"r\":2,\"c\":5,\"rs\":1,\"cs\":2},{\"k\":\"w\",\"id\":\"team\",\"r\":1,\"c\":3,\"rs\":1,\"cs\":2},{\"k\":\"w\",\"id\":\"timesheet\",\"r\":2,\"c\":3,\"rs\":2,\"cs\":2},{\"k\":\"w\",\"id\":\"notice\",\"r\":4,\"c\":1,\"rs\":2,\"cs\":4},{\"k\":\"w\",\"id\":\"memo\",\"r\":3,\"c\":1,\"rs\":1,\"cs\":2},{\"k\":\"w\",\"id\":\"dday\",\"r\":1,\"c\":1,\"rs\":2,\"cs\":2},{\"k\":\"a\",\"id\":\"jet\",\"r\":1,\"c\":5,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"footing\",\"r\":1,\"c\":6,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"fin\",\"r\":1,\"c\":8,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"taxagent\",\"r\":2,\"c\":5,\"rs\":1,\"cs\":1},{\"k\":\"z\",\"id\":\"ai\",\"r\":3,\"c\":5,\"rs\":1,\"cs\":5},{\"k\":\"a\",\"id\":\"notice\",\"r\":2,\"c\":7,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"settings\",\"r\":2,\"c\":9,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"expense\",\"r\":2,\"c\":8,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"markettool\",\"r\":1,\"c\":7,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"dart\",\"r\":1,\"c\":9,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"room\",\"r\":2,\"c\":10,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"xbrl\",\"r\":3,\"c\":5,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"dsdroll\",\"r\":3,\"c\":6,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"k1118\",\"r\":3,\"c\":7,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"pdfguard\",\"r\":3,\"c\":8,\"rs\":1,\"cs\":1}],\"dock\":[\"rev\",\"cal\",\"team\",\"memo\"],\"theme\":\"gray\",\"zones\":{\"audit\":{\"n\":\"감사\",\"dot\":\"#D3374F\"},\"tax\":{\"n\":\"세무\",\"dot\":\"#DFA748\"},\"admin\":{\"n\":\"공통\",\"dot\":\"#5C6E80\"},\"ai\":{\"n\":\"AI · 자동화\",\"dot\":\"#232B36\"},\"z_mtslau9x\":{\"n\":\"업무 지원\",\"dot\":\"#C7519A\"}}}","sh-portal:memo:yoon.gb":"[{\"id\":\"m1\",\"t\":\"알파테크 매출 절사 테스트\\n12/28~31 표본 3건 — 인도조건 확인 필요, 검수확인서 1건 미비\",\"ts\":1789514842597,\"c\":\"y\"},{\"id\":\"m2\",\"t\":\"4/15 파트너 월례회의 안건\\n- ISQM1 보고서 진행 상황\\n- 상반기 필수 교육 이수율\\n- 신규 수임 검토 2건\",\"ts\":1789360042597,\"c\":\"b\"},{\"id\":\"m3\",\"t\":\"감마물산 현장 종료 전 확인\\n재고 실사 차이 조정, 우발부채 질문서 회신\",\"ts\":1789187242597,\"c\":\"p\"}]","sh-portal:yoon.gb:kal":"1"};
 const store={get(k){try{const v=localStorage.getItem("sh-final-20260916:"+k);if(v!==null)return v;}catch(e){}return finalMemory[k]??null;},set(k,v){finalMemory[k]=String(v);try{localStorage.setItem("sh-final-20260916:"+k,v);}catch(e){}}};
