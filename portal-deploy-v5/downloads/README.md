@@ -21,6 +21,7 @@ NAS 경로: `/volume1/sh-pf/docker/nginx-html/portal/downloads/`
 }
 ```
 
+- 항목에 `name`·`sub`를 넣으면 **앱 이름·부제가 바뀜**(모든 사용자). 예: `"toolkit": { "name": "Staff Toolkit", "sub": "원장가공 · 리스계산" }`. 파일 없이 이름만 있어도 됨. 포털 관리 화면의 ✎ 버튼이 이걸 씀.
 - 키 = 포털의 앱 키(아래 표). `file` = 이 폴더 안의 파일명(버전 포함 권장). `ver`는 배지 툴팁에 `(v1.3)`로 표시(생략 가능).
 - `file`을 `""`로 두면 그 앱의 배지를 끔.
 - JSON 규칙: 큰따옴표만, 마지막 항목 뒤에 쉼표 없음. 형식이 깨지면 배지가 전부 안 뜨지만 포털 자체는 정상.
@@ -31,10 +32,13 @@ NAS 경로: `/volume1/sh-pf/docker/nginx-html/portal/downloads/`
 | 키 | 앱 | 키 | 앱 |
 |---|---|---|---|
 | `jet` | JET Tool | `footing` | Footing Tool |
-| `toolkit` | Audit Toolkit | `dsdroll` | DSD 이월기입 자동화 |
+| `toolkit` | Staff Toolkit | `dsdroll` | DSD 이월기입 자동화 |
 | `claudeexcel` | Claude in Excel | `precheck` | 사전심리도우미 |
-| `pdfguard` | PDF 증빙 위·변조 탐지 | `markettool` | 유사상장사 · 베타 분석 |
+| `pdfguard` | PDF 증빙 위·변조 탐지 | `markettool` | 베타·주가변동성 산출 도구 |
 | `k1118` | K-IFRS 1118호 자동화 Tool | `xbrl` | XBRL Comparator |
+| `ifrs18wp` | IFRS18_wp | `startend` | Start and End |
+| `qms` | QMS 자동화 | `prerisk` | 계약전위험평가조서 자동화 도구 |
+| `enreport` | 영문보고서 초안 작성 자동화 Tool | `vuln` | 취약점 진단 |
 | `shaudit` | SH Audit Platform | `fin` | 금융기관 조회 |
 | `dart` | Open DART API 조회 | `taxagent` | TAX Agent |
 | `rev` | 리뷰함 | `expense` | 경비청구 |
