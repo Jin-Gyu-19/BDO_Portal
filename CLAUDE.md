@@ -46,7 +46,7 @@
 
 ## 포털 구조 (핵심) — 2026-09-16 새 디자인
 
-`portal-deploy-v5/index.html` — **단일 HTML 파일**(약 650KB, 아이콘 PNG/WebP 60개 내장, Pretendard 폰트는 jsdelivr CDN). 백엔드·DB·빌드 과정 없음. 정적 파일입니다 (네트워크 호출은 `/oauth2/userinfo`(SSO 사용자)·`/downloads/manifest.json`(다운로드 배지 목록), 그리고 관리자 전용 다운로드 관리 화면의 `/downloads/` PUT/DELETE 뿐. 없으면 조용히 건너뜀).
+`portal-deploy-v5/index.html` — **단일 HTML 파일**(약 650KB, 아이콘 PNG/WebP 60개 내장, 탭 아이콘은 SVG data URI). Pretendard 폰트는 `@font-face`로 NAS `portal/fonts/PretendardVariable.woff2`를 먼저 찾고 없으면 jsdelivr CDN 폴백(2026-09-19. NAS에 올리는 법: `sso/README.md` 7번). 백엔드·DB·빌드 과정 없음. 정적 파일입니다 (네트워크 호출은 `/oauth2/userinfo`(SSO 사용자)·`/downloads/manifest.json`(다운로드 배지 목록), 그리고 관리자 전용 다운로드 관리 화면의 `/downloads/` PUT/DELETE 뿐. 없으면 조용히 건너뜀).
 
 iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페이스·타임시트·메모·공지)과 앱 아이콘이 10×5 격자에 놓이고, 앱을 누르면 창이 열립니다. 하단 Dock, ⌘K 검색, "홈 편집" 서랍, 스티커 메모, AI 칼 플로팅 챗봇이 있습니다. **로그인 화면은 없습니다. 접속하면 바로 홈**입니다 (2026-09-16 결정. 인증은 SSO 도입 때 nginx 단에서 처리).
 
