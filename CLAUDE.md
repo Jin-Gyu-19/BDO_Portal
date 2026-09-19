@@ -10,6 +10,7 @@
 | 경로 | 내용 | 비고 |
 |---|---|---|
 | `portal-deploy-v5/` | **포털 본체(`index.html`) + 배포 스크립트(`update-portal-from-github.bat`·`deploy-portal-PC.bat`) + 현행 nginx 라우팅(`default.conf`)** | ★ 포털 작업은 여기서 |
+| `portal-deploy-v5/apps/` | 포털 창 안에서 여는 **단일 HTML 업무 앱**(JET Workbench·국문/영문 감사보고서 대사검증·영문감사보고서 자동작성). NAS `portal/apps/`로 배포 | 배포는 `update-apps-from-github.bat` |
 | `portal-deploy-v5/downloads/` | 다운로드 배지 목록 `manifest.json` 예시 + 사용법(README) | NAS `portal/downloads/`에 File Station으로 직접 관리. `.bat` 배포 대상 아님 |
 | `docs/` | 작업 인수인계서, NAS 인프라 변경보고서(SH-AX-INFRA-001) | 배경·제약 사항 |
 | `infra/reference/` | 초기 인프라 구축본(compose, nginx.conf, .env.example) | 운영본과 다름. 참고만 |
@@ -50,9 +51,9 @@
 
 iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페이스·타임시트·메모·공지)과 앱 아이콘이 10×5 격자에 놓이고, 앱을 누르면 창이 열립니다. 하단 Dock, ⌘K 검색, "홈 편집" 서랍, 스티커 메모, AI 칼 플로팅 챗봇이 있습니다. **로그인 화면은 없습니다. 접속하면 바로 홈**입니다 (2026-09-16 결정. 인증은 SSO 도입 때 nginx 단에서 처리).
 
-**위젯·목업 앱 내용·사용자(윤길배)·칼의 답변은 전부 하드코딩된 목업입니다.** 실데이터 연동은 없습니다. 실제로 동작하는 것은 아래 앱 5개를 창 안 iframe으로 여는 것뿐입니다.
+**위젯·목업 앱 내용·사용자(윤길배)·칼의 답변은 전부 하드코딩된 목업입니다.** 실데이터 연동은 없습니다. 실제로 동작하는 것은 아래 앱 9개를 창 안 iframe으로 여는 것뿐입니다.
 
-### 연결된 앱 5종 (`APPS`에 `url`이 있는 항목)
+### 연결된 앱 9종 (`APPS`에 `url`이 있는 항목)
 
 | 앱 키 | 이름 | iframe 대상 | 방식 |
 |---|---|---|---|
@@ -60,6 +61,10 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
 | `k1118` | K-IFRS 1118호 자동화 Tool | `/ifrs18/index.html` | 정적 HTML |
 | `fin` | 금융기관 조회 | `/data/` | Streamlit 프록시 |
 | `xbrl` | XBRL Comparator | `extUrl(4000,4001)` → http면 `http://<접속호스트>:4000/`, https면 `https://<접속호스트>:4001/` | **외부 포트 직접 연결.** 포털을 여는 프로토콜·호스트를 따라감 (DSM 역방향 프록시 4001 → localhost:4000 전제) |
+| `jet` | JET Tool | `/apps/jet-workbench.html` | 정적 HTML (2026-09-19 연결. xlsx.js·Google Fonts를 CDN에서 로드) |
+| `koaudrep` | 국문감사보고서 대사검증 | `/apps/ko-audit-recon.html` | 정적 HTML (**Pyodide CDN** 사용 — 첫 실행 시 인터넷 필요) |
+| `enaudrep` | 영문감사보고서 대사검증 | `/apps/en-audit-recon.html` | 정적 HTML (Pyodide CDN) |
+| `enwriter` | 영문감사보고서 자동작성 | `/apps/en-audit-write.html` | 정적 HTML (Pyodide CDN) |
 | `room` | 회의실 예약 | `extUrl(3500,3501)+'?embed=1'` → https면 `https://<접속호스트>:3501/?embed=1` (`embed=1`은 회의실 앱의 임베드 모드: 자기 상단 바를 숨김, 2026-09-19) (2026-09-19: IP 고정에서 접속 호스트 따라가기로. VPN처럼 다른 호스트로 열면 크롬이 '공용 페이지→사설망' 차단) | **외부 포트(https, MS SSO 적용) + `auth:'popup'`.** MS 로그인 페이지는 iframe 안에서 열리지 않으므로, 첫 열기 때 창 안에 안내(`.auth-gate`)를 띄우고 "로그인 창 열기"로 팝업에서 로그인 → 팝업이 닫히면 iframe 로드. 같은 호스트라 로그인 쿠키가 iframe에도 적용됨. 완료 표시는 `sessionStorage`(`sh-portal:auth:room`, 탭 세션 동안 유지). 포털을 https(8080)로 열어야 동작 |
 
 - `url`이 있는 앱은 `openApp()`에서 목업 `body()` 대신 `frameBody()`가 만든 iframe 창으로 열립니다. 창 크기는 `w:1600,h:1000`으로 잡아 화면에 거의 꽉 차게(최대화·이동·닫기 가능) 열립니다.
@@ -67,7 +72,7 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
 - 로딩 스피너 `.app-loading`은 iframe `load` 시(최소 0.5초 노출) 또는 15초 후 제거.
 - 창 이동·크기조정 중에는 `body.winDrag`로 모든 iframe의 포인터 이벤트를 끊습니다.
 - 나머지 앱(리뷰함·TAX Agent·JET Tool 등)은 목업 창입니다. 실제 서비스가 생기면 해당 항목에 `url:`만 넣으면 됩니다.
-- **AI 활용사례 그룹(2026-09-19)**: 사용자 제공 아이콘 8종(`icons/aicase-*-20260919.webp`, 512px WebP로 변환해 `PORTAL_ASSETS`에 내장)으로 새 앱 6개 추가 — `ifrs18wp`(IFRS18_wp, 기존 `k1118`과 별개), `startend`(Start and End: JET·LEAD·DSD입력), `qms`, `prerisk`(계약전위험평가조서), `enreport`(영문보고서 초안), `vuln`(취약점 진단), 그리고 2차분 `koaudrep`(국문감사보고서 대사검증)·`enaudrep`(영문감사보고서 대사검증)·`enwriter`(영문보고서 작성도구). 아이콘은 사용자가 누끼 처리한 512px 투명 PNG(portal_all_icons_transparent.zip) → WebP(알파). 기존 `toolkit`→"Staff Toolkit", `markettool`→"베타·주가변동성 산출 도구"로 이름·아이콘 교체. **홈 기본 배치에는 올리지 않음**(사용자가 직접 배치하기로) — "모든 App" 서랍(카테고리 `ai`)에서 끌어다 놓음.
+- **AI 활용사례 그룹(2026-09-19)**: 사용자 제공 아이콘 8종(`icons/aicase-*-20260919.webp`, 512px WebP로 변환해 `PORTAL_ASSETS`에 내장)으로 새 앱 6개 추가 — `ifrs18wp`(IFRS18_wp, 기존 `k1118`과 별개), `startend`(Start and End: JET·LEAD·DSD입력), `qms`, `prerisk`(계약전위험평가조서), `enreport`(영문보고서 초안), `vuln`(취약점 진단), 그리고 2차분 `koaudrep`(국문감사보고서 대사검증)·`enaudrep`(영문감사보고서 대사검증)·`enwriter`(영문감사보고서 자동작성). 아이콘은 사용자가 누끼 처리한 512px 투명 PNG(portal_all_icons_transparent.zip) → WebP(알파). 기존 `toolkit`→"Staff Toolkit", `markettool`→"베타·주가변동성 산출 도구"로 이름·아이콘 교체. **홈 기본 배치에는 올리지 않음**(사용자가 직접 배치하기로) — "모든 App" 서랍(카테고리 `ai`)에서 끌어다 놓음.
 - **앱 이름·부제 관리자 수정(2026-09-19)**: `downloads/manifest.json` 항목의 `name`·`sub`를 `applyDlManifest()`가 `APPS[id].name/sub`에 덮어씀(원래 값은 `APPS[id]._orig`에 보관, 비우면 복귀). 관리자 화면(설정 → "앱 관리 · 이름 · 다운로드 파일", 프로필 메뉴 "앱 관리")의 각 줄 ✎ → 인라인 입력 → `dlAdminRenameSave()`가 manifest를 PUT. 파일 저장·해제는 name/sub를 보존.
 - **SSO 앱**(`auth:'popup'`): `frameBody()`가 iframe에 `src` 대신 `data-src`를 두고 `.auth-gate`를 띄움. `authLogin()`이 팝업을 열고 닫힘을 감지해 `authRelease()`로 iframe을 로드. "이미 로그인했어요"는 게이트를 건너뜀. **포털에 SSO로 로그인한 상태(`USER.sso`)면 게이트를 띄우지 않고 바로 iframe** — 같은 Entra 앱·같은 MS 세션이라 회의실의 MS 리다이렉트가 화면 없이 통과함. 창 제목줄의 자물쇠 버튼(`data-act="relogin"`)이 `authRelogin()` → 팝업 로그인 후 iframe을 새로 불러옴(로그인이 풀려 화면이 빌 때). 다른 SSO 앱이 생기면 항목에 `auth:'popup'`만 추가.
 - **다운로드형 앱**(설치 파일·엑셀 매크로 등): 파일이 있는 앱은 홈·Dock 아이콘 **우측 하단에 작은 다운로드 배지**(`.dlb`)가 붙고 배지를 누르면 `triggerDownload()`. **`url`이 없는(창이 없는) 앱은 아이콘 본체를 눌러도 바로 내려받음**(`dlDirect()`, `openApp()` 첫머리 분기. 2026-09-19). `url`이 있는 앱은 아이콘 본체 = 창, 배지 = 다운로드. 파일은 NAS `/volume1/sh-pf/docker/nginx-html/portal/downloads/`에 DSM File Station으로 올립니다(nginx 루트가 `portal/`이라 설정 변경 불필요). 편집 모드(`body.editing`)에서는 배지를 숨깁니다.
@@ -103,6 +108,8 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
 4. NAS의 백업은 **최신 5개만 유지**(`MAX_BAK`), 더 오래된 `index.html.bak_*`는 자동 삭제. 실행 끝에 남은 백업 목록과 롤백 명령을 출력
 
 즉 흐름은 **여기서 푸시 → 사용자가 PC에서 .bat 더블클릭 → 비밀번호 1회**. 배포 브랜치를 바꾸려면 .bat 상단 `GH_BRANCH`만 수정. nginx 재시작 불필요(정적 파일).
+
+**앱 페이지: `portal-deploy-v5/update-apps-from-github.bat`** (2026-09-19) — `portal-deploy-v5/apps/*.html` 4개를 GitHub에서 받아 NAS `portal/apps/`에 올립니다. 크기·`</html>` 검사 후 ssh(폴더 준비) → `scp -O`(전송)라 **비밀번호 2회**. 포털 본체와 별개이므로 앱 HTML이 바뀔 때만 실행하면 됩니다. nginx는 `location /`의 root가 `portal/`이라 `/apps/`도 자동 서빙되고 SSO 게이트가 그대로 걸립니다(설정 변경 불필요).
 
 **예비: `portal-deploy-v5/deploy-portal-PC.bat`** — .bat과 같은 폴더의 `index.html`(로컬 클론본)을 scp로 올림. GitHub에 접근이 안 될 때만.
 

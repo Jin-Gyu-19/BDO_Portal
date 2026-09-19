@@ -1,0 +1,2281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JET Workbench — 저널엔트리 테스트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  /* ===================================================================
+     Apple-derived tokens, adapted for data density. Core principles kept:
+     a single accent color (Action Blue) carries every interactive
+     element; canvas is a tinted parchment, never stark white; text sits
+     at near-black (#1D1D1F), never pure black; exactly one soft shadow
+     exists in the whole system, reserved for the one truly floating
+     surface (dropdown/detail popouts) — everything else is flat with a
+     hairline border. Semantic status colors (green/amber/red) are the
+     one necessary departure from Apple's single-accent rule, since this
+     tool must visually distinguish normal/attention/risk at a glance;
+     they are kept fully separate in hue from the blue action accent.
+     =================================================================== */
+  :root{
+    --radius:12px;
+    --radius-btn:8px;
+    --radius-pill:999px;
+    --display:'Inter',sans-serif;
+    --body:'Inter',sans-serif;
+    --mono:'Inter',sans-serif;
+
+    --bg:#F5F5F7;
+    --panel:#FFFFFF;
+    --panel-2:#F0F0F2;
+    --ink:#1D1D1F;
+    --ink-soft:#6E6E73;
+    --ink-faint:#9A9A9E;
+    --rule:#E3E3E6;
+    --rule-2:#ECECEE;
+
+    --accent:#0066CC;
+    --accent-2:#0071E3;
+    --accent-soft:#E8F0FC;
+    --on-accent:#FFFFFF;
+    --info:#0066CC;
+    --info-soft:#E8F0FC;
+
+    --flag:#A9660C;
+    --flag-soft:#FBF0DE;
+    --good:#1E7A52;
+    --good-soft:#E4F3EC;
+    --bad:#D93025;
+    --bad-soft:#FBEAE8;
+
+    --shadow-soft:0 8px 24px rgba(0,0,0,0.10);
+  }
+</style>
+<style>
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:14px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    transition:background .15s ease, color .15s ease;
+  }
+  .app{display:flex; min-height:100vh;}
+
+  /* ---------- Sidebar / workpaper index rail ---------- */
+  .rail{
+    width:250px; flex:none;
+    background:var(--panel);
+    color:var(--ink);
+    display:flex; flex-direction:column;
+    position:sticky; top:0; height:100vh;
+    border-right:1px solid var(--rule);
+  }
+  .rail-head{padding:22px 20px 16px; border-bottom:1px solid var(--rule);}
+  .rail-logo{font-family:var(--display); font-weight:600; font-size:19px; letter-spacing:-.02em; color:var(--ink);}
+  .rail-sub{font-size:11.5px; color:var(--ink-faint); margin-top:3px; letter-spacing:.03em;}
+  .rail-nav{padding:14px 10px; display:flex; flex-direction:column; gap:2px; flex:1;}
+  .tab-btn{
+    display:flex; align-items:center; gap:10px;
+    background:transparent; border:none; border-left:2px solid transparent; text-align:left;
+    color:var(--ink-soft); padding:11px 12px; border-radius:var(--radius-btn);
+    cursor:pointer; font-family:var(--body); font-size:13px;
+    transition:background .12s ease, border-color .12s ease, color .12s ease;
+    position:relative;
+  }
+  .tab-btn:hover{background:var(--panel-2); border-left-color:var(--rule);}
+  .tab-btn.active{background:var(--accent-soft); color:var(--accent); border-left-color:var(--accent);}
+  .tab-btn .ref{font-family:var(--mono); font-size:10.5px; color:var(--ink-faint); min-width:40px; letter-spacing:.02em;}
+  .tab-btn.active .ref{color:var(--accent);}
+  .tab-btn .label{flex:1; font-weight:500;}
+  .dot{width:7px; height:7px; border-radius:50%; background:var(--ink-faint); flex:none;}
+  .dot.pending{background:var(--ink-faint);}
+  .dot.ok{background:var(--good);}
+  .dot.flag{background:var(--flag);}
+  .rail-file{
+    margin:10px 12px 18px; padding:12px 12px; border-radius:var(--radius);
+    background:var(--panel-2); font-size:11.5px; color:var(--ink-soft);
+    font-family:var(--mono); border:1px solid var(--rule); border-left:2px solid var(--accent);
+  }
+  .rail-file b{display:block; color:var(--ink); font-family:var(--body); font-size:12.5px; font-weight:600; margin-bottom:4px;}
+
+  /* ---------- Main ---------- */
+  .main{flex:1; min-width:0; padding:36px 44px 80px;}
+  .panel-head{margin-bottom:26px; padding-bottom:18px; border-bottom:1px solid var(--rule);}
+  .panel-head .ref{font-family:var(--mono); color:var(--info); font-size:12px; letter-spacing:.05em;}
+  .panel-head h1{font-family:var(--display); font-size:22px; font-weight:600; letter-spacing:-.02em; margin:4px 0 8px; color:var(--ink);}
+  .panel-head p{color:var(--ink-soft); font-size:13.5px; max-width:640px; margin:0;}
+
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  .card{background:var(--panel); border:1px solid var(--rule); border-radius:var(--radius); padding:22px 24px; margin-bottom:20px;}
+  .card h2{font-family:var(--display); font-size:15px; font-weight:600; letter-spacing:0; margin:0 0 14px;}
+  .card .hint{color:var(--ink-soft); font-size:12.5px; margin:-8px 0 14px;}
+
+  .empty{
+    border:1.5px dashed var(--rule); border-radius:var(--radius); padding:40px 20px;
+    text-align:center; color:var(--ink-soft); font-size:13px; background:var(--panel-2);
+  }
+  .empty b{color:var(--ink); display:block; margin-bottom:4px; font-size:13.5px;}
+
+  /* Buttons */
+  .btn{
+    display:inline-flex; align-items:center; gap:7px;
+    background:var(--accent); color:var(--on-accent); border:none; border-radius:var(--radius-pill);
+    padding:9px 18px; font-size:13px; font-weight:600; cursor:pointer;
+    font-family:var(--body); transition:background .12s ease;
+  }
+  .btn:hover{background:var(--accent-2);}
+  .btn.secondary{background:var(--panel); color:var(--ink); border:1px solid var(--rule); border-radius:var(--radius-btn);}
+  .btn.secondary:hover{background:var(--panel-2);}
+  .btn:disabled{opacity:.45; cursor:not-allowed;}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+
+  input[type="file"]{display:none;}
+  .drop{
+    border:1.5px dashed var(--rule); border-radius:var(--radius); padding:28px 20px;
+    text-align:center; cursor:pointer; background:var(--panel-2); transition:border-color .12s;
+  }
+  .drop:hover{border-color:var(--accent);}
+  .drop b{display:block; font-size:13.5px; margin-bottom:4px; color:var(--ink);}
+  .drop span{font-size:12px; color:var(--ink-soft);}
+
+  input[type="text"], input[type="number"], select{
+    font-family:var(--body); font-size:13px; padding:8px 10px;
+    border:1px solid var(--rule); border-radius:var(--radius-btn); background:var(--panel); color:var(--ink);
+  }
+  input[type="text"]:focus, input[type="number"]:focus, select:focus{
+    outline:none; border-color:var(--accent);
+  }
+  select{min-width:150px;}
+  label.field-label{font-size:11.5px; color:var(--ink-soft); display:block; margin-bottom:5px; font-weight:600; letter-spacing:.02em;}
+
+  .map-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:16px;}
+  @media(max-width:900px){.map-grid{grid-template-columns:repeat(2,1fr);}}
+
+  .stat-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:20px;}
+  @media(max-width:1100px){.stat-grid{grid-template-columns:repeat(3,1fr);}}
+  .stat{background:var(--panel); border:1px solid var(--rule); border-radius:var(--radius); padding:14px 16px;}
+  .stat .k{font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;}
+  .stat .v{font-family:var(--mono); font-size:17px; font-weight:600; color:var(--accent);}
+  .stat.good .v{color:var(--good);}
+  .stat.bad .v{color:var(--bad);}
+
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  thead th{
+    position:sticky; top:0; background:var(--panel-2); text-align:left; font-weight:600;
+    padding:9px 10px; border-bottom:1px solid var(--rule); color:var(--ink-soft);
+    font-size:11.5px; text-transform:uppercase; letter-spacing:.03em; white-space:nowrap;
+  }
+  tbody td{padding:8px 10px; border-bottom:1px solid var(--rule-2); vertical-align:top;}
+  tbody tr:hover{background:var(--panel-2);}
+  .num{font-family:var(--mono); font-variant-numeric:tabular-nums; font-feature-settings:'tnum' 1; text-align:right; white-space:nowrap;}
+  .mono{font-family:var(--mono); font-variant-numeric:tabular-nums; font-feature-settings:'tnum' 1;}
+  .table-wrap{max-height:520px; overflow:auto; border:1px solid var(--rule); border-radius:var(--radius);}
+  .table-wrap table{margin:0;}
+
+  .badge{display:inline-block; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:600;}
+  .badge.match{background:var(--good-soft); color:var(--good);}
+  .badge.mismatch{background:var(--bad-soft); color:var(--bad);}
+  .badge.missing{background:var(--flag-soft); color:var(--flag);}
+  .badge.weekend{background:var(--flag-soft); color:var(--flag);}
+
+  .toggle-row{cursor:pointer;}
+  .toggle-row .car{display:inline-block; width:12px; color:var(--ink-faint); transition:transform .1s;}
+  .toggle-row.open .car{transform:rotate(90deg);}
+  .detail-row td{background:var(--panel-2); padding:0;}
+  .detail-inner{padding:10px 14px 14px 34px;}
+
+  .inline-controls{display:flex; gap:18px; flex-wrap:wrap; align-items:flex-end; margin-bottom:16px;}
+  .radio-group{display:flex; gap:14px; align-items:center;}
+  .radio-group label{font-size:12.5px; display:flex; align-items:center; gap:5px; cursor:pointer; color:var(--ink);}
+
+  .foot-note{color:var(--ink-faint); font-size:11.5px; margin-top:10px;}
+
+  .guide-list{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:12px;}
+  .guide-list li{font-size:13px; color:var(--ink); line-height:1.6;}
+  .guide-list b{font-weight:700;}
+  .guide-example{
+    margin:8px 0 6px; padding:10px 12px; background:var(--panel-2); border:1px solid var(--rule);
+    border-radius:8px; font-family:var(--mono); font-size:12px; color:var(--ink-soft); line-height:1.7;
+  }
+  .guide-note{display:block; font-size:11.5px; color:var(--ink-faint); margin-top:4px;}
+
+  .dash-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px;}
+  @media(max-width:900px){.dash-grid{grid-template-columns:1fr;}}
+  .dash-card{
+    background:var(--panel); border:1px solid var(--rule); border-radius:var(--radius);
+    padding:16px 18px; cursor:pointer; transition:border-color .12s;
+  }
+  .dash-card:hover{border-color:var(--accent-2);}
+  .dash-card-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;}
+  .dash-card-title{font-family:var(--display); font-weight:600; letter-spacing:0; font-size:13.5px;}
+  .dash-card-ref{font-family:var(--mono); font-size:10.5px; color:var(--info);}
+  .dash-card-metric{font-family:var(--mono); font-size:20px; font-weight:600; margin-bottom:4px;}
+  .dash-card-sub{font-size:12px; color:var(--ink-soft);}
+  .dash-card.status-flag{border-color:var(--flag);}
+  .dash-card.status-flag .dash-card-metric{color:var(--flag);}
+  .dash-card.status-ok .dash-card-metric{color:var(--good);}
+  .dash-card.status-pending{opacity:.55;}
+  .status-pill{display:inline-block; padding:2px 8px; border-radius:20px; font-size:10.5px; font-weight:600;}
+  .status-pill.flag{background:var(--flag-soft); color:var(--flag);}
+  .status-pill.ok{background:var(--good-soft); color:var(--good);}
+  .status-pill.pending{background:var(--panel-2); color:var(--ink-faint);}
+  .section-title{font-family:var(--display); font-weight:600; letter-spacing:0; font-size:13.5px; margin:0 0 10px; color:var(--ink);}
+
+  @media(max-width:780px){
+    .app{flex-direction:column;}
+    .rail{width:100%; height:auto; position:relative; flex-direction:row; overflow-x:auto;}
+    .rail-head{border-bottom:none; border-right:1px solid var(--rule); padding:16px;}
+    .rail-nav{flex-direction:row; padding:10px;}
+    .rail-file{display:none;}
+    .main{padding:22px 16px 60px;}
+    .stat-grid{grid-template-columns:repeat(2,1fr);}
+    .map-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <div class="rail-head">
+      <div class="rail-logo">JET Workbench</div>
+      <div class="rail-sub">저널엔트리 테스트 · 감사 절차</div>
+    </div>
+    <nav class="rail-nav" id="railNav">
+      <button class="tab-btn active" data-tab="upload"><span class="dot pending" id="dot-upload"></span><span class="ref">JET-1</span><span class="label">데이터 업로드</span></button>
+      <button class="tab-btn" data-tab="compare"><span class="dot pending" id="dot-compare"></span><span class="ref">JET-2</span><span class="label">재무제표 대사</span></button>
+      <button class="tab-btn" data-tab="weekend"><span class="dot pending" id="dot-weekend"></span><span class="ref">JET-3</span><span class="label">주말 전표 검토</span></button>
+      <button class="tab-btn" data-tab="counter"><span class="dot pending" id="dot-counter"></span><span class="ref">JET-4</span><span class="label">상대계정 분석</span></button>
+      <button class="tab-btn" data-tab="pm"><span class="dot pending" id="dot-pm"></span><span class="ref">JET-5</span><span class="label">중요성기준(PM) 초과전표</span></button>
+      <button class="tab-btn" data-tab="anomaly"><span class="dot pending" id="dot-anomaly"></span><span class="ref">JET-6</span><span class="label">이상징후 종합분석</span></button>
+      <button class="tab-btn" data-tab="duplicate"><span class="dot pending" id="dot-duplicate"></span><span class="ref">JET-7</span><span class="label">중복 전표 탐지</span></button>
+      <button class="tab-btn" data-tab="vendor"><span class="dot pending" id="dot-vendor"></span><span class="ref">JET-8</span><span class="label">거래처 분석</span></button>
+      <button class="tab-btn" data-tab="monthly"><span class="dot pending" id="dot-monthly"></span><span class="ref">JET-9</span><span class="label">월별 거래액 분석</span></button>
+      <div style="height:1px; background:var(--rule); margin:8px 10px;"></div>
+      <button class="tab-btn" data-tab="dashboard"><span class="dot pending" id="dot-dashboard"></span><span class="ref">요약</span><span class="label">종합 대시보드</span></button>
+    </nav>
+    <div class="rail-file" id="railFileInfo"><b>업로드된 파일 없음</b>JET-1에서 전표 데이터를 업로드하세요.</div>
+    <div style="padding:0 12px 14px; font-family:var(--mono); font-size:10px; color:var(--ink-faint);">build 2026-08-22-c · 날짜 로직: 원본 시리얼값 직접계산</div>
+  </aside>
+
+  <main class="main">
+
+    <!-- ===================== JET-1 업로드 ===================== -->
+    <section class="tab-panel active" id="tab-upload">
+      <div class="panel-head">
+        <span class="ref">JET-1</span>
+        <h1>데이터 업로드</h1>
+        <p>날짜 · 전표번호 · 계정과목 · 계정코드 · 적요 · 차변 · 대변 · 거래처 · 거래처번호 컬럼을 포함한 전표(Journal Entry) 엑셀 파일을 업로드하세요.</p>
+      </div>
+
+      <div class="card">
+        <h2>감사 기준값 설정</h2>
+        <p class="hint">여기서 설정한 PM(중요성 금액)은 JET-5 및 아래 "전체 절차 일괄 실행"에서 공통으로 사용됩니다. 언제든 값을 바꿀 수 있습니다.</p>
+        <div class="inline-controls" style="margin-bottom:0;">
+          <div>
+            <label class="field-label">PM (중요성 금액, 원)</label>
+            <input type="text" id="globalPmInput" placeholder="예: 50000000" style="width:220px;">
+          </div>
+          <div>
+            <label class="field-label">적용 값</label>
+            <div id="pmDisplayValue" style="font-family:var(--mono); font-size:14px; font-weight:600; padding:8px 0; color:var(--ink-soft);">미설정</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>전표 파일</h2>
+        <div class="drop" id="dropZone">
+          <b>클릭하여 엑셀 파일 선택 (.xlsx, .xls, .csv)</b>
+          <span>또는 이 영역으로 파일을 끌어다 놓으세요</span>
+        </div>
+        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn secondary" id="btnTemplate">샘플 양식 다운로드</button>
+        </div>
+      </div>
+
+      <div class="card" id="mappingCard" style="display:none;">
+        <h2>컬럼 매핑 확인</h2>
+        <p class="hint">자동으로 인식한 컬럼입니다. 다르게 인식된 항목이 있으면 직접 선택해 주세요.</p>
+        <div class="map-grid" id="mapGrid"></div>
+        <div class="btn-row">
+          <button class="btn" id="btnConfirmMap">데이터 확인 및 불러오기</button>
+        </div>
+      </div>
+
+      <div id="uploadResults" style="display:none;">
+        <div class="card" id="runAllCard" style="background:var(--accent-soft); border-color:var(--accent-2);">
+          <h2 style="margin-bottom:6px;">전체 절차 일괄 실행</h2>
+          <p class="hint">기본값(또는 위에서 설정한 PM) 기준으로 JET-3, 5, 6A/B/C, 7, 8A를 한 번에 실행하고 종합 대시보드로 이동합니다. JET-2(재무제표 대사)·JET-4(상대계정 분석)·JET-8B(연도별 거래처 비교)는 별도 파일 업로드나 계정 선택이 필요해 자동 실행에서 제외되며, 실행 후 안내해 드립니다.</p>
+          <div class="btn-row">
+            <button class="btn" id="btnRunAllFromUpload">일괄 실행 → 대시보드로 이동</button>
+          </div>
+        </div>
+        <div class="stat-grid" id="uploadStats"></div>
+
+        <div class="card" id="unbalancedCard" style="display:none;">
+          <h2>⚠ 차대 불일치 전표</h2>
+          <p class="hint">전표번호 기준 차변 합계와 대변 합계가 일치하지 않는 전표입니다. 이후 분석의 신뢰도에 영향을 줄 수 있습니다.</p>
+          <div class="table-wrap"><table id="unbalancedTable"></table></div>
+        </div>
+
+        <div class="card">
+          <h2>데이터 미리보기 (상위 25건)</h2>
+          <div class="table-wrap"><table id="previewTable"></table></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== JET-2 재무제표 대사 ===================== -->
+    <section class="tab-panel" id="tab-compare">
+      <div class="panel-head">
+        <span class="ref">JET-2</span>
+        <h1>재무제표 대사</h1>
+        <p>업로드된 전표 데이터로 계정과목별 시산표를 산출하고, 회사가 제시한 재무제표(또는 시산표) 금액과 일치하는지 확인합니다.</p>
+      </div>
+      <div class="card" id="compareGuideCard">
+        <h2>이용 방법</h2>
+        <ol class="guide-list">
+          <li><b>JET-1에서 전표 데이터를 먼저 업로드</b>합니다. 이 화면은 그 데이터로 계정과목별 시산표(차변합계·대변합계·잔액)를 자동으로 계산합니다.</li>
+          <li><b>표준 양식대로 회사 재무제표(또는 시산표) 파일을 준비</b>합니다. 아래 "회사 재무제표(시산표) 파일" 카드의 [표준 양식 다운로드] 버튼을 누르면 정확한 형식의 엑셀 파일을 받을 수 있습니다. 계정과목, 계정코드, 금액 3개 컬럼이며, 계정과목·계정코드 중 하나만 정확해도 대사할 수 있습니다.
+            <div class="guide-example">
+              예시<br>
+              계정과목 &nbsp;|&nbsp; 계정코드 &nbsp;|&nbsp; 금액<br>
+              현금 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp; 10100 &nbsp;|&nbsp; 15,000,000<br>
+              매입채무 &nbsp;|&nbsp; 21100 &nbsp;|&nbsp; -8,200,000<br>
+              제품매출 &nbsp;|&nbsp; 40100 &nbsp;|&nbsp; -320,000,000
+            </div>
+            <span class="guide-note">※ 금액의 부호(차변/대변 방향)는 전표 데이터의 "차변−대변" 계산 방식과 동일한 부호 체계로 입력해야 정확히 대사됩니다. 자산·비용 계정은 양수(+), 부채·자본·수익 계정은 음수(−)로 입력하세요.</span>
+          </li>
+          <li>"회사 재무제표(시산표) 파일" 영역에서 <b>파일을 업로드</b>한 뒤, 계정과목/계정코드/금액 컬럼 매핑을 확인하고 [재무제표 데이터 불러오기]를 클릭합니다.</li>
+          <li><b>매칭 기준</b>을 선택합니다. 계정과목명이 전표와 재무제표에서 동일하게 표기되어 있으면 "계정과목명"을, 계정코드가 더 정확히 일치한다면 "계정코드"를 선택하세요.</li>
+          <li>계정과목명 표기가 미세하게 다르거나 반올림 등으로 작은 차이가 있을 수 있는 경우 <b>허용 오차(원)</b>를 입력하세요. 0으로 두면 완전히 일치하는 금액만 "일치"로 판정됩니다.</li>
+          <li>[대사 실행]을 누르면 계정과목별로 <span class="badge match">일치</span> <span class="badge mismatch">불일치</span> <span class="badge missing">FS 없음</span> 상태가 표시됩니다. 화면 하단에는 재무제표에는 있지만 전표 데이터에서 발견되지 않은 계정도 별도로 표시됩니다.</li>
+          <li>결과표 우측 상단의 <b>[엑셀 다운로드]</b> 버튼으로 대사 결과 전체를 엑셀 파일로 저장할 수 있습니다.</li>
+        </ol>
+      </div>
+
+      <div id="compareEmpty" class="empty"><b>먼저 JET-1에서 전표 데이터를 업로드하세요.</b>데이터가 준비되면 이 화면에서 대사를 진행할 수 있습니다.</div>
+
+      <div id="compareBody" style="display:none;">
+        <div class="card">
+          <h2>회사 재무제표(시산표) 파일</h2>
+          <p class="hint">아래 표준 양식대로 <b>계정과목, 계정코드, 금액</b> 3개 컬럼으로 준비해서 업로드하세요. (계정과목명 또는 계정코드 중 실제 대사에 쓸 컬럼 하나만 정확해도 되고, 나머지 하나는 비워둬도 됩니다.)</p>
+          <div class="guide-example">
+            계정과목 | 계정코드 | 금액<br>
+            현금 | 10100 | 15,000,000<br>
+            매입채무 | 21100 | -8,200,000<br>
+            제품매출 | 40100 | -320,000,000<br>
+            매출원가 | 50100 | 210,000,000
+          </div>
+          <span class="guide-note">※ 부호 기준: 자산·비용 계정은 양수(+), 부채·자본·수익 계정은 음수(−)로 입력해야 전표 데이터의 "차변−대변" 계산과 정확히 대사됩니다.</span>
+          <div class="btn-row" style="margin:14px 0 16px;">
+            <button class="btn secondary" id="btnCompareTemplate">표준 양식 다운로드</button>
+          </div>
+          <div class="drop" id="dropZoneCompare">
+            <b>클릭하여 엑셀 파일 선택</b>
+            <span>계정과목, 계정코드, 금액 컬럼 포함 (표준 양식 권장)</span>
+          </div>
+          <input type="file" id="compareFileInput" accept=".xlsx,.xls,.csv">
+          <div class="map-grid" id="compareMapGrid" style="display:none; margin-top:16px;"></div>
+          <div class="btn-row" id="compareMapConfirmRow" style="display:none;">
+            <button class="btn" id="btnConfirmCompareMap">재무제표 데이터 불러오기</button>
+          </div>
+        </div>
+
+        <div class="card" id="compareRunCard" style="display:none;">
+          <h2>대사 기준</h2>
+          <div class="inline-controls">
+            <div>
+              <label class="field-label">매칭 기준</label>
+              <div class="radio-group">
+                <label><input type="radio" name="compareBasis" value="accountName" checked> 계정과목명</label>
+                <label><input type="radio" name="compareBasis" value="accountCode"> 계정코드</label>
+              </div>
+            </div>
+            <div>
+              <label class="field-label">허용 오차 (원)</label>
+              <input type="number" id="toleranceInput" value="0" style="width:120px;">
+            </div>
+            <button class="btn" id="btnRunCompare">대사 실행</button>
+          </div>
+        </div>
+
+        <div id="compareResults" style="display:none;">
+          <div class="stat-grid" id="compareStats"></div>
+          <div class="card">
+            <div class="btn-row" style="justify-content:space-between; margin-bottom:14px;">
+              <h2 style="margin:0;">계정과목별 대사 결과</h2>
+              <button class="btn secondary" id="btnExportCompare">엑셀 다운로드</button>
+            </div>
+            <div class="table-wrap"><table id="compareTable"></table></div>
+          </div>
+          <div class="card" id="onlyCompanyCard" style="display:none;">
+            <h2>재무제표에는 있으나 전표 데이터에 없는 계정</h2>
+            <div class="table-wrap"><table id="onlyCompanyTable"></table></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== JET-3 주말전표 ===================== -->
+    <section class="tab-panel" id="tab-weekend">
+      <div class="panel-head">
+        <span class="ref">JET-3</span>
+        <h1>주말 전표 검토</h1>
+        <p>토요일 또는 일요일 날짜로 작성된 전표를 전표번호 단위로 검출합니다. 통상적이지 않은 시점의 회계처리 여부를 확인하는 절차입니다.</p>
+      </div>
+      <div id="weekendEmpty" class="empty"><b>먼저 JET-1에서 전표 데이터를 업로드하세요.</b></div>
+      <div id="weekendBody" style="display:none;">
+        <div class="stat-grid" id="weekendStats"></div>
+        <div class="card">
+          <div class="btn-row" style="justify-content:space-between; margin-bottom:14px;">
+            <h2 style="margin:0;">주말 전표 목록</h2>
+            <button class="btn secondary" id="btnExportWeekend">엑셀 다운로드</button>
+          </div>
+          <div class="table-wrap"><table id="weekendTable"></table></div>
+          <p class="foot-note">행을 클릭하면 전표의 세부 라인을 확인할 수 있습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== JET-4 상대계정 분석 ===================== -->
+    <section class="tab-panel" id="tab-counter">
+      <div class="panel-head">
+        <span class="ref">JET-4</span>
+        <h1>상대계정 분석</h1>
+        <p>특정 계정과목을 지정하면, 해당 계정이 포함된 전표에서 함께 회계처리된 상대계정을 집계합니다. 비정상적인 상대계정 조합을 식별하는 데 사용합니다.</p>
+      </div>
+      <div id="counterEmpty" class="empty"><b>먼저 JET-1에서 전표 데이터를 업로드하세요.</b></div>
+      <div id="counterBody" style="display:none;">
+        <div class="card">
+          <div class="inline-controls">
+            <div>
+              <label class="field-label">대상 계정과목</label>
+              <select id="counterAccountSelect"></select>
+            </div>
+            <button class="btn" id="btnRunCounter">분석 실행</button>
+          </div>
+        </div>
+        <div id="counterResults" style="display:none;">
+          <div class="stat-grid" id="counterStats"></div>
+          <div class="card">
+            <div class="btn-row" style="justify-content:space-between; margin-bottom:14px;">
+              <h2 style="margin:0;" id="counterResultTitle">상대계정 집계</h2>
+              <button class="btn secondary" id="btnExportCounter">엑셀 다운로드</button>
+            </div>
+            <div class="table-wrap"><table id="counterTable"></table></div>
+            <p class="foot-note">행을 클릭하면 해당 상대계정과 연결된 전표 세부 내역을 확인할 수 있습니다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== JET-5 PM초과전표 ===================== -->
+    <section class="tab-panel" id="tab-pm">
+      <div class="panel-head">
+        <span class="ref">JET-5</span>
+        <h1>중요성기준(PM) 초과전표</h1>
+        <p>지정한 중요성 금액(PM) 이상의 거액전표를 검출합니다. 전표 합계 기준 또는 라인(차/대변 개별 금액) 기준으로 조회할 수 있습니다.</p>
+      </div>
+      <div id="pmEmpty" class="empty"><b>먼저 JET-1에서 전표 데이터를 업로드하세요.</b></div>
+      <div id="pmBody" style="display:none;">
+        <div class="card">
+          <div class="inline-controls">
+            <div>
+              <label class="field-label">적용 중인 PM (중요성 금액)</label>
+              <div id="pmDisplayValue2" style="font-family:var(--mono); font-size:15px; font-weight:600; padding:8px 0;">미설정</div>
+            </div>
+            <div>
+              <label class="field-label">조회 기준</label>
+              <div class="radio-group">
+                <label><input type="radio" name="pmBasis" value="voucher" checked> 전표 합계 기준</label>
+                <label><input type="radio" name="pmBasis" value="line"> 라인(개별 금액) 기준</label>
+              </div>
+            </div>
+            <button class="btn secondary" id="btnGoToPmSetting">JET-1에서 PM 변경</button>
+            <button class="btn" id="btnRunPM">조회</button>
+          </div>
+        </div>
+        <div id="pmResults" style="display:none;">
+          <div class="stat-grid" id="pmStats"></div>
+          <div class="card">
+            <div class="btn-row" style="justify-content:space-between; margin-bottom:14px;">
+              <h2 style="margin:0;">PM 초과 전표 목록</h2>
+              <button class="btn secondary" id="btnExportPM">엑셀 다운로드</button>
+            </div>
+            <div class="table-wrap"><table id="pmTable"></table></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== JET-6 이상징후 종합분석 ===================== -->
+    <section class="tab-panel" id="tab-anomaly">
+      <div class="panel-head">
+        <span class="ref">JET-6</span>
+        <h1>이상징후 종합분석</h1>
+        <p>Round Number 회계처리, 결산일(분기 말)에 생성된 전표, 다른 전표 대비 비정상적으로 드물게 쓰인 상대계정 조합을 각각 조회합니다. 세 개의 독립된 검사로 구성되어 있으며 필요한 것만 실행하면 됩니다.</p>
+      </div>
+      <div id="anomalyEmpty" class="empty"><b>먼저 JET-1에서 전표 데이터를 업로드하세요.</b></div>
+      <div id="anomalyBody" style="display:none;">
+
+        <div class="card">
+          <h2>6-A. Round Number 전표</h2>
+          <p class="hint">차변 또는 대변 금액이 지정한 단위로 딱 떨어지는 라인을 검출합니다. 실제 거래보다 임의로 만들어졌을 가능성이 있는 금액을 식별하는 절차입니다.</p>
+          <div class="inline-controls">
+            <div>
+              <label class="field-label">라운드 판단 단위</label>
+              <select id="roundUnitSelect">
+                <option value="1000000">100만원 단위</option>
+                <option value="10000000" selected>1,000만원 단위</option>
+                <option value="100000000">1억원 단위</option>
+                <option value="1000000000">10억원 단위</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label">최소 금액 (원)</label>
+              <input type="text" id="roundMinAmount" value="1000000" style="width:150px;">
+            </div>
+            <button class="btn" id="btnRunRound">조회</button>
+          </div>
+          <div id="roundResultsWrap" style="display:none;">
+            <div class="stat-grid" id="roundStats"></div>
+            <div class="btn-row" style="justify-content:flex-end; margin-bottom:10px;"><button class="btn secondary" id="btnExportRound">엑셀 다운로드</button></div>
+            <div class="table-wrap"><table id="roundTable"></table></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>6-B. 결산일 생성 전표</h2>
+          <p class="hint">분기 결산일에 생성된 전표를 검출합니다. 특정 날짜(MM/DD) 또는 임의의 날짜 범위 중 하나를 선택해서 조회할 수 있습니다.</p>
+          <div class="inline-controls">
+            <div>
+              <label class="field-label">판단 방식</label>
+              <div class="radio-group">
+                <label><input type="radio" name="fiscalMode" value="dates" checked> 특정 날짜 (MM/DD)</label>
+                <label><input type="radio" name="fiscalMode" value="range"> 날짜 범위</label>
+              </div>
+            </div>
+          </div>
+          <div class="inline-controls" id="fiscalDatesRow">
+            <div>
+              <label class="field-label">결산일 (MM/DD, 콤마 구분)</label>
+              <input type="text" id="fiscalDatesInput" value="03/31, 06/30, 09/30, 12/31" style="width:280px;">
+            </div>
+          </div>
+          <div class="inline-controls" id="fiscalRangeRow" style="display:none;">
+            <div>
+              <label class="field-label">날짜 범위 (YYYY-MM-DD~YYYY-MM-DD, 콤마로 여러 구간 가능)</label>
+              <input type="text" id="fiscalRangeInput" placeholder="예: 2026-03-25~2026-04-05, 2026-09-25~2026-10-05" style="width:420px;">
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn" id="btnRunFiscal">조회</button>
+          </div>
+          <div id="fiscalResultsWrap" style="display:none;">
+            <div class="stat-grid" id="fiscalStats"></div>
+            <div class="btn-row" style="justify-content:flex-end; margin-bottom:10px;"><button class="btn secondary" id="btnExportFiscal">엑셀 다운로드</button></div>
+            <div class="table-wrap"><table id="fiscalTable"></table></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>6-C. 비정상적인 상대계정 조합</h2>
+          <p class="hint">계정과목별로 평소 함께 쓰이는 상대계정의 빈도를 분석해, 그 계정 기준으로 드물게 사용된 상대계정 조합을 찾습니다.</p>
+          <div class="inline-controls">
+            <div>
+              <label class="field-label">기준계정 최소 거래건수</label>
+              <input type="number" id="minTxInput" value="5" style="width:100px;">
+            </div>
+            <div>
+              <label class="field-label">비정상 판단 비율(%) 이하</label>
+              <input type="number" id="rarityInput" value="5" style="width:100px;">
+            </div>
+            <button class="btn" id="btnRunAnomalyPair">조회</button>
+          </div>
+          <div id="pairResultsWrap" style="display:none;">
+            <div class="stat-grid" id="pairStats"></div>
+            <div class="btn-row" style="justify-content:flex-end; margin-bottom:10px;"><button class="btn secondary" id="btnExportPair">엑셀 다운로드</button></div>
+            <div class="table-wrap"><table id="pairTable"></table></div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================== JET-7 중복 전표 탐지 ===================== -->
+    <section class="tab-panel" id="tab-duplicate">
+      <div class="panel-head">
+        <span class="ref">JET-7</span>
+        <h1>중복 전표 탐지</h1>
+        <p>날짜·계정과목·금액·거래처가 동일한 라인이 여러 번 나타나는 경우를 검출합니다. 이중 입력 실수나 반복적인 부정 거래를 식별하는 절차입니다.</p>
+      </div>
+      <div id="duplicateEmpty" class="empty"><b>먼저 JET-1에서 전표 데이터를 업로드하세요.</b></div>
+      <div id="duplicateBody" style="display:none;">
+        <div class="card">
+          <div class="inline-controls">
+            <div>
+              <label class="field-label">최소 중복 건수</label>
+              <input type="number" id="dupMinCount" value="2" min="2" style="width:90px;">
+            </div>
+            <div>
+              <label class="field-label">매칭 조건</label>
+              <div class="radio-group">
+                <label><input type="checkbox" id="dupUsePartner" checked> 거래처까지 동일해야 중복으로 판단</label>
+              </div>
+            </div>
+            <button class="btn" id="btnRunDup">조회</button>
+          </div>
+        </div>
+        <div id="dupResults" style="display:none;">
+          <div class="stat-grid" id="dupStats"></div>
+          <div class="card">
+            <div class="btn-row" style="justify-content:space-between; margin-bottom:14px;">
+              <h2 style="margin:0;">중복 의심 그룹</h2>
+              <button class="btn secondary" id="btnExportDup">엑셀 다운로드</button>
+            </div>
+            <div class="table-wrap"><table id="dupTable"></table></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== JET-8 거래처 분석 ===================== -->
+    <section class="tab-panel" id="tab-vendor">
+      <div class="panel-head">
+        <span class="ref">JET-8</span>
+        <h1>거래처 분석</h1>
+        <p>거래처별 거래 집중도와, 처음 등장한 거래처의 거래가 거액인 경우를 확인합니다.</p>
+      </div>
+      <div id="vendorEmpty" class="empty"><b>먼저 JET-1에서 전표 데이터를 업로드하세요.</b></div>
+      <div id="vendorBody" style="display:none;">
+
+        <div class="card">
+          <h2>8-A. 거래처 집중도</h2>
+          <p class="hint">거래처별 거래금액·건수를 집계해 상위 거래처와 전체 대비 비중을 확인합니다.</p>
+          <div class="inline-controls">
+            <div>
+              <label class="field-label">표시 건수 (상위 N개)</label>
+              <input type="number" id="vendorTopN" value="20" style="width:90px;">
+            </div>
+            <div>
+              <label class="field-label">집중도 경고 기준 (%)</label>
+              <input type="number" id="vendorConcThreshold" value="10" style="width:90px;">
+            </div>
+            <button class="btn" id="btnRunVendorConc">조회</button>
+          </div>
+          <div id="vendorConcResultsWrap" style="display:none;">
+            <div class="stat-grid" id="vendorConcStats"></div>
+            <div class="btn-row" style="justify-content:flex-end; margin-bottom:10px;"><button class="btn secondary" id="btnExportVendorConc">엑셀 다운로드</button></div>
+            <div class="table-wrap"><table id="vendorConcTable"></table></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>8-B. 연도별 거래처 순위 비교</h2>
+          <p class="hint">전년도 파일을 업로드하면, JET-1에서 업로드한 데이터를 "올해"로 놓고 지정한 계정과목 기준으로 거래처별 거래액을 연도별로 비교합니다. 올해만 있는 거래처(신규), 전년도만 있는 거래처(거래 중단), 거래빈도가 높은 거래처를 한눈에 확인할 수 있습니다.</p>
+
+          <div class="drop" id="dropZonePrior">
+            <b>클릭하여 전년도 파일 선택</b>
+            <span>JET-1과 동일한 9개 컬럼 형식 (.xlsx, .xls, .csv)</span>
+          </div>
+          <input type="file" id="priorFileInput" accept=".xlsx,.xls,.csv">
+          <div class="map-grid" id="priorMapGrid" style="display:none; margin-top:16px;"></div>
+          <div class="btn-row" id="priorMapConfirmRow" style="display:none; margin-top:10px;">
+            <button class="btn" id="btnConfirmPriorMap">전년도 데이터 불러오기</button>
+          </div>
+
+          <div class="inline-controls" id="vendorYoyControls" style="display:none; margin-top:18px;">
+            <div>
+              <label class="field-label">비교할 계정과목</label>
+              <select id="vendorYoyAccountSelect"></select>
+            </div>
+            <button class="btn" id="btnRunVendorYoy">조회</button>
+          </div>
+
+          <div id="vendorYoyResultsWrap" style="display:none;">
+            <div class="stat-grid" id="vendorYoyStats"></div>
+            <div class="btn-row" style="justify-content:flex-end; margin-bottom:10px;"><button class="btn secondary" id="btnExportVendorYoy">엑셀 다운로드</button></div>
+            <div class="table-wrap"><table id="vendorYoyTable"></table></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================== JET-9 월별 거래액 분석 ===================== -->
+    <section class="tab-panel" id="tab-monthly">
+      <div class="panel-head">
+        <span class="ref">JET-9</span>
+        <h1>월별 거래액 분석</h1>
+        <p>특정 계정과목을 선택해 월별 차변·대변·순액 추이를 확인합니다. 특정 월에 비정상적으로 몰린 거래나 계절적 패턴을 벗어난 이상 변동을 식별하는 데 활용합니다.</p>
+      </div>
+      <div id="monthlyEmpty" class="empty"><b>먼저 JET-1에서 전표 데이터를 업로드하세요.</b></div>
+      <div id="monthlyBody" style="display:none;">
+        <div class="card">
+          <div class="inline-controls">
+            <div>
+              <label class="field-label">대상 계정과목</label>
+              <select id="monthlyAccountSelect"></select>
+            </div>
+            <div>
+              <label class="field-label">표시 기준</label>
+              <div class="radio-group">
+                <label><input type="radio" name="monthlyBasis" value="net" checked> 순액(차변-대변)</label>
+                <label><input type="radio" name="monthlyBasis" value="debit"> 차변 합계</label>
+                <label><input type="radio" name="monthlyBasis" value="credit"> 대변 합계</label>
+                <label><input type="radio" name="monthlyBasis" value="gross"> 차변+대변 합계</label>
+              </div>
+            </div>
+            <button class="btn" id="btnRunMonthly">조회</button>
+          </div>
+        </div>
+        <div id="monthlyResults" style="display:none;">
+          <div class="stat-grid" id="monthlyStats"></div>
+          <div class="card">
+            <h2 id="monthlyChartTitle" style="margin-bottom:14px;">월별 추이</h2>
+            <div id="monthlyChartWrap" style="overflow-x:auto;"></div>
+          </div>
+          <div class="card">
+            <div class="btn-row" style="justify-content:space-between; margin-bottom:14px;">
+              <h2 style="margin:0;">월별 상세 내역</h2>
+              <button class="btn secondary" id="btnExportMonthly">엑셀 다운로드</button>
+            </div>
+            <div class="table-wrap"><table id="monthlyTable"></table></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 종합 대시보드 ===================== -->
+    <section class="tab-panel" id="tab-dashboard">
+      <div class="panel-head">
+        <span class="ref">요약</span>
+        <h1>종합 대시보드</h1>
+        <p>지금까지 실행한 JET-1 ~ JET-8 절차의 결과를 한 화면에 모아 보여줍니다. 아직 실행하지 않은 절차는 "미실행"으로 표시됩니다.</p>
+      </div>
+      <div id="dashboardEmpty" class="empty"><b>먼저 JET-1에서 전표 데이터를 업로드하세요.</b></div>
+      <div id="dashboardBody" style="display:none;">
+        <div class="btn-row" style="justify-content:space-between; margin-bottom:16px;">
+          <div class="btn-row">
+            <button class="btn secondary" id="btnRefreshDashboard">새로고침</button>
+            <button class="btn secondary" id="btnRunAllFromDashboard">전체 절차 일괄 실행</button>
+          </div>
+          <button class="btn" id="btnExportDashboard">전체 결과 엑셀 다운로드</button>
+        </div>
+        <div class="stat-grid" id="dashboardOverallStats" style="grid-template-columns:repeat(3,1fr);"></div>
+        <div id="dashboardCards" class="dash-grid"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------------------------------------------------------------
+  // State
+  // ---------------------------------------------------------------
+  const state = {
+    fileName:'', headers:[], aoa:[], rows:[],
+    compareFileName:'', compareHeaders:[], compareAoa:[], compareRows:[],
+    weekendData:null, counterData:null, pmData:null, compareResult:null,
+    roundData:null, fiscalData:null, pairData:null,
+    duplicateData:null, vendorConcData:null,
+    priorFileName:'', priorHeaders:[], priorAoa:[], priorRows:[], vendorYoyData:null,
+    monthlyData:null
+  };
+  const openSets = { weekend:new Set(), counter:new Set() };
+
+  const FIELD_ORDER = ['date','voucher','accountName','accountCode','desc','debit','credit','partner','partnerNo'];
+  const LABELS = {date:'날짜',voucher:'전표번호',accountName:'계정과목',accountCode:'계정코드',desc:'적요',debit:'차변',credit:'대변',partner:'거래처',partnerNo:'거래처번호'};
+  const KEYWORDS = {
+    voucher:['전표번호','전표No','전표번','분개번호'],
+    accountCode:['계정코드','계정과목코드','코드'],
+    accountName:['계정과목','계정명'],
+    partnerNo:['거래처번호','거래처코드'],
+    partner:['거래처명','거래처'],
+    debit:['차변금액','차변'],
+    credit:['대변금액','대변'],
+    date:['전표일자','회계일자','거래일자','날짜','일자'],
+    desc:['적요내용','적요','내용','비고']
+  };
+  const KEYWORD_ORDER = ['voucher','accountCode','accountName','partnerNo','partner','debit','credit','date','desc'];
+
+  // ---------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------
+  const $ = id => document.getElementById(id);
+  const norm = h => String(h==null?'':h).replace(/\s+/g,'').toLowerCase();
+
+  // ---------------------------------------------------------------
+  // Date handling — deliberately avoids the JS Date object's getDay()/
+  // getUTCDay() entirely. Every date is kept as a plain {y,m,d,key,dow}
+  // calendar value computed with pure integer arithmetic, so the weekday
+  // is always correct and never depends on the browser's local timezone
+  // (this is what previously caused an intermittent off-by-one-day bug:
+  // SheetJS builds date-typed cells as local-time Date objects, so mixing
+  // local and UTC accessors on the same value silently shifted the date).
+  //
+  // civilFromDays: days-since-1970-01-01 -> {y,m,d}. Howard Hinnant's
+  // algorithm, pure integer math, no Date object involved.
+  function civilFromDays(z){
+    z += 719468;
+    const era = Math.floor((z >= 0 ? z : z - 146096) / 146097);
+    const doe = z - era * 146097;
+    const yoe = Math.floor((doe - Math.floor(doe/1460) + Math.floor(doe/36524) - Math.floor(doe/146096)) / 365);
+    const y = yoe + era * 400;
+    const doy = doe - (365*yoe + Math.floor(yoe/4) - Math.floor(yoe/100));
+    const mp = Math.floor((5*doy + 2) / 153);
+    const d = doy - Math.floor((153*mp + 2)/5) + 1;
+    const m = mp + (mp < 10 ? 3 : -9);
+    return {y: y + (m <= 2 ? 1 : 0), m, d};
+  }
+
+  function excelSerialToYMD(serial){
+    let days = serial - 25569;
+    // Real-world xlsx files store dates as plain numeric serials, and the
+    // library that read/wrote them can leave a tiny floating-point remainder
+    // on that serial (well under a minute's worth of a day) — the size and
+    // even the sign of that remainder depends on the timezone the file was
+    // written or re-parsed under. A plain floor() can therefore land on the
+    // wrong calendar day depending on which way the drift happened to go.
+    // Snapping anything within ~2 minutes of a whole day removes that risk
+    // entirely, since this app never needs the time-of-day, only the date.
+    const rounded = Math.round(days);
+    if(Math.abs(days - rounded) < 0.0015) days = rounded;
+    return civilFromDays(Math.floor(days));
+  }
+
+  // Sakamoto's algorithm: weekday from plain y/m/d integers. 0=Sun..6=Sat,
+  // matching Date.getDay()'s convention, computed with no timezone concept.
+  function sakamotoDow(y,m,d){
+    const t = [0,3,2,5,0,3,5,1,4,6,2,4];
+    if(m < 3) y -= 1;
+    return (y + Math.floor(y/4) - Math.floor(y/100) + Math.floor(y/400) + t[m-1] + d) % 7;
+  }
+
+  function makeDate(y,m,d){
+    if(!y || !m || !d) return null;
+    return {y, m, d, key: y*10000 + m*100 + d, dow: sakamotoDow(y,m,d)};
+  }
+
+  function parseDateValue(v){
+    if(v===null || v===undefined || v==='') return null;
+    if(v instanceof Date){
+      // SheetJS (cellDates:true) builds date-typed cells using the runtime's
+      // *local* timezone, so reading it back with local getters always
+      // round-trips to the correct calendar date, whatever that local zone is.
+      return makeDate(v.getFullYear(), v.getMonth()+1, v.getDate());
+    }
+    if(typeof v === 'number'){
+      const ymd = excelSerialToYMD(v);
+      return makeDate(ymd.y, ymd.m, ymd.d);
+    }
+    let s = String(v).trim();
+    if(/^\d{8}$/.test(s)) return makeDate(+s.slice(0,4), +s.slice(4,6), +s.slice(6,8));
+    s = s.replace(/[.\/]/g,'-');
+    let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if(m) return makeDate(+m[1], +m[2], +m[3]);
+    m = s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})/);
+    if(m) return makeDate(+m[3], +m[1], +m[2]);
+    const d = new Date(s);
+    if(!isNaN(d)) return makeDate(d.getFullYear(), d.getMonth()+1, d.getDate());
+    return null;
+  }
+
+  function parseAmount(v){
+    if(v===null || v===undefined || v==='') return 0;
+    if(typeof v === 'number') return v;
+    let s = String(v).trim();
+    if(s==='' || s==='-') return 0;
+    const neg = /^\(.*\)$/.test(s);
+    s = s.replace(/[(),₩\s]/g,'');
+    let n = parseFloat(s);
+    if(isNaN(n)) return 0;
+    return neg ? -n : n;
+  }
+
+  function fmtDate(dv){
+    if(!dv) return '';
+    return dv.y+'-'+String(dv.m).padStart(2,'0')+'-'+String(dv.d).padStart(2,'0');
+  }
+  const WEEKDAY_KR = ['일','월','화','수','목','금','토'];
+
+  function fmtNum(n){
+    if(n===null || n===undefined || isNaN(n)) return '';
+    const r = Math.round(n*100)/100;
+    return r.toLocaleString('ko-KR');
+  }
+  function esc(s){
+    return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function setDot(tab, status){
+    const d = $('dot-'+tab);
+    if(!d) return;
+    d.className = 'dot ' + status;
+  }
+
+  function readWorkbookFirstSheet(data){
+    // Deliberately NOT using cellDates:true. Letting SheetJS decode date
+    // cells into JS Date objects turned out to be the actual source of the
+    // weekday bug: its internal serial->Date conversion picks up a tiny
+    // timezone-dependent floating-point drift, so the Date object it hands
+    // back can itself already represent the wrong calendar day before we
+    // even read it. Reading the raw numeric serial instead and converting
+    // it ourselves (excelSerialToYMD, pure integer arithmetic) sidesteps
+    // that bug completely.
+    const wb = XLSX.read(data, {type:'array'});
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    return XLSX.utils.sheet_to_json(ws, {header:1, raw:true, defval:''});
+  }
+
+  function downloadRows(dataArr, filename){
+    const ws = XLSX.utils.json_to_sheet(dataArr);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    XLSX.writeFile(wb, filename);
+  }
+
+  function downloadMultiSheet(sheets, filename){
+    // sheets: [{name, rows}], rows can be [] (still creates an empty sheet with headers if given via [{}])
+    const wb = XLSX.utils.book_new();
+    const usedNames = new Set();
+    sheets.forEach(s=>{
+      let name = String(s.name).replace(/[\\\/\?\*\[\]:]/g,'').slice(0,31) || 'Sheet';
+      let base = name, n = 1;
+      while(usedNames.has(name)){ name = (base.slice(0, 28)) + '_' + (++n); }
+      usedNames.add(name);
+      const rows = s.rows && s.rows.length ? s.rows : [{'결과':'해당 없음 또는 미실행'}];
+      const ws = XLSX.utils.json_to_sheet(rows);
+      XLSX.utils.book_append_sheet(wb, ws, name);
+    });
+    XLSX.writeFile(wb, filename);
+  }
+
+  // ---------------------------------------------------------------
+  // Tab switching
+  // ---------------------------------------------------------------
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      $('tab-'+btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ---------------------------------------------------------------
+  // Global PM (materiality) setting — configured once on JET-1, used by
+  // JET-5 and by "일괄 실행". Keeps the two display spots in sync.
+  // ---------------------------------------------------------------
+  function syncPmDisplay(){
+    const raw = $('globalPmInput').value;
+    const pm = parseAmount(raw);
+    const text = pm > 0 ? fmtNum(pm)+'원' : '미설정';
+    $('pmDisplayValue').textContent = text;
+    $('pmDisplayValue2').textContent = text;
+  }
+  $('globalPmInput').addEventListener('input', syncPmDisplay);
+  syncPmDisplay();
+  $('btnGoToPmSetting').addEventListener('click', ()=>{
+    document.querySelector('.tab-btn[data-tab="upload"]').click();
+    $('globalPmInput').focus();
+  });
+
+  // ---------------------------------------------------------------
+  // 전체 절차 일괄 실행 — runs every test that only needs default/
+  // already-configured inputs (no extra file upload or account pick),
+  // then jumps to the dashboard. JET-2/4/8B are skipped since they each
+  // need a separate file upload or an account selection first.
+  // ---------------------------------------------------------------
+  function runAllTests(){
+    if(!state.rows.length){ alert('먼저 JET-1에서 데이터를 업로드하세요.'); return; }
+    const ran = [], skipped = [];
+
+    renderWeekend(); ran.push('JET-3 주말 전표 검토');
+
+    const pm = parseAmount($('globalPmInput').value);
+    if(pm > 0){ $('btnRunPM').click(); ran.push('JET-5 PM 초과전표'); }
+    else { skipped.push('JET-5 PM 초과전표 (PM 미설정 — JET-1에서 설정 후 다시 실행)'); }
+
+    $('btnRunRound').click(); ran.push('JET-6A Round Number 전표');
+    $('btnRunFiscal').click(); ran.push('JET-6B 결산일 생성 전표');
+    $('btnRunAnomalyPair').click(); ran.push('JET-6C 비정상 상대계정 조합');
+    $('btnRunDup').click(); ran.push('JET-7 중복 전표 탐지');
+    $('btnRunVendorConc').click(); ran.push('JET-8A 거래처 집중도');
+
+    skipped.push('JET-2 재무제표 대사 (회사 재무제표 파일 업로드 필요)');
+    skipped.push('JET-4 상대계정 분석 (대상 계정과목 선택 필요)');
+    skipped.push('JET-8B 연도별 거래처 비교 (전년도 파일 업로드 필요)');
+
+    document.querySelector('.tab-btn[data-tab="dashboard"]').click();
+    renderDashboard();
+
+    alert('일괄 실행 완료\n\n실행됨:\n- '+ran.join('\n- ')+'\n\n별도 설정이 필요해 건너뜀:\n- '+skipped.join('\n- '));
+  }
+  $('btnRunAllFromUpload').addEventListener('click', runAllTests);
+  $('btnRunAllFromDashboard').addEventListener('click', runAllTests);
+
+  // ---------------------------------------------------------------
+  // JET-1: Upload main JE file
+  // ---------------------------------------------------------------
+  $('dropZone').addEventListener('click', ()=> $('fileInput').click());
+  $('dropZone').addEventListener('dragover', e=>{ e.preventDefault(); });
+  $('dropZone').addEventListener('drop', e=>{
+    e.preventDefault();
+    if(e.dataTransfer.files.length) handleMainFile(e.dataTransfer.files[0]);
+  });
+  $('fileInput').addEventListener('change', e=>{
+    if(e.target.files.length) handleMainFile(e.target.files[0]);
+  });
+  $('btnTemplate').addEventListener('click', downloadTemplate);
+
+  function downloadTemplate(){
+    const headers = ['날짜','전표번호','계정과목','계정코드','적요','차변','대변','거래처','거래처번호'];
+    const sample = [
+      ['2026-01-05','JV-000123','현금','10100','제품매출 대금 수령','1500000','','(주)가나상사','C-0001'],
+      ['2026-01-05','JV-000123','제품매출','40100','제품매출 대금 수령','','1500000','(주)가나상사','C-0001']
+    ];
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...sample]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'JET');
+    XLSX.writeFile(wb, 'JET_업로드_양식.xlsx');
+  }
+
+  function handleMainFile(file){
+    state.fileName = file.name;
+    const reader = new FileReader();
+    reader.onload = e=>{
+      const data = new Uint8Array(e.target.result);
+      const aoa = readWorkbookFirstSheet(data);
+      if(!aoa || aoa.length < 2){ alert('파일에서 데이터를 찾을 수 없습니다.'); return; }
+      state.aoa = aoa;
+      state.headers = aoa[0].map(h=>String(h==null?'':h));
+      renderMappingUI();
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  function guessMapping(headers){
+    const headerNorm = headers.map(norm);
+    const used = new Set();
+    const result = {};
+    KEYWORD_ORDER.forEach(field=>{
+      let foundIdx = -1;
+      const exact = norm(LABELS[field]);
+      headerNorm.forEach((h,i)=>{ if(!used.has(i) && foundIdx===-1 && h===exact) foundIdx=i; });
+      if(foundIdx===-1){
+        for(const kw of KEYWORDS[field]){
+          const kwn = norm(kw);
+          headerNorm.forEach((h,i)=>{ if(!used.has(i) && foundIdx===-1 && h.includes(kwn)) foundIdx=i; });
+          if(foundIdx!==-1) break;
+        }
+      }
+      if(foundIdx!==-1){ used.add(foundIdx); result[field]=foundIdx; } else { result[field]=-1; }
+    });
+    return result;
+  }
+
+  function renderMappingUI(){
+    const guess = guessMapping(state.headers);
+    const grid = $('mapGrid');
+    grid.innerHTML = FIELD_ORDER.map(field=>{
+      const opts = ['<option value="-1">— 선택 안 함 —</option>']
+        .concat(state.headers.map((h,i)=>'<option value="'+i+'"'+(guess[field]===i?' selected':'')+'>'+esc(h||'(제목없음 '+(i+1)+')')+'</option>'))
+        .join('');
+      return '<div><label class="field-label">'+LABELS[field]+'</label><select data-field="'+field+'" class="map-select">'+opts+'</select></div>';
+    }).join('');
+    $('mappingCard').style.display = 'block';
+    $('uploadResults').style.display = 'none';
+  }
+
+  $('btnConfirmMap').addEventListener('click', ()=>{
+    const mapping = {};
+    document.querySelectorAll('.map-select').forEach(sel=>{
+      mapping[sel.dataset.field] = parseInt(sel.value, 10);
+    });
+    if(mapping.accountName === -1 && mapping.voucher === -1){
+      alert('최소한 전표번호 또는 계정과목 컬럼은 지정해야 합니다.');
+      return;
+    }
+    state.rows = buildRows(state.aoa, mapping);
+    if(state.rows.length === 0){ alert('유효한 데이터 행을 찾지 못했습니다. 매핑을 확인해 주세요.'); return; }
+    renderUploadResults();
+    populateAccountSelect();
+    hideEmptyStates();
+    setDot('upload','ok');
+    $('railFileInfo').innerHTML = '<b>'+esc(state.fileName)+'</b>'+state.rows.length.toLocaleString('ko-KR')+'개 라인 · '
+      + new Set(state.rows.map(r=>r.voucher)).size.toLocaleString('ko-KR')+'개 전표';
+  });
+
+  function buildRows(aoa, mapping){
+    const rows = [];
+    for(let i=1;i<aoa.length;i++){
+      const r = aoa[i];
+      if(!r || r.every(c=> c==='' || c==null)) continue;
+      const get = f => mapping[f] >= 0 ? r[mapping[f]] : '';
+      const row = {
+        date: parseDateValue(get('date')),
+        voucher: String(get('voucher') ?? '').trim(),
+        accountName: String(get('accountName') ?? '').trim(),
+        accountCode: String(get('accountCode') ?? '').trim(),
+        desc: String(get('desc') ?? '').trim(),
+        debit: parseAmount(get('debit')),
+        credit: parseAmount(get('credit')),
+        partner: String(get('partner') ?? '').trim(),
+        partnerNo: String(get('partnerNo') ?? '').trim()
+      };
+      if(!row.accountName && !row.voucher) continue;
+      rows.push(row);
+    }
+    return rows;
+  }
+
+  function computeSummary(rows){
+    const voucherSet = new Set(), accountSet = new Set();
+    let sumDebit=0, sumCredit=0, minDate=null, maxDate=null;
+    const voucherTotals = {};
+    rows.forEach(row=>{
+      voucherSet.add(row.voucher);
+      accountSet.add(row.accountName);
+      sumDebit += row.debit; sumCredit += row.credit;
+      if(row.date){
+        if(!minDate || row.date.key < minDate.key) minDate = row.date;
+        if(!maxDate || row.date.key > maxDate.key) maxDate = row.date;
+      }
+      if(!voucherTotals[row.voucher]) voucherTotals[row.voucher] = {debit:0, credit:0};
+      voucherTotals[row.voucher].debit += row.debit;
+      voucherTotals[row.voucher].credit += row.credit;
+    });
+    const unbalanced = Object.entries(voucherTotals)
+      .filter(([v,t]) => Math.abs(t.debit - t.credit) > 1)
+      .map(([v,t]) => ({voucher:v, debit:t.debit, credit:t.credit, diff:t.debit-t.credit}));
+    return {count:rows.length, voucherCount:voucherSet.size, accountCount:accountSet.size, sumDebit, sumCredit, minDate, maxDate, unbalanced};
+  }
+
+  function renderUploadResults(){
+    const s = computeSummary(state.rows);
+    const balanced = Math.abs(s.sumDebit - s.sumCredit) <= 1;
+    $('uploadStats').innerHTML = [
+      ['총 라인 수', s.count.toLocaleString('ko-KR')+'건', ''],
+      ['전표 건수', s.voucherCount.toLocaleString('ko-KR')+'건', ''],
+      ['계정과목 수', s.accountCount.toLocaleString('ko-KR')+'개', ''],
+      ['기간', (s.minDate?fmtDate(s.minDate):'-')+' ~ '+(s.maxDate?fmtDate(s.maxDate):'-'), ''],
+      ['차변 합계', fmtNum(s.sumDebit), ''],
+      ['대변 합계 / 차대일치', fmtNum(s.sumCredit)+(balanced?' (일치)':' (불일치)'), balanced?'good':'bad']
+    ].map(([k,v,cls])=>'<div class="stat'+(cls?' '+cls:'')+'"><div class="k">'+esc(k)+'</div><div class="v">'+esc(v)+'</div></div>').join('');
+
+    if(s.unbalanced.length){
+      $('unbalancedCard').style.display='block';
+      $('unbalancedTable').innerHTML =
+        '<thead><tr><th>전표번호</th><th>차변합계</th><th>대변합계</th><th>차이</th></tr></thead><tbody>'
+        + s.unbalanced.map(u=>'<tr><td class="mono">'+esc(u.voucher)+'</td><td class="num">'+fmtNum(u.debit)+'</td><td class="num">'+fmtNum(u.credit)+'</td><td class="num">'+fmtNum(u.diff)+'</td></tr>').join('')
+        + '</tbody>';
+    } else {
+      $('unbalancedCard').style.display='none';
+    }
+
+    const preview = state.rows.slice(0,25);
+    $('previewTable').innerHTML =
+      '<thead><tr><th>날짜</th><th>요일</th><th>전표번호</th><th>계정과목</th><th>계정코드</th><th>적요</th><th>차변</th><th>대변</th><th>거래처</th><th>거래처번호</th></tr></thead><tbody>'
+      + preview.map(r=>'<tr><td class="mono">'+esc(fmtDate(r.date))+'</td><td class="mono">'+(r.date? WEEKDAY_KR[r.date.dow]:'')+'</td><td class="mono">'+esc(r.voucher)+'</td><td>'+esc(r.accountName)+'</td><td class="mono">'+esc(r.accountCode)+'</td><td>'+esc(r.desc)+'</td><td class="num">'+fmtNum(r.debit)+'</td><td class="num">'+fmtNum(r.credit)+'</td><td>'+esc(r.partner)+'</td><td class="mono">'+esc(r.partnerNo)+'</td></tr>').join('')
+      + '</tbody>';
+
+    $('uploadResults').style.display='block';
+  }
+
+  function hideEmptyStates(){
+    $('compareEmpty').style.display='none'; $('compareBody').style.display='block';
+    $('weekendEmpty').style.display='none'; $('weekendBody').style.display='block';
+    $('counterEmpty').style.display='none'; $('counterBody').style.display='block';
+    $('pmEmpty').style.display='none'; $('pmBody').style.display='block';
+    $('anomalyEmpty').style.display='none'; $('anomalyBody').style.display='block';
+    $('duplicateEmpty').style.display='none'; $('duplicateBody').style.display='block';
+    $('vendorEmpty').style.display='none'; $('vendorBody').style.display='block';
+    $('monthlyEmpty').style.display='none'; $('monthlyBody').style.display='block';
+    $('dashboardEmpty').style.display='none'; $('dashboardBody').style.display='block';
+  }
+
+  function statsHtml(items){
+    return items.map(([k,v,cls])=>'<div class="stat'+(cls?' '+cls:'')+'"><div class="k">'+esc(k)+'</div><div class="v">'+esc(v)+'</div></div>').join('');
+  }
+  function emptyRow(msg, colspan){
+    return '<tbody><tr><td colspan="'+colspan+'" style="padding:16px; color:var(--ink-soft);">'+esc(msg)+'</td></tr></tbody>';
+  }
+  function groupByVoucher(rows){
+    const map = new Map();
+    rows.forEach(row=>{
+      if(!map.has(row.voucher)) map.set(row.voucher, []);
+      map.get(row.voucher).push(row);
+    });
+    return map;
+  }
+
+  // ---------------------------------------------------------------
+  // JET-2: Compare to company financial statements
+  // ---------------------------------------------------------------
+  $('dropZoneCompare').addEventListener('click', ()=> $('compareFileInput').click());
+  $('compareFileInput').addEventListener('change', e=>{
+    if(e.target.files.length) handleCompareFile(e.target.files[0]);
+  });
+
+  function handleCompareFile(file){
+    state.compareFileName = file.name;
+    const reader = new FileReader();
+    reader.onload = e=>{
+      const data = new Uint8Array(e.target.result);
+      const aoa = readWorkbookFirstSheet(data);
+      if(!aoa || aoa.length < 2){ alert('파일에서 데이터를 찾을 수 없습니다.'); return; }
+      state.compareAoa = aoa;
+      state.compareHeaders = aoa[0].map(h=>String(h==null?'':h));
+      renderCompareMappingUI();
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  function renderCompareMappingUI(){
+    const headers = state.compareHeaders;
+    const norm2 = headers.map(norm);
+    let nameGuess=-1, codeGuess=-1, amtGuess=-1;
+    norm2.forEach((h,i)=>{ if(codeGuess===-1 && h.includes('코드')) codeGuess=i; });
+    norm2.forEach((h,i)=>{ if(nameGuess===-1 && i!==codeGuess && (h.includes('계정과목')||h.includes('계정명')||(h.includes('계정')&&!h.includes('코드')))) nameGuess=i; });
+    norm2.forEach((h,i)=>{ if(amtGuess===-1 && i!==codeGuess && i!==nameGuess && (h.includes('금액')||h.includes('잔액'))) amtGuess=i; });
+    const optsFor = guess => ['<option value="-1">— 선택 안 함 —</option>']
+      .concat(headers.map((h,i)=>'<option value="'+i+'"'+(guess===i?' selected':'')+'>'+esc(h||'(제목없음 '+(i+1)+')')+'</option>')).join('');
+    $('compareMapGrid').innerHTML =
+      '<div><label class="field-label">계정과목</label><select id="cmNameSel">'+optsFor(nameGuess)+'</select></div>'
+      + '<div><label class="field-label">계정코드</label><select id="cmCodeSel">'+optsFor(codeGuess)+'</select></div>'
+      + '<div><label class="field-label">금액(잔액)</label><select id="cmAmtSel">'+optsFor(amtGuess)+'</select></div>';
+    $('compareMapGrid').style.display='grid';
+    $('compareMapConfirmRow').style.display='flex';
+  }
+
+  $('btnCompareTemplate').addEventListener('click', ()=>{
+    const headers = ['계정과목','계정코드','금액'];
+    const sample = [
+      ['현금','10100','15000000'],
+      ['매입채무','21100','-8200000'],
+      ['제품매출','40100','-320000000'],
+      ['매출원가','50100','210000000']
+    ];
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...sample]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, '재무제표');
+    XLSX.writeFile(wb, 'JET2_재무제표_업로드양식.xlsx');
+  });
+
+  $('btnConfirmCompareMap').addEventListener('click', ()=>{
+    const nameIdx = parseInt($('cmNameSel').value,10);
+    const codeIdx = parseInt($('cmCodeSel').value,10);
+    const amtIdx = parseInt($('cmAmtSel').value,10);
+    if((nameIdx<0 && codeIdx<0) || amtIdx<0){ alert('계정과목 또는 계정코드 중 최소 하나와, 금액 컬럼을 선택해 주세요.'); return; }
+    const rows = [];
+    for(let i=1;i<state.compareAoa.length;i++){
+      const r = state.compareAoa[i];
+      if(!r || r.every(c=>c===''||c==null)) continue;
+      const name = nameIdx>=0 ? String(r[nameIdx]??'').trim() : '';
+      const code = codeIdx>=0 ? String(r[codeIdx]??'').trim() : '';
+      if(!name && !code) continue;
+      rows.push({name, code, amount: parseAmount(r[amtIdx])});
+    }
+    state.compareRows = rows;
+    $('compareRunCard').style.display='block';
+    alert('재무제표 데이터 '+rows.length.toLocaleString('ko-KR')+'건을 불러왔습니다. 대사 기준을 선택 후 [대사 실행]을 눌러주세요.');
+  });
+
+  $('btnRunCompare').addEventListener('click', runCompare);
+
+  function computeTrialBalance(rows, basis){
+    const map = new Map();
+    rows.forEach(row=>{
+      const key = basis==='accountCode' ? row.accountCode : row.accountName;
+      if(!map.has(key)) map.set(key, {key, accountName:row.accountName, accountCode:row.accountCode, debit:0, credit:0});
+      const o = map.get(key);
+      o.debit += row.debit; o.credit += row.credit;
+    });
+    return Array.from(map.values()).map(o=>({...o, balance:o.debit-o.credit}));
+  }
+
+  function runCompare(){
+    if(!state.compareRows.length){ alert('먼저 회사 재무제표 파일을 불러와 주세요.'); return; }
+    const basis = document.querySelector('input[name="compareBasis"]:checked').value;
+    const tolerance = parseAmount($('toleranceInput').value);
+    const tb = computeTrialBalance(state.rows, basis);
+    const cmap = new Map();
+    state.compareRows.forEach(r=>{
+      const key = basis==='accountCode' ? r.code : r.name;
+      if(!key) return;
+      cmap.set(key, (cmap.get(key)||0) + r.amount);
+    });
+    const matchedKeys = new Set();
+    const results = tb.map(t=>{
+      const has = cmap.has(t.key);
+      const company = has ? cmap.get(t.key) : null;
+      if(has) matchedKeys.add(t.key);
+      const diff = has ? (t.balance - company) : null;
+      const status = !has ? 'missing' : (Math.abs(diff) <= tolerance ? 'match' : 'mismatch');
+      return {...t, company, diff, status};
+    }).sort((a,b)=> Math.abs(b.diff||0) - Math.abs(a.diff||0));
+    const onlyCompany = [];
+    cmap.forEach((amt,key)=>{ if(!matchedKeys.has(key)) onlyCompany.push({key, amount:amt}); });
+
+    state.compareResult = {results, onlyCompany, basis};
+    const matchCount = results.filter(r=>r.status==='match').length;
+    const mismatchCount = results.filter(r=>r.status==='mismatch').length;
+    const missingCount = results.filter(r=>r.status==='missing').length;
+    const totalDiff = results.reduce((s,r)=> s + Math.abs(r.diff||0), 0);
+
+    $('compareStats').innerHTML = [
+      ['대사 계정 수', results.length.toLocaleString('ko-KR')+'개',''],
+      ['일치', matchCount.toLocaleString('ko-KR')+'개','good'],
+      ['불일치', mismatchCount.toLocaleString('ko-KR')+'개', mismatchCount>0?'bad':''],
+      ['재무제표에 없는 계정', missingCount.toLocaleString('ko-KR')+'개', missingCount>0?'bad':''],
+      ['전표에 없는 계정(회사FS)', onlyCompany.length.toLocaleString('ko-KR')+'개', onlyCompany.length>0?'bad':''],
+      ['차이 절대값 합계', fmtNum(totalDiff), totalDiff>tolerance?'bad':'good']
+    ].map(([k,v,cls])=>'<div class="stat'+(cls?' '+cls:'')+'"><div class="k">'+esc(k)+'</div><div class="v">'+esc(v)+'</div></div>').join('');
+
+    $('compareTable').innerHTML =
+      '<thead><tr><th>계정과목</th><th>계정코드</th><th>JET 차변합계</th><th>JET 대변합계</th><th>JET 잔액</th><th>회사 재무제표</th><th>차이</th><th>상태</th></tr></thead><tbody>'
+      + results.map(r=>'<tr><td>'+esc(r.accountName)+'</td><td class="mono">'+esc(r.accountCode)+'</td><td class="num">'+fmtNum(r.debit)+'</td><td class="num">'+fmtNum(r.credit)+'</td><td class="num">'+fmtNum(r.balance)+'</td><td class="num">'+(r.company===null?'-':fmtNum(r.company))+'</td><td class="num">'+(r.diff===null?'-':fmtNum(r.diff))+'</td><td><span class="badge '+r.status+'">'+(r.status==='match'?'일치':r.status==='mismatch'?'불일치':'FS 없음')+'</span></td></tr>').join('')
+      + '</tbody>';
+
+    if(onlyCompany.length){
+      $('onlyCompanyCard').style.display='block';
+      $('onlyCompanyTable').innerHTML = '<thead><tr><th>계정과목/코드</th><th>금액</th></tr></thead><tbody>'
+        + onlyCompany.map(o=>'<tr><td>'+esc(o.key)+'</td><td class="num">'+fmtNum(o.amount)+'</td></tr>').join('')
+        + '</tbody>';
+    } else {
+      $('onlyCompanyCard').style.display='none';
+    }
+
+    $('compareResults').style.display='block';
+    setDot('compare', (mismatchCount>0 || missingCount>0 || onlyCompany.length>0) ? 'flag' : 'ok');
+  }
+
+  $('btnExportCompare').addEventListener('click', ()=>{
+    if(!state.compareResult) return;
+    downloadRows(state.compareResult.results.map(r=>({
+      계정과목:r.accountName, 계정코드:r.accountCode, JET차변합계:r.debit, JET대변합계:r.credit,
+      JET잔액:r.balance, 회사재무제표:r.company, 차이:r.diff, 상태:r.status
+    })), 'JET2_재무제표대사.xlsx');
+  });
+
+  // ---------------------------------------------------------------
+  // JET-3: Weekend entries
+  // ---------------------------------------------------------------
+  function runWeekend(){
+    const map = new Map();
+    state.rows.forEach(row=>{
+      if(!row.date) return;
+      const day = row.date.dow;
+      if(day===0 || day===6){
+        if(!map.has(row.voucher)) map.set(row.voucher, {voucher:row.voucher, date:row.date, day, lines:[], debit:0, credit:0});
+        const o = map.get(row.voucher);
+        o.lines.push(row); o.debit += row.debit; o.credit += row.credit;
+      }
+    });
+    return Array.from(map.values()).sort((a,b)=> a.date.key - b.date.key);
+  }
+
+  function renderWeekend(){
+    const data = runWeekend();
+    state.weekendData = data;
+    const totalAmt = data.reduce((s,v)=> s + Math.max(v.debit,v.credit), 0);
+    $('weekendStats').innerHTML = [
+      ['주말 전표 건수', data.length.toLocaleString('ko-KR')+'건',''],
+      ['해당 라인 수', data.reduce((s,v)=>s+v.lines.length,0).toLocaleString('ko-KR')+'건',''],
+      ['금액 합계', fmtNum(totalAmt), data.length>0?'bad':'good']
+    ].map(([k,v,cls])=>'<div class="stat'+(cls?' '+cls:'')+'"><div class="k">'+esc(k)+'</div><div class="v">'+esc(v)+'</div></div>').join('');
+
+    if(!data.length){
+      $('weekendTable').innerHTML = '<tbody><tr><td style="padding:16px; color:var(--ink-soft);">주말에 생성된 전표가 없습니다.</td></tr></tbody>';
+    } else {
+      $('weekendTable').innerHTML = '<thead><tr><th></th><th>전표번호</th><th>날짜</th><th>요일</th><th>라인수</th><th>차변합계</th><th>대변합계</th></tr></thead><tbody>'
+        + data.map((v,i)=> weekendRowHtml(v,i)).join('') + '</tbody>';
+    }
+    $('weekendTable').onclick = e=>{
+      const tr = e.target.closest('tr.toggle-row');
+      if(!tr) return;
+      const idx = tr.dataset.idx;
+      if(openSets.weekend.has(idx)) openSets.weekend.delete(idx); else openSets.weekend.add(idx);
+      renderWeekend();
+    };
+    setDot('weekend', data.length>0 ? 'flag' : 'ok');
+  }
+
+  function weekendRowHtml(v,i){
+    const open = openSets.weekend.has(String(i));
+    let html = '<tr class="toggle-row'+(open?' open':'')+'" data-idx="'+i+'"><td><span class="car">▸</span></td><td class="mono">'+esc(v.voucher)+'</td><td class="mono">'+esc(fmtDate(v.date))+'</td><td><span class="badge weekend">'+WEEKDAY_KR[v.day]+'요일</span></td><td class="num">'+v.lines.length+'</td><td class="num">'+fmtNum(v.debit)+'</td><td class="num">'+fmtNum(v.credit)+'</td></tr>';
+    if(open){
+      html += '<tr class="detail-row"><td colspan="7"><div class="detail-inner"><table><thead><tr><th>계정과목</th><th>계정코드</th><th>적요</th><th>차변</th><th>대변</th><th>거래처</th></tr></thead><tbody>'
+        + v.lines.map(l=>'<tr><td>'+esc(l.accountName)+'</td><td class="mono">'+esc(l.accountCode)+'</td><td>'+esc(l.desc)+'</td><td class="num">'+fmtNum(l.debit)+'</td><td class="num">'+fmtNum(l.credit)+'</td><td>'+esc(l.partner)+'</td></tr>').join('')
+        + '</tbody></table></div></td></tr>';
+    }
+    return html;
+  }
+
+  $('btnExportWeekend').addEventListener('click', ()=>{
+    if(!state.weekendData) return;
+    downloadRows(state.weekendData.map(v=>({
+      전표번호:v.voucher, 날짜:fmtDate(v.date), 요일:WEEKDAY_KR[v.day]+'요일', 라인수:v.lines.length, 차변합계:v.debit, 대변합계:v.credit
+    })), 'JET3_주말전표.xlsx');
+  });
+
+  // ---------------------------------------------------------------
+  // JET-4: Counter account analysis
+  // ---------------------------------------------------------------
+  function populateAccountSelect(){
+    const names = Array.from(new Set(state.rows.map(r=>r.accountName))).filter(Boolean).sort((a,b)=>a.localeCompare(b,'ko'));
+    $('counterAccountSelect').innerHTML = names.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('');
+    $('monthlyAccountSelect').innerHTML = names.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('');
+  }
+
+  $('btnRunCounter').addEventListener('click', ()=>{
+    const target = $('counterAccountSelect').value;
+    if(!target) return;
+    openSets.counter.clear();
+    const byVoucher = new Map();
+    state.rows.forEach(row=>{
+      if(!byVoucher.has(row.voucher)) byVoucher.set(row.voucher, []);
+      byVoucher.get(row.voucher).push(row);
+    });
+    const counterMap = new Map();
+    const detailMap = new Map();
+    let voucherHitCount = 0;
+    byVoucher.forEach((lines, voucher)=>{
+      const hasTarget = lines.some(l=>l.accountName===target);
+      if(!hasTarget) return;
+      voucherHitCount++;
+      lines.forEach(l=>{
+        if(l.accountName===target) return;
+        const key = l.accountName+'|'+l.accountCode;
+        if(!counterMap.has(key)) counterMap.set(key, {accountName:l.accountName, accountCode:l.accountCode, count:0, debit:0, credit:0});
+        const o = counterMap.get(key);
+        o.count++; o.debit += l.debit; o.credit += l.credit;
+        if(!detailMap.has(key)) detailMap.set(key, []);
+        detailMap.get(key).push({voucher, date:l.date, debit:l.debit, credit:l.credit, desc:l.desc, partner:l.partner});
+      });
+    });
+    const list = Array.from(counterMap.values()).sort((a,b)=> (b.debit+b.credit)-(a.debit+a.credit));
+    state.counterData = {target, list, detailMap, voucherHitCount};
+    renderCounter();
+  });
+
+  function renderCounter(){
+    const d = state.counterData;
+    if(!d) return;
+    $('counterResultTitle').textContent = '"'+d.target+'" 계정의 상대계정 집계';
+    $('counterStats').innerHTML = [
+      ['대상 계정 전표 건수', d.voucherHitCount.toLocaleString('ko-KR')+'건',''],
+      ['상대계정 종류', d.list.length.toLocaleString('ko-KR')+'개',''],
+      ['상대계정 라인 합계', fmtNum(d.list.reduce((s,o)=>s+o.count,0)),'']
+    ].map(([k,v,cls])=>'<div class="stat'+(cls?' '+cls:'')+'"><div class="k">'+esc(k)+'</div><div class="v">'+esc(v)+'</div></div>').join('');
+
+    if(!d.list.length){
+      $('counterTable').innerHTML = '<tbody><tr><td style="padding:16px; color:var(--ink-soft);">상대계정이 발견되지 않았습니다 (해당 계정이 단독으로 사용되었거나 데이터가 없습니다).</td></tr></tbody>';
+    } else {
+      $('counterTable').innerHTML = '<thead><tr><th></th><th>상대계정과목</th><th>계정코드</th><th>건수</th><th>차변합계</th><th>대변합계</th></tr></thead><tbody>'
+        + d.list.map((o,i)=> counterRowHtml(o,i,d)).join('') + '</tbody>';
+    }
+    $('counterTable').onclick = e=>{
+      const tr = e.target.closest('tr.toggle-row');
+      if(!tr) return;
+      const idx = tr.dataset.idx;
+      if(openSets.counter.has(idx)) openSets.counter.delete(idx); else openSets.counter.add(idx);
+      renderCounter();
+    };
+    $('counterResults').style.display='block';
+    setDot('counter','ok');
+  }
+
+  function counterRowHtml(o,i,d){
+    const key = o.accountName+'|'+o.accountCode;
+    const open = openSets.counter.has(String(i));
+    let html = '<tr class="toggle-row'+(open?' open':'')+'" data-idx="'+i+'"><td><span class="car">▸</span></td><td>'+esc(o.accountName)+'</td><td class="mono">'+esc(o.accountCode)+'</td><td class="num">'+o.count+'</td><td class="num">'+fmtNum(o.debit)+'</td><td class="num">'+fmtNum(o.credit)+'</td></tr>';
+    if(open){
+      const details = d.detailMap.get(key) || [];
+      html += '<tr class="detail-row"><td colspan="6"><div class="detail-inner"><table><thead><tr><th>전표번호</th><th>날짜</th><th>적요</th><th>차변</th><th>대변</th><th>거래처</th></tr></thead><tbody>'
+        + details.map(l=>'<tr><td class="mono">'+esc(l.voucher)+'</td><td class="mono">'+esc(fmtDate(l.date))+'</td><td>'+esc(l.desc)+'</td><td class="num">'+fmtNum(l.debit)+'</td><td class="num">'+fmtNum(l.credit)+'</td><td>'+esc(l.partner)+'</td></tr>').join('')
+        + '</tbody></table></div></td></tr>';
+    }
+    return html;
+  }
+
+  $('btnExportCounter').addEventListener('click', ()=>{
+    if(!state.counterData) return;
+    downloadRows(state.counterData.list.map(o=>({
+      상대계정과목:o.accountName, 계정코드:o.accountCode, 건수:o.count, 차변합계:o.debit, 대변합계:o.credit
+    })), 'JET4_상대계정분석.xlsx');
+  });
+
+  // ---------------------------------------------------------------
+  // JET-5: PM threshold entries
+  // ---------------------------------------------------------------
+  $('btnRunPM').addEventListener('click', ()=>{
+    const pm = parseAmount($('globalPmInput').value);
+    if(!pm || pm<=0){ alert('PM(중요성 금액)이 설정되지 않았습니다. JET-1 화면 상단의 "감사 기준값 설정"에서 먼저 입력해 주세요.'); return; }
+    const basis = document.querySelector('input[name="pmBasis"]:checked').value;
+    let data;
+    if(basis==='line'){
+      data = state.rows.filter(r=> r.debit>=pm || r.credit>=pm)
+        .map(r=>({...r, amount: Math.max(r.debit,r.credit)}))
+        .sort((a,b)=> b.amount - a.amount);
+    } else {
+      const byVoucher = new Map();
+      state.rows.forEach(row=>{
+        if(!byVoucher.has(row.voucher)) byVoucher.set(row.voucher, {voucher:row.voucher, date:row.date, partner:row.partner, debit:0, credit:0, lines:0});
+        const o = byVoucher.get(row.voucher);
+        o.debit += row.debit; o.credit += row.credit; o.lines++;
+        if(row.date && (!o.date || row.date.key < o.date.key)) o.date = row.date;
+      });
+      data = Array.from(byVoucher.values())
+        .map(v=>({...v, amount: Math.max(v.debit,v.credit)}))
+        .filter(v=> v.amount >= pm)
+        .sort((a,b)=> b.amount - a.amount);
+    }
+    state.pmData = {data, basis, pm};
+    renderPM();
+  });
+
+  function renderPM(){
+    const {data, basis, pm} = state.pmData;
+    const total = data.reduce((s,v)=>s+v.amount,0);
+    $('pmStats').innerHTML = [
+      ['적용 PM', fmtNum(pm), ''],
+      ['조회 기준', basis==='line' ? '라인 기준' : '전표 합계 기준', ''],
+      ['검출 건수', data.length.toLocaleString('ko-KR')+'건', data.length>0?'flag':'good'],
+      ['금액 합계', fmtNum(total), '']
+    ].map(([k,v,cls])=>'<div class="stat'+(cls==='flag'?' bad':cls?' '+cls:'')+'"><div class="k">'+esc(k)+'</div><div class="v">'+esc(v)+'</div></div>').join('');
+
+    if(!data.length){
+      $('pmTable').innerHTML = '<tbody><tr><td style="padding:16px; color:var(--ink-soft);">PM 이상의 전표/라인이 없습니다.</td></tr></tbody>';
+    } else if(basis==='line'){
+      $('pmTable').innerHTML = '<thead><tr><th>날짜</th><th>전표번호</th><th>계정과목</th><th>적요</th><th>차변</th><th>대변</th><th>거래처</th></tr></thead><tbody>'
+        + data.map(r=>'<tr><td class="mono">'+esc(fmtDate(r.date))+'</td><td class="mono">'+esc(r.voucher)+'</td><td>'+esc(r.accountName)+'</td><td>'+esc(r.desc)+'</td><td class="num">'+fmtNum(r.debit)+'</td><td class="num">'+fmtNum(r.credit)+'</td><td>'+esc(r.partner)+'</td></tr>').join('')
+        + '</tbody>';
+    } else {
+      $('pmTable').innerHTML = '<thead><tr><th>전표번호</th><th>날짜</th><th>거래처</th><th>라인수</th><th>차변합계</th><th>대변합계</th></tr></thead><tbody>'
+        + data.map(v=>'<tr><td class="mono">'+esc(v.voucher)+'</td><td class="mono">'+esc(fmtDate(v.date))+'</td><td>'+esc(v.partner)+'</td><td class="num">'+v.lines+'</td><td class="num">'+fmtNum(v.debit)+'</td><td class="num">'+fmtNum(v.credit)+'</td></tr>').join('')
+        + '</tbody>';
+    }
+    $('pmResults').style.display='block';
+    setDot('pm', data.length>0 ? 'flag' : 'ok');
+  }
+
+  $('btnExportPM').addEventListener('click', ()=>{
+    if(!state.pmData) return;
+    const {data, basis} = state.pmData;
+    const out = basis==='line'
+      ? data.map(r=>({날짜:fmtDate(r.date), 전표번호:r.voucher, 계정과목:r.accountName, 적요:r.desc, 차변:r.debit, 대변:r.credit, 거래처:r.partner}))
+      : data.map(v=>({전표번호:v.voucher, 날짜:fmtDate(v.date), 거래처:v.partner, 라인수:v.lines, 차변합계:v.debit, 대변합계:v.credit}));
+    downloadRows(out, 'JET5_PM초과전표.xlsx');
+  });
+
+  // ---------------------------------------------------------------
+  // JET-6: Composite risk / anomaly tests
+  // ---------------------------------------------------------------
+
+  // 6-A Round number entries
+  $('btnRunRound').addEventListener('click', ()=>{
+    const unit = parseInt($('roundUnitSelect').value, 10);
+    const minAmt = parseAmount($('roundMinAmount').value);
+    const data = state.rows.filter(r=>{
+      const amt = Math.max(r.debit, r.credit);
+      return amt !== 0 && amt >= minAmt && amt % unit === 0;
+    }).sort((a,b)=> Math.max(b.debit,b.credit) - Math.max(a.debit,a.credit));
+    state.roundData = data;
+    const total = data.reduce((s,r)=> s + Math.max(r.debit,r.credit), 0);
+    $('roundStats').innerHTML = statsHtml([
+      ['검출 건수', data.length.toLocaleString('ko-KR')+'건', data.length>0?'bad':'good'],
+      ['금액 합계', fmtNum(total), '']
+    ]);
+    $('roundTable').innerHTML = data.length
+      ? '<thead><tr><th>날짜</th><th>전표번호</th><th>계정과목</th><th>금액</th><th>적요</th><th>거래처</th></tr></thead><tbody>'
+        + data.map(r=>'<tr><td class="mono">'+esc(fmtDate(r.date))+'</td><td class="mono">'+esc(r.voucher)+'</td><td>'+esc(r.accountName)+'</td><td class="num">'+fmtNum(Math.max(r.debit,r.credit))+'</td><td>'+esc(r.desc)+'</td><td>'+esc(r.partner)+'</td></tr>').join('')
+        + '</tbody>'
+      : emptyRow('라운드 넘버 조건에 해당하는 라인이 없습니다.', 6);
+    $('roundResultsWrap').style.display='block';
+    refreshAnomalyDot();
+  });
+  $('btnExportRound').addEventListener('click', ()=>{
+    if(!state.roundData) return;
+    downloadRows(state.roundData.map(r=>({
+      날짜:fmtDate(r.date), 전표번호:r.voucher, 계정과목:r.accountName, 금액:Math.max(r.debit,r.credit), 적요:r.desc, 거래처:r.partner
+    })), 'JET6A_라운드넘버.xlsx');
+  });
+
+  // 6-B Fiscal (quarter-end) date entries
+  document.querySelectorAll('input[name="fiscalMode"]').forEach(r=>{
+    r.addEventListener('change', ()=>{
+      const mode = document.querySelector('input[name="fiscalMode"]:checked').value;
+      $('fiscalDatesRow').style.display = mode==='dates' ? 'flex' : 'none';
+      $('fiscalRangeRow').style.display = mode==='range' ? 'flex' : 'none';
+    });
+  });
+
+  function parseFiscalRanges(raw){
+    return raw.split(',').map(s=>s.trim()).filter(Boolean).map(s=>{
+      const parts = s.split('~').map(p=>p.trim());
+      if(parts.length !== 2) return null;
+      const start = parseDateValue(parts[0]);
+      const end = parseDateValue(parts[1]);
+      if(!start || !end) return null;
+      return start.key <= end.key ? {start:start.key, end:end.key} : {start:end.key, end:start.key};
+    }).filter(Boolean);
+  }
+
+  $('btnRunFiscal').addEventListener('click', ()=>{
+    const mode = document.querySelector('input[name="fiscalMode"]:checked').value;
+    let matchFn, emptyMsg;
+
+    if(mode === 'range'){
+      const ranges = parseFiscalRanges($('fiscalRangeInput').value);
+      if(!ranges.length){ alert('날짜 범위 형식이 올바르지 않습니다. 예: 2026-03-25~2026-04-05'); return; }
+      matchFn = d => ranges.some(r=> d.key >= r.start && d.key <= r.end);
+      emptyMsg = '지정한 날짜 범위에 생성된 전표가 없습니다.';
+    } else {
+      const raw = $('fiscalDatesInput').value;
+      const targets = raw.split(',').map(s=>s.trim()).filter(Boolean).map(s=>{
+        const m = s.match(/^(\d{1,2})\/(\d{1,2})$/);
+        return m ? {month:+m[1], day:+m[2]} : null;
+      }).filter(Boolean);
+      if(!targets.length){ alert('결산일 형식이 올바르지 않습니다. 예: 03/31, 06/30'); return; }
+      matchFn = d => targets.some(t=> t.month===d.m && t.day===d.d);
+      emptyMsg = '지정한 결산일에 생성된 전표가 없습니다.';
+    }
+
+    const byVoucher = groupByVoucher(state.rows);
+    const qualifyingVouchers = [];
+    byVoucher.forEach((lines, voucher)=>{
+      const dEntry = lines.find(l=>l.date);
+      const d = dEntry ? dEntry.date : null;
+      if(!d) return;
+      if(!matchFn(d)) return;
+      qualifyingVouchers.push({voucher, date:d, lines});
+    });
+    qualifyingVouchers.sort((a,b)=> a.date.key - b.date.key || a.voucher.localeCompare(b.voucher,'ko'));
+
+    // Flatten to one row per line (not aggregated per voucher), tagging each
+    // line with its group index so consecutive lines of the same voucher can
+    // be visually grouped in the table.
+    const results = [];
+    qualifyingVouchers.forEach((v, gi)=>{
+      v.lines.forEach(l=> results.push({
+        groupIndex: gi, voucher: v.voucher, date: l.date || v.date,
+        accountName: l.accountName, accountCode: l.accountCode, desc: l.desc,
+        debit: l.debit, credit: l.credit, partner: l.partner
+      }));
+    });
+
+    state.fiscalData = results;
+    const voucherAmountSum = qualifyingVouchers.reduce((s,v)=> s + Math.max(v.lines.reduce((a,l)=>a+l.debit,0), v.lines.reduce((a,l)=>a+l.credit,0)), 0);
+    $('fiscalStats').innerHTML = statsHtml([
+      ['검출 전표 건수', qualifyingVouchers.length.toLocaleString('ko-KR')+'건', qualifyingVouchers.length>0?'bad':'good'],
+      ['검출 라인 수', results.length.toLocaleString('ko-KR')+'건', ''],
+      ['금액 합계', fmtNum(voucherAmountSum), '']
+    ]);
+    $('fiscalTable').innerHTML = results.length
+      ? '<thead><tr><th>전표번호</th><th>날짜</th><th>계정과목</th><th>계정코드</th><th>적요</th><th>차변</th><th>대변</th><th>거래처</th></tr></thead><tbody>'
+        + results.map((r,i)=>{
+            const newGroup = i===0 || results[i-1].groupIndex !== r.groupIndex;
+            return '<tr'+(newGroup && i>0 ? ' style="border-top:2px solid var(--rule)"' : '')+'><td class="mono">'+esc(r.voucher)+'</td><td class="mono">'+esc(fmtDate(r.date))+'</td><td>'+esc(r.accountName)+'</td><td class="mono">'+esc(r.accountCode)+'</td><td>'+esc(r.desc)+'</td><td class="num">'+fmtNum(r.debit)+'</td><td class="num">'+fmtNum(r.credit)+'</td><td>'+esc(r.partner)+'</td></tr>';
+          }).join('')
+        + '</tbody>'
+      : emptyRow(emptyMsg, 8);
+    $('fiscalResultsWrap').style.display='block';
+    refreshAnomalyDot();
+  });
+  $('btnExportFiscal').addEventListener('click', ()=>{
+    if(!state.fiscalData) return;
+    downloadRows(state.fiscalData.map(r=>({
+      전표번호:r.voucher, 날짜:fmtDate(r.date), 계정과목:r.accountName, 계정코드:r.accountCode, 적요:r.desc, 차변:r.debit, 대변:r.credit, 거래처:r.partner
+    })), 'JET6B_결산일전표.xlsx');
+  });
+
+  // 6-C Anomalous (rarely-used) counter-account combinations
+  $('btnRunAnomalyPair').addEventListener('click', ()=>{
+    const minTx = parseInt($('minTxInput').value, 10) || 1;
+    const rarity = parseFloat($('rarityInput').value);
+    const byVoucher = groupByVoucher(state.rows);
+    const accountTotal = new Map();
+    const pairCount = new Map();
+    const pairVouchers = new Map();
+    byVoucher.forEach((lines, voucher)=>{
+      const accountsInVoucher = Array.from(new Set(lines.map(l=>l.accountName))).filter(Boolean);
+      const dEntry = lines.find(l=>l.date);
+      const d = dEntry ? dEntry.date : null;
+      accountsInVoucher.forEach(acc=> accountTotal.set(acc, (accountTotal.get(acc)||0)+1));
+      accountsInVoucher.forEach(acc=>{
+        accountsInVoucher.forEach(counter=>{
+          if(acc===counter) return;
+          const key = acc+'|||'+counter;
+          pairCount.set(key, (pairCount.get(key)||0)+1);
+          if(!pairVouchers.has(key)) pairVouchers.set(key, []);
+          pairVouchers.get(key).push({voucher, date:d});
+        });
+      });
+    });
+    const results = [];
+    pairCount.forEach((cnt, key)=>{
+      const [acc, counter] = key.split('|||');
+      const total = accountTotal.get(acc) || 0;
+      if(total < minTx) return;
+      const ratio = (cnt/total)*100;
+      if(ratio <= rarity) results.push({account:acc, counter, count:cnt, total, ratio, key});
+    });
+    results.sort((a,b)=> a.ratio - b.ratio);
+    state.pairData = {results, pairVouchers};
+    renderPairTable();
+  });
+
+  function renderPairTable(){
+    const {results, pairVouchers} = state.pairData;
+    $('pairStats').innerHTML = statsHtml([
+      ['검출된 비정상 조합', results.length.toLocaleString('ko-KR')+'건', results.length>0?'bad':'good']
+    ]);
+    $('pairTable').innerHTML = results.length
+      ? '<thead><tr><th>기준계정</th><th>상대계정</th><th>발생건수</th><th>기준계정 전체건수</th><th>비율</th><th>해당 전표</th></tr></thead><tbody>'
+        + results.map(r=> pairRowHtml(r,pairVouchers)).join('')
+        + '</tbody>'
+      : emptyRow('지정한 기준을 만족하는 비정상 상대계정 조합이 없습니다.', 6);
+    $('pairResultsWrap').style.display='block';
+    refreshAnomalyDot();
+  }
+
+  function pairRowHtml(r,pairVouchers){
+    const vs = pairVouchers.get(r.key) || [];
+    const vList = vs.map(v=> esc(v.voucher)+' ('+esc(fmtDate(v.date))+')').join(', ');
+    return '<tr><td>'+esc(r.account)+'</td><td>'+esc(r.counter)+'</td><td class="num">'+r.count+'</td><td class="num">'+r.total+'</td><td class="num">'+r.ratio.toFixed(1)+'%</td><td style="max-width:320px; white-space:normal;">'+vList+'</td></tr>';
+  }
+
+  $('btnExportPair').addEventListener('click', ()=>{
+    if(!state.pairData) return;
+    downloadRows(state.pairData.results.map(r=>({
+      기준계정:r.account, 상대계정:r.counter, 발생건수:r.count, 기준계정전체건수:r.total, 비율:r.ratio.toFixed(1)+'%'
+    })), 'JET6C_비정상상대계정.xlsx');
+  });
+
+  function refreshAnomalyDot(){
+    const roundFlag = state.roundData && state.roundData.length>0;
+    const fiscalFlag = state.fiscalData && state.fiscalData.length>0;
+    const pairFlag = state.pairData && state.pairData.results.length>0;
+    if(roundFlag || fiscalFlag || pairFlag) setDot('anomaly','flag');
+    else if(state.roundData || state.fiscalData || state.pairData) setDot('anomaly','ok');
+  }
+
+  // ---------------------------------------------------------------
+  // JET-7: Duplicate entry detection
+  // ---------------------------------------------------------------
+  $('btnRunDup').addEventListener('click', ()=>{
+    const minCount = parseInt($('dupMinCount').value, 10) || 2;
+    const usePartner = $('dupUsePartner').checked;
+    const map = new Map();
+    state.rows.forEach(row=>{
+      const amt = row.debit || row.credit;
+      if(!row.date || !amt) return;
+      const key = row.date.key+'|'+row.accountName+'|'+amt+(usePartner ? '|'+row.partner : '');
+      if(!map.has(key)) map.set(key, {date:row.date, accountName:row.accountName, amount:amt, partner: usePartner ? row.partner : '(거래처 무관)', rows:[]});
+      map.get(key).rows.push(row);
+    });
+    const groups = Array.from(map.values())
+      .filter(g=> g.rows.length >= minCount)
+      .sort((a,b)=> b.rows.length - a.rows.length || b.amount - a.amount);
+    state.duplicateData = groups;
+
+    $('dupStats').innerHTML = statsHtml([
+      ['검출된 중복 그룹', groups.length.toLocaleString('ko-KR')+'개', groups.length>0?'bad':'good'],
+      ['관련 라인 수', groups.reduce((s,g)=>s+g.rows.length,0).toLocaleString('ko-KR')+'건', ''],
+      ['관련 금액 합계', fmtNum(groups.reduce((s,g)=>s+g.amount*g.rows.length,0)), '']
+    ]);
+    $('dupTable').innerHTML = groups.length
+      ? '<thead><tr><th>날짜</th><th>계정과목</th><th>금액</th><th>거래처</th><th>중복건수</th><th>전표번호</th><th>적요</th></tr></thead><tbody>'
+        + groups.map(g=>{
+            const vouchers = Array.from(new Set(g.rows.map(r=>r.voucher))).join(', ');
+            const descs = Array.from(new Set(g.rows.map(r=>r.desc).filter(Boolean))).join(' / ');
+            return '<tr><td class="mono">'+esc(fmtDate(g.date))+'</td><td>'+esc(g.accountName)+'</td><td class="num">'+fmtNum(g.amount)+'</td><td>'+esc(g.partner)+'</td><td class="num">'+g.rows.length+'</td><td class="mono">'+esc(vouchers)+'</td><td>'+esc(descs)+'</td></tr>';
+          }).join('')
+        + '</tbody>'
+      : emptyRow('지정한 기준을 만족하는 중복 라인이 없습니다.', 7);
+    $('dupResults').style.display='block';
+    setDot('duplicate', groups.length>0 ? 'flag' : 'ok');
+  });
+
+  $('btnExportDup').addEventListener('click', ()=>{
+    if(!state.duplicateData) return;
+    downloadRows(state.duplicateData.map(g=>({
+      날짜:fmtDate(g.date), 계정과목:g.accountName, 금액:g.amount, 거래처:g.partner, 중복건수:g.rows.length,
+      전표번호목록: Array.from(new Set(g.rows.map(r=>r.voucher))).join(', '),
+      적요목록: Array.from(new Set(g.rows.map(r=>r.desc).filter(Boolean))).join(' / ')
+    })), 'JET7_중복전표.xlsx');
+  });
+
+  // ---------------------------------------------------------------
+  // JET-8: Vendor analysis
+  // ---------------------------------------------------------------
+  function refreshVendorDot(){
+    const concFlag = state.vendorConcData && state.vendorConcData.list.some(v=>v.flag);
+    if(concFlag) setDot('vendor','flag');
+    else if(state.vendorConcData || state.vendorYoyData) setDot('vendor','ok');
+  }
+
+  $('btnRunVendorConc').addEventListener('click', ()=>{
+    const topN = parseInt($('vendorTopN').value, 10) || 20;
+    const concThreshold = parseFloat($('vendorConcThreshold').value);
+    const threshold = isNaN(concThreshold) ? 10 : concThreshold;
+    const map = new Map();
+    let grandTotal = 0;
+    state.rows.forEach(row=>{
+      if(!row.partner) return;
+      const amt = Math.max(row.debit, row.credit);
+      if(!map.has(row.partner)) map.set(row.partner, {partner:row.partner, partnerNo:row.partnerNo, count:0, debit:0, credit:0, amount:0, first:null, last:null});
+      const o = map.get(row.partner);
+      o.count++; o.debit += row.debit; o.credit += row.credit; o.amount += amt;
+      if(!o.partnerNo && row.partnerNo) o.partnerNo = row.partnerNo;
+      if(row.date){
+        if(!o.first || row.date.key < o.first.key) o.first = row.date;
+        if(!o.last || row.date.key > o.last.key) o.last = row.date;
+      }
+      grandTotal += amt;
+    });
+    const allList = Array.from(map.values()).map(o=>({...o, ratio: grandTotal>0 ? (o.amount/grandTotal*100) : 0}));
+    allList.sort((a,b)=> b.amount - a.amount);
+    allList.forEach(o=> o.flag = o.ratio >= threshold);
+    const list = allList.slice(0, topN);
+    state.vendorConcData = {list, grandTotal, threshold};
+
+    const flaggedCount = list.filter(v=>v.flag).length;
+    $('vendorConcStats').innerHTML = statsHtml([
+      ['표시된 거래처 수', list.length.toLocaleString('ko-KR')+'개', ''],
+      ['집중도 경고 거래처', flaggedCount.toLocaleString('ko-KR')+'개', flaggedCount>0?'bad':'good'],
+      ['전체 거래금액', fmtNum(grandTotal), '']
+    ]);
+    $('vendorConcTable').innerHTML = list.length
+      ? '<thead><tr><th>거래처</th><th>거래처번호</th><th>건수</th><th>차변합계</th><th>대변합계</th><th>금액합계</th><th>비중</th><th>최초거래일</th><th>최종거래일</th></tr></thead><tbody>'
+        + list.map(v=>'<tr><td>'+esc(v.partner)+(v.flag?' <span class="badge mismatch">집중</span>':'')+'</td><td class="mono">'+esc(v.partnerNo)+'</td><td class="num">'+v.count+'</td><td class="num">'+fmtNum(v.debit)+'</td><td class="num">'+fmtNum(v.credit)+'</td><td class="num">'+fmtNum(v.amount)+'</td><td class="num">'+v.ratio.toFixed(1)+'%</td><td class="mono">'+esc(fmtDate(v.first))+'</td><td class="mono">'+esc(fmtDate(v.last))+'</td></tr>').join('')
+        + '</tbody>'
+      : emptyRow('거래처 정보가 있는 라인이 없습니다.', 9);
+    $('vendorConcResultsWrap').style.display='block';
+    refreshVendorDot();
+  });
+
+  $('btnExportVendorConc').addEventListener('click', ()=>{
+    if(!state.vendorConcData) return;
+    downloadRows(state.vendorConcData.list.map(v=>({
+      거래처:v.partner, 거래처번호:v.partnerNo, 건수:v.count, 차변합계:v.debit, 대변합계:v.credit,
+      금액합계:v.amount, 비중:v.ratio.toFixed(1)+'%', 최초거래일:fmtDate(v.first), 최종거래일:fmtDate(v.last)
+    })), 'JET8A_거래처집중도.xlsx');
+  });
+
+  // 8-B. Year-over-year vendor ranking for a chosen account.
+  // "Current year" reuses the JET-1 dataset already loaded (state.rows);
+  // this section only needs the prior-year file uploaded and mapped the
+  // same way JET-1 does (same 9-column format, same guessMapping/buildRows).
+  $('dropZonePrior').addEventListener('click', ()=> $('priorFileInput').click());
+  $('priorFileInput').addEventListener('change', e=>{
+    if(e.target.files.length) handlePriorFile(e.target.files[0]);
+  });
+
+  function handlePriorFile(file){
+    state.priorFileName = file.name;
+    const reader = new FileReader();
+    reader.onload = e=>{
+      const data = new Uint8Array(e.target.result);
+      const aoa = readWorkbookFirstSheet(data);
+      if(!aoa || aoa.length < 2){ alert('파일에서 데이터를 찾을 수 없습니다.'); return; }
+      state.priorAoa = aoa;
+      state.priorHeaders = aoa[0].map(h=>String(h==null?'':h));
+      renderPriorMappingUI();
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  function renderPriorMappingUI(){
+    const guess = guessMapping(state.priorHeaders);
+    const grid = $('priorMapGrid');
+    grid.innerHTML = FIELD_ORDER.map(field=>{
+      const opts = ['<option value="-1">— 선택 안 함 —</option>']
+        .concat(state.priorHeaders.map((h,i)=>'<option value="'+i+'"'+(guess[field]===i?' selected':'')+'>'+esc(h||'(제목없음 '+(i+1)+')')+'</option>'))
+        .join('');
+      return '<div><label class="field-label">'+LABELS[field]+'</label><select data-field="'+field+'" class="prior-map-select">'+opts+'</select></div>';
+    }).join('');
+    grid.style.display = 'grid';
+    $('priorMapConfirmRow').style.display = 'flex';
+    $('vendorYoyControls').style.display = 'none';
+    $('vendorYoyResultsWrap').style.display = 'none';
+  }
+
+  $('btnConfirmPriorMap').addEventListener('click', ()=>{
+    const mapping = {};
+    document.querySelectorAll('.prior-map-select').forEach(sel=>{
+      mapping[sel.dataset.field] = parseInt(sel.value, 10);
+    });
+    if(mapping.accountName === -1){ alert('계정과목 컬럼은 반드시 지정해야 합니다.'); return; }
+    state.priorRows = buildRows(state.priorAoa, mapping);
+    if(!state.priorRows.length){ alert('유효한 데이터 행을 찾지 못했습니다. 매핑을 확인해 주세요.'); return; }
+
+    const names = Array.from(new Set([
+      ...state.rows.map(r=>r.accountName),
+      ...state.priorRows.map(r=>r.accountName)
+    ])).filter(Boolean).sort((a,b)=>a.localeCompare(b,'ko'));
+    $('vendorYoyAccountSelect').innerHTML = names.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('');
+    $('vendorYoyControls').style.display = 'flex';
+    alert('전년도 데이터 '+state.priorRows.length.toLocaleString('ko-KR')+'건을 불러왔습니다. 비교할 계정과목을 선택 후 [조회]를 눌러주세요.');
+  });
+
+  $('btnRunVendorYoy').addEventListener('click', ()=>{
+    const account = $('vendorYoyAccountSelect').value;
+    if(!account) return;
+
+    function aggByVendor(rows){
+      const map = new Map();
+      rows.filter(r=> r.accountName===account && r.partner).forEach(row=>{
+        const amt = Math.max(row.debit, row.credit);
+        if(!map.has(row.partner)) map.set(row.partner, {partner:row.partner, partnerNo:row.partnerNo, count:0, amount:0});
+        const o = map.get(row.partner);
+        o.count++; o.amount += amt;
+        if(!o.partnerNo && row.partnerNo) o.partnerNo = row.partnerNo;
+      });
+      return map;
+    }
+
+    const curMap = aggByVendor(state.rows);
+    const priorMap = aggByVendor(state.priorRows);
+    const allVendors = new Set([...curMap.keys(), ...priorMap.keys()]);
+
+    const list = Array.from(allVendors).map(partner=>{
+      const cur = curMap.get(partner) || {count:0, amount:0, partnerNo:''};
+      const prior = priorMap.get(partner) || {count:0, amount:0, partnerNo:''};
+      const change = cur.amount - prior.amount;
+      const changeRatio = prior.amount>0 ? (change/prior.amount*100) : null;
+      let flag;
+      if(prior.amount===0 && cur.amount>0) flag = 'new';
+      else if(prior.amount>0 && cur.amount===0) flag = 'stopped';
+      else flag = 'continuing';
+      return {
+        partner, partnerNo: cur.partnerNo || prior.partnerNo,
+        curAmount: cur.amount, curCount: cur.count,
+        priorAmount: prior.amount, priorCount: prior.count,
+        change, changeRatio, flag
+      };
+    }).sort((a,b)=> b.curAmount - a.curAmount);
+
+    state.vendorYoyData = {account, list};
+
+    const newCount = list.filter(v=>v.flag==='new').length;
+    const stoppedCount = list.filter(v=>v.flag==='stopped').length;
+    $('vendorYoyStats').innerHTML = statsHtml([
+      ['거래처 수', list.length.toLocaleString('ko-KR')+'개', ''],
+      ['올해 신규 거래처', newCount.toLocaleString('ko-KR')+'개', ''],
+      ['전년도만 거래(중단)', stoppedCount.toLocaleString('ko-KR')+'개', ''],
+      ['올해 거래액 합계', fmtNum(list.reduce((s,v)=>s+v.curAmount,0)), '']
+    ]);
+    const flagLabel = {new:'신규', stopped:'거래중단', continuing:'계속거래'};
+    const flagBadgeClass = {new:'match', stopped:'mismatch', continuing:'missing'};
+    $('vendorYoyTable').innerHTML = list.length
+      ? '<thead><tr><th>순위</th><th>거래처</th><th>거래처번호</th><th>올해 거래액</th><th>올해 건수</th><th>전년도 거래액</th><th>전년도 건수</th><th>증감액</th><th>증감률</th><th>구분</th></tr></thead><tbody>'
+        + list.map((v,i)=>'<tr><td class="num">'+(i+1)+'</td><td>'+esc(v.partner)+'</td><td class="mono">'+esc(v.partnerNo)+'</td><td class="num">'+fmtNum(v.curAmount)+'</td><td class="num">'+v.curCount+'</td><td class="num">'+fmtNum(v.priorAmount)+'</td><td class="num">'+v.priorCount+'</td><td class="num">'+fmtNum(v.change)+'</td><td class="num">'+(v.changeRatio===null?'-':v.changeRatio.toFixed(1)+'%')+'</td><td><span class="badge '+flagBadgeClass[v.flag]+'">'+flagLabel[v.flag]+'</span></td></tr>').join('')
+        + '</tbody>'
+      : emptyRow('"'+account+'" 계정으로 거래한 거래처가 없습니다.', 10);
+    $('vendorYoyResultsWrap').style.display='block';
+    refreshVendorDot();
+  });
+
+  $('btnExportVendorYoy').addEventListener('click', ()=>{
+    if(!state.vendorYoyData) return;
+    const flagLabel = {new:'신규', stopped:'거래중단', continuing:'계속거래'};
+    downloadRows(state.vendorYoyData.list.map((v,i)=>({
+      순위:i+1, 거래처:v.partner, 거래처번호:v.partnerNo, 올해거래액:v.curAmount, 올해건수:v.curCount,
+      전년도거래액:v.priorAmount, 전년도건수:v.priorCount, 증감액:v.change,
+      증감률: v.changeRatio===null?'-':v.changeRatio.toFixed(1)+'%', 구분:flagLabel[v.flag]
+    })), 'JET8B_연도별거래처비교.xlsx');
+  });
+
+  // ---------------------------------------------------------------
+  // JET-9: Monthly transaction amount analysis for a chosen account
+  // ---------------------------------------------------------------
+  function svgBarChart(labels, values, opts){
+    opts = opts || {};
+    const W = Math.max(640, labels.length * 56 + 80);
+    const H = 300;
+    const padL = 64, padR = 20, padT = 20, padB = 56;
+    const plotW = W - padL - padR, plotH = H - padT - padB;
+    const maxAbs = Math.max(1, ...values.map(v=>Math.abs(v)));
+    const zeroY = padT + plotH/2 * (values.some(v=>v<0) ? 1 : 2) ; // if no negatives, zero at bottom
+    const hasNeg = values.some(v=>v<0);
+    const baseline = hasNeg ? padT + plotH/2 : padT + plotH;
+    const scale = (hasNeg ? plotH/2 : plotH) / maxAbs;
+    const bw = Math.min(40, plotW/labels.length - 10);
+    const step = plotW / labels.length;
+
+    let bars = '', xlabels = '', gridlines = '';
+    // zero line / baseline
+    gridlines += '<line x1="'+padL+'" y1="'+baseline+'" x2="'+(W-padR)+'" y2="'+baseline+'" stroke="var(--rule)" stroke-width="1"/>';
+    if(hasNeg){
+      gridlines += '<line x1="'+padL+'" y1="'+padT+'" x2="'+(W-padR)+'" y2="'+padT+'" stroke="var(--rule-2)" stroke-width="1"/>';
+      gridlines += '<line x1="'+padL+'" y1="'+(padT+plotH)+'" x2="'+(W-padR)+'" y2="'+(padT+plotH)+'" stroke="var(--rule-2)" stroke-width="1"/>';
+    } else {
+      gridlines += '<line x1="'+padL+'" y1="'+padT+'" x2="'+(W-padR)+'" y2="'+padT+'" stroke="var(--rule-2)" stroke-width="1"/>';
+    }
+    // y-axis labels (max, 0, min)
+    gridlines += '<text x="'+(padL-8)+'" y="'+(padT+4)+'" text-anchor="end" font-size="10" fill="var(--ink-faint)" font-family="var(--mono)">'+fmtNum(hasNeg? maxAbs : maxAbs)+'</text>';
+    gridlines += '<text x="'+(padL-8)+'" y="'+(baseline+4)+'" text-anchor="end" font-size="10" fill="var(--ink-faint)" font-family="var(--mono)">0</text>';
+    if(hasNeg){
+      gridlines += '<text x="'+(padL-8)+'" y="'+(padT+plotH+4)+'" text-anchor="end" font-size="10" fill="var(--ink-faint)" font-family="var(--mono)">-'+fmtNum(maxAbs)+'</text>';
+    }
+
+    labels.forEach((lab,i)=>{
+      const v = values[i];
+      const x = padL + step*i + (step-bw)/2;
+      const h = Math.abs(v) * scale;
+      const y = v >= 0 ? baseline - h : baseline;
+      const color = v >= 0 ? 'var(--accent)' : 'var(--bad)';
+      bars += '<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+Math.max(1,h)+'" fill="'+color+'" rx="2"></rect>';
+      bars += '<title>'+esc(lab)+': '+fmtNum(v)+'</title>';
+      const lx = x + bw/2;
+      xlabels += '<text x="'+lx+'" y="'+(H-padB+16)+'" text-anchor="end" font-size="10" fill="var(--ink-soft)" font-family="var(--body)" transform="rotate(-45 '+lx+' '+(H-padB+16)+')">'+esc(lab)+'</text>';
+    });
+
+    return '<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="display:block;">'+gridlines+bars+xlabels+'</svg>';
+  }
+
+  document.querySelectorAll('input[name="monthlyBasis"]').forEach(r=>{
+    r.addEventListener('change', ()=>{ if(state.monthlyData) runMonthly(); });
+  });
+  $('monthlyAccountSelect').addEventListener('change', ()=>{ /* wait for explicit run */ });
+
+  $('btnRunMonthly').addEventListener('click', runMonthly);
+
+  function runMonthly(){
+    const target = $('monthlyAccountSelect').value;
+    if(!target) return;
+    const basis = document.querySelector('input[name="monthlyBasis"]:checked').value;
+
+    const map = new Map(); // key: y*100+m -> {y,m,debit,credit,count}
+    state.rows.forEach(row=>{
+      if(row.accountName !== target || !row.date) return;
+      const key = row.date.y*100 + row.date.m;
+      if(!map.has(key)) map.set(key, {y:row.date.y, m:row.date.m, debit:0, credit:0, count:0});
+      const o = map.get(key);
+      o.debit += row.debit; o.credit += row.credit; o.count++;
+    });
+    const rowsOut = Array.from(map.values()).sort((a,b)=> (a.y*100+a.m) - (b.y*100+b.m));
+
+    // fill gaps between first and last month with zero rows so trend/gaps are visible
+    const filled = [];
+    if(rowsOut.length){
+      let cy = rowsOut[0].y, cm = rowsOut[0].m;
+      const endKey = rowsOut[rowsOut.length-1].y*100 + rowsOut[rowsOut.length-1].m;
+      const byKey = new Map(rowsOut.map(r=>[r.y*100+r.m, r]));
+      while(cy*100+cm <= endKey){
+        const k = cy*100+cm;
+        filled.push(byKey.get(k) || {y:cy, m:cm, debit:0, credit:0, count:0});
+        cm++; if(cm>12){ cm=1; cy++; }
+      }
+    }
+
+    const valueOf = r => basis==='debit' ? r.debit : basis==='credit' ? r.credit : basis==='gross' ? (r.debit+r.credit) : (r.debit - r.credit);
+    const labels = filled.map(r=> r.y+'-'+String(r.m).padStart(2,'0'));
+    const values = filled.map(valueOf);
+
+    state.monthlyData = {target, basis, rows: filled};
+
+    const totalDebit = filled.reduce((s,r)=>s+r.debit,0);
+    const totalCredit = filled.reduce((s,r)=>s+r.credit,0);
+    const totalCount = filled.reduce((s,r)=>s+r.count,0);
+    const nonZeroMonths = filled.filter(r=>r.count>0).length;
+    const avgPerMonth = nonZeroMonths ? (basis==='debit'?totalDebit:basis==='credit'?totalCredit:basis==='gross'?(totalDebit+totalCredit):(totalDebit-totalCredit)) / nonZeroMonths : 0;
+
+    $('monthlyStats').innerHTML = statsHtml([
+      ['대상 계정과목', target, ''],
+      ['조회 기간', (labels[0]||'-')+' ~ '+(labels[labels.length-1]||'-'), ''],
+      ['총 라인 수', totalCount.toLocaleString('ko-KR')+'건', ''],
+      ['차변 합계', fmtNum(totalDebit), ''],
+      ['대변 합계', fmtNum(totalCredit), ''],
+      ['월평균('+({debit:'차변',credit:'대변',gross:'차변+대변',net:'순액'})[basis]+')', fmtNum(avgPerMonth), '']
+    ]);
+
+    $('monthlyChartTitle').textContent = '월별 추이 — '+target+' ('+({debit:'차변 합계',credit:'대변 합계',gross:'차변+대변 합계',net:'순액(차변-대변)'})[basis]+')';
+    $('monthlyChartWrap').innerHTML = filled.length ? svgBarChart(labels, values) : '<p style="color:var(--ink-soft); padding:20px;">표시할 데이터가 없습니다.</p>';
+
+    $('monthlyTable').innerHTML = filled.length
+      ? '<thead><tr><th>연월</th><th>라인수</th><th>차변합계</th><th>대변합계</th><th>순액</th></tr></thead><tbody>'
+        + filled.map(r=>'<tr><td class="mono">'+r.y+'-'+String(r.m).padStart(2,'0')+'</td><td class="num">'+r.count+'</td><td class="num">'+fmtNum(r.debit)+'</td><td class="num">'+fmtNum(r.credit)+'</td><td class="num">'+fmtNum(r.debit-r.credit)+'</td></tr>').join('')
+        + '</tbody>'
+      : emptyRow('데이터가 없습니다.', 5);
+
+    $('monthlyResults').style.display='block';
+    setDot('monthly', 'ok');
+  }
+
+  $('btnExportMonthly').addEventListener('click', ()=>{
+    if(!state.monthlyData) return;
+    downloadRows(state.monthlyData.rows.map(r=>({
+      연월: r.y+'-'+String(r.m).padStart(2,'0'), 라인수:r.count, 차변합계:r.debit, 대변합계:r.credit, 순액:r.debit-r.credit
+    })), 'JET9_월별거래액_'+state.monthlyData.target+'.xlsx');
+  });
+
+  // ---------------------------------------------------------------
+  // 종합 대시보드
+  // ---------------------------------------------------------------
+  const dashboardCardDefs = [
+    {tab:'compare', ref:'JET-2', title:'재무제표 대사', get:()=>{
+      if(!state.compareResult) return null;
+      const flagCount = state.compareResult.results.filter(r=>r.status!=='match').length + state.compareResult.onlyCompany.length;
+      return {status: flagCount>0?'flag':'ok', metric: flagCount+'건', sub:'불일치·누락 계정 수'};
+    }},
+    {tab:'weekend', ref:'JET-3', title:'주말 전표 검토', get:()=>{
+      if(!state.weekendData) return null;
+      return {status: state.weekendData.length>0?'flag':'ok', metric: state.weekendData.length+'건', sub:'주말 생성 전표'};
+    }},
+    {tab:'counter', ref:'JET-4', title:'상대계정 분석', get:()=>{
+      if(!state.counterData) return null;
+      return {status:'ok', metric: state.counterData.list.length+'개', sub:'"'+state.counterData.target+'"의 상대계정 종류'};
+    }},
+    {tab:'pm', ref:'JET-5', title:'PM 초과전표', get:()=>{
+      if(!state.pmData) return null;
+      return {status: state.pmData.data.length>0?'flag':'ok', metric: state.pmData.data.length+'건', sub:'PM '+fmtNum(state.pmData.pm)+'원 초과'};
+    }},
+    {tab:'anomaly', ref:'JET-6A', title:'Round Number 전표', get:()=>{
+      if(!state.roundData) return null;
+      return {status: state.roundData.length>0?'flag':'ok', metric: state.roundData.length+'건', sub:'라운드 넘버 라인'};
+    }},
+    {tab:'anomaly', ref:'JET-6B', title:'결산일 생성 전표', get:()=>{
+      if(!state.fiscalData) return null;
+      const voucherCount = new Set(state.fiscalData.map(r=>r.voucher)).size;
+      return {status: voucherCount>0?'flag':'ok', metric: voucherCount+'건', sub:'결산일 전표 ('+state.fiscalData.length+'라인)'};
+    }},
+    {tab:'anomaly', ref:'JET-6C', title:'비정상 상대계정 조합', get:()=>{
+      if(!state.pairData) return null;
+      return {status: state.pairData.results.length>0?'flag':'ok', metric: state.pairData.results.length+'건', sub:'희귀 상대계정 조합'};
+    }},
+    {tab:'duplicate', ref:'JET-7', title:'중복 전표 탐지', get:()=>{
+      if(!state.duplicateData) return null;
+      return {status: state.duplicateData.length>0?'flag':'ok', metric: state.duplicateData.length+'개 그룹', sub:'중복 의심 그룹 수'};
+    }},
+    {tab:'vendor', ref:'JET-8A', title:'거래처 집중도', get:()=>{
+      if(!state.vendorConcData) return null;
+      const flagCount = state.vendorConcData.list.filter(v=>v.flag).length;
+      const top = state.vendorConcData.list[0];
+      return {status: flagCount>0?'flag':'ok', metric: (top? top.ratio.toFixed(1):'0')+'%', sub: top? '최대 비중: '+top.partner : '거래처 데이터 없음'};
+    }},
+    {tab:'vendor', ref:'JET-8B', title:'연도별 거래처 순위비교', get:()=>{
+      if(!state.vendorYoyData) return null;
+      const newCount = state.vendorYoyData.list.filter(v=>v.flag==='new').length;
+      return {status:'ok', metric: state.vendorYoyData.list.length+'개 거래처', sub:'"'+state.vendorYoyData.account+'" · 신규 '+newCount+'개'};
+    }},
+    {tab:'monthly', ref:'JET-9', title:'월별 거래액 분석', get:()=>{
+      if(!state.monthlyData) return null;
+      const nonZero = state.monthlyData.rows.filter(r=>r.count>0).length;
+      return {status:'ok', metric: nonZero+'개월', sub:'"'+state.monthlyData.target+'" 조회 완료'};
+    }}
+  ];
+
+  function renderDashboard(){
+    let totalRun = 0, totalFlags = 0;
+    const cardsHtml = dashboardCardDefs.map(c=>{
+      const r = c.get();
+      if(!r){
+        return '<div class="dash-card status-pending" data-tab="'+c.tab+'"><div class="dash-card-head"><span class="dash-card-title">'+esc(c.title)+'</span><span class="dash-card-ref">'+esc(c.ref)+'</span></div><div class="dash-card-metric">—</div><div class="dash-card-sub">미실행 · 클릭하여 이동</div></div>';
+      }
+      totalRun++;
+      if(r.status==='flag') totalFlags++;
+      return '<div class="dash-card status-'+r.status+'" data-tab="'+c.tab+'"><div class="dash-card-head"><span class="dash-card-title">'+esc(c.title)+' <span class="dash-card-ref">'+esc(c.ref)+'</span></span><span class="status-pill '+r.status+'">'+(r.status==='flag'?'확인필요':'정상')+'</span></div><div class="dash-card-metric">'+esc(r.metric)+'</div><div class="dash-card-sub">'+esc(r.sub)+'</div></div>';
+    }).join('');
+    $('dashboardCards').innerHTML = cardsHtml;
+    $('dashboardCards').onclick = e=>{
+      const card = e.target.closest('.dash-card');
+      if(!card) return;
+      const target = document.querySelector('.tab-btn[data-tab="'+card.dataset.tab+'"]');
+      if(target) target.click();
+    };
+    $('dashboardOverallStats').innerHTML = statsHtml([
+      ['실행된 절차', totalRun+' / '+dashboardCardDefs.length, ''],
+      ['확인 필요 항목', totalFlags+'건', totalFlags>0?'bad':'good'],
+      ['총 전표 라인 수', state.rows.length.toLocaleString('ko-KR')+'건', '']
+    ]);
+    setDot('dashboard', totalFlags>0 ? 'flag' : (totalRun>0 ? 'ok' : 'pending'));
+  }
+
+  document.querySelector('.tab-btn[data-tab="dashboard"]').addEventListener('click', ()=>{
+    if(state.rows.length) renderDashboard();
+  });
+  $('btnRefreshDashboard').addEventListener('click', renderDashboard);
+
+  $('btnExportDashboard').addEventListener('click', ()=>{
+    const uploadSummary = state.rows.length
+      ? {절차:'JET-1 데이터 업로드', 상태:'완료', 핵심지표: state.rows.length.toLocaleString('ko-KR')+'건', 설명: new Set(state.rows.map(r=>r.voucher)).size.toLocaleString('ko-KR')+'개 전표 업로드됨'}
+      : {절차:'JET-1 데이터 업로드', 상태:'미실행', 핵심지표:'-', 설명:''};
+    const overviewRows = [uploadSummary, ...dashboardCardDefs.map(c=>{
+      const r = c.get();
+      return {절차: c.ref+' '+c.title, 상태: r ? (r.status==='flag'?'확인필요':'정상') : '미실행', 핵심지표: r ? r.metric : '-', 설명: r ? r.sub : ''};
+    })];
+    const sheets = [{name:'요약', rows: overviewRows}];
+    if(state.rows.length) sheets.push({name:'JET1_원본데이터', rows: state.rows.map(r=>({
+      날짜:fmtDate(r.date), 전표번호:r.voucher, 계정과목:r.accountName, 계정코드:r.accountCode, 적요:r.desc, 차변:r.debit, 대변:r.credit, 거래처:r.partner, 거래처번호:r.partnerNo
+    }))});
+    if(state.compareResult) sheets.push({name:'JET2_재무제표대사', rows: state.compareResult.results.map(r=>({
+      계정과목:r.accountName, 계정코드:r.accountCode, JET차변합계:r.debit, JET대변합계:r.credit, JET잔액:r.balance, 회사재무제표:r.company, 차이:r.diff, 상태:r.status
+    }))});
+    if(state.weekendData) sheets.push({name:'JET3_주말전표', rows: state.weekendData.map(v=>({
+      전표번호:v.voucher, 날짜:fmtDate(v.date), 요일:WEEKDAY_KR[v.day]+'요일', 라인수:v.lines.length, 차변합계:v.debit, 대변합계:v.credit
+    }))});
+    if(state.counterData) sheets.push({name:'JET4_상대계정분석', rows: state.counterData.list.map(o=>({
+      상대계정과목:o.accountName, 계정코드:o.accountCode, 건수:o.count, 차변합계:o.debit, 대변합계:o.credit
+    }))});
+    if(state.pmData) sheets.push({name:'JET5_PM초과전표', rows: state.pmData.basis==='line'
+      ? state.pmData.data.map(r=>({날짜:fmtDate(r.date), 전표번호:r.voucher, 계정과목:r.accountName, 적요:r.desc, 차변:r.debit, 대변:r.credit, 거래처:r.partner}))
+      : state.pmData.data.map(v=>({전표번호:v.voucher, 날짜:fmtDate(v.date), 거래처:v.partner, 라인수:v.lines, 차변합계:v.debit, 대변합계:v.credit}))});
+    if(state.roundData) sheets.push({name:'JET6A_라운드넘버', rows: state.roundData.map(r=>({
+      날짜:fmtDate(r.date), 전표번호:r.voucher, 계정과목:r.accountName, 금액:Math.max(r.debit,r.credit), 적요:r.desc, 거래처:r.partner
+    }))});
+    if(state.fiscalData) sheets.push({name:'JET6B_결산일전표', rows: state.fiscalData.map(r=>({
+      전표번호:r.voucher, 날짜:fmtDate(r.date), 계정과목:r.accountName, 계정코드:r.accountCode, 적요:r.desc, 차변:r.debit, 대변:r.credit, 거래처:r.partner
+    }))});
+    if(state.pairData) sheets.push({name:'JET6C_비정상상대계정', rows: state.pairData.results.map(r=>({
+      기준계정:r.account, 상대계정:r.counter, 발생건수:r.count, 기준계정전체건수:r.total, 비율:r.ratio.toFixed(1)+'%'
+    }))});
+    if(state.duplicateData) sheets.push({name:'JET7_중복전표', rows: state.duplicateData.map(g=>({
+      날짜:fmtDate(g.date), 계정과목:g.accountName, 금액:g.amount, 거래처:g.partner, 중복건수:g.rows.length,
+      전표번호목록: Array.from(new Set(g.rows.map(r=>r.voucher))).join(', ')
+    }))});
+    if(state.vendorConcData) sheets.push({name:'JET8A_거래처집중도', rows: state.vendorConcData.list.map(v=>({
+      거래처:v.partner, 거래처번호:v.partnerNo, 건수:v.count, 차변합계:v.debit, 대변합계:v.credit, 금액합계:v.amount, 비중:v.ratio.toFixed(1)+'%', 최초거래일:fmtDate(v.first), 최종거래일:fmtDate(v.last)
+    }))});
+    if(state.vendorYoyData) sheets.push({name:'JET8B_연도별거래처비교', rows: state.vendorYoyData.list.map((v,i)=>({
+      순위:i+1, 거래처:v.partner, 거래처번호:v.partnerNo, 올해거래액:v.curAmount, 올해건수:v.curCount,
+      전년도거래액:v.priorAmount, 전년도건수:v.priorCount, 증감액:v.change,
+      증감률: v.changeRatio===null?'-':v.changeRatio.toFixed(1)+'%', 구분:{new:'신규',stopped:'거래중단',continuing:'계속거래'}[v.flag]
+    }))});
+    if(state.monthlyData) sheets.push({name:'JET9_월별거래액분석', rows: state.monthlyData.rows.map(r=>({
+      연월: r.y+'-'+String(r.m).padStart(2,'0'), 라인수:r.count, 차변합계:r.debit, 대변합계:r.credit, 순액:r.debit-r.credit
+    }))});
+    downloadMultiSheet(sheets, 'JET_종합결과.xlsx');
+  });
+
+  // ---------------------------------------------------------------
+  // JET-3 auto-run when tab opened for first time after upload
+  // ---------------------------------------------------------------
+  document.querySelector('[data-tab="weekend"]').addEventListener('click', ()=>{
+    if(state.rows.length) renderWeekend();
+  });
+
+})();
+</script>
+</body>
+</html>
