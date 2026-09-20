@@ -2110,7 +2110,8 @@ const APPS = {
   shaudit:{name:'SH Audit Platform', sub:'감사 플랫폼 · 재무제표 구조화', short:'SH', bg:'linear-gradient(150deg,#E81A3B,#8E0F24)', w:1600, h:1000, url:'/audit/index.html'},
   taxagent:{name:'TAX Agent',sub:'연결 주소 등록 대기',short:'TAX',bg:'linear-gradient(150deg,#E7A027,#B96B10)',w:520,h:340,body:()=>`<div class="empty"><div class="bigicon img" style="${icoBg('taxagent')}"></div><div class="t">TAX Agent</div><div class="d">앱 아이콘이 추가되었습니다.<br>연결할 사이트 주소는 아직 등록되지 않았습니다.</div></div>`},
   expense:{name:'경비청구', sub:'경비 청구 · 정산', short:'경비', bg:'linear-gradient(150deg,#309CF4,#07368B)', w:1280, h:900,
-    get url(){ return extUrl(7000,7005); }, auth:'popup', authAlways:true,   /* 2026-09-20 연결. http 7000 / https 7005, 접속 호스트를 따라감(XBRL·회의실과 동일).
+    get url(){ return extUrl(7010,7011); }, auth:'popup', authAlways:true,   /* 2026-09-20 연결. http 7010 / https 7011, 접속 호스트를 따라감(XBRL·회의실과 동일).
+                                                               (7000/7005 에서 옮김 — 경비청구 쪽이 7011(HTTPS) → 7010(앱) 구성으로 전환)
                                                                MS 로그인이 필요하므로 회의실처럼 auth:'popup'. 다만 포털과 다른 Entra 앱이라
                                                                iframe 안의 MS 로그인이 거부되므로 authAlways:true 로 항상 팝업 로그인을 먼저 거친다 */
     body:()=>`
