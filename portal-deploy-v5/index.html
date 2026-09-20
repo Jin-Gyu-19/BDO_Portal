@@ -334,6 +334,40 @@ transition:transform .17s cubic-bezier(.3,1.4,.5,1),opacity .15s}
 .sact:active{transform:scale(.97)}
 .sact:focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:6px}
 .sact .ic{width:12px;height:12px}
+
+/* 현재 배치 저장 — 상태바 버튼이 여는 작은 플로팅창 (2026-09-20). 불러오기·삭제는 설정 창에 그대로 있음 */
+.laypop{position:fixed;top:44px;right:16px;width:320px;z-index:960;border-radius:18px;corner-shape:squircle;padding:10px;
+background:var(--menuBg);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);
+border:1px solid var(--menuBorder);box-shadow:var(--menuShadow);color:var(--fg);
+opacity:0;transform:translateY(-8px) scale(.97);transform-origin:top center;pointer-events:none;
+transition:opacity .16s ease,transform .16s cubic-bezier(.2,.9,.3,1.1)}
+.laypop.on{opacity:1;transform:none;pointer-events:auto}
+.laypop .lp-hd{display:flex;align-items:center;gap:8px;padding:2px 2px 8px;border-bottom:1px solid var(--menuLine);margin-bottom:6px}
+.laypop .lp-hd h4{flex:1;font-size:calc(12.5px * var(--fz));font-weight:800;letter-spacing:-.1px}
+.laypop .lp-hd .lp-cnt{font-size:calc(10.5px * var(--fz));font-weight:700;opacity:.55}
+.laypop .lp-hd .lp-x{width:20px;height:20px;border-radius:50%;border:none;background:none;color:var(--fg);
+font-size:15px;line-height:1;opacity:.5;flex-shrink:0}
+.laypop .lp-hd .lp-x:hover{opacity:1;background:var(--menuHov)}
+.laypop .lp-sl{display:flex;align-items:center;gap:9px;width:100%;padding:7px 9px;border-radius:10px;text-align:left;
+font-size:calc(12px * var(--fz));font-weight:600;color:var(--fg);background:none;border:none}
+.laypop .lp-sl:hover{background:var(--menuHov)}
+.laypop .lp-sl.lp-on{background:var(--menuHov)}
+.laypop .lp-sl .lp-no{width:17px;height:17px;border-radius:50%;border:1.5px solid var(--line);flex-shrink:0;
+display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;opacity:.6}
+.laypop .lp-sl.lp-on .lp-no{border-color:var(--red);background:var(--red);color:#fff;opacity:1}
+.laypop .lp-sl .lp-tx{flex:1;min-width:0}
+.laypop .lp-sl .lp-tx b{display:block;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.laypop .lp-sl .lp-tx i{display:block;font-style:normal;font-size:calc(10px * var(--fz));opacity:.55;margin-top:1px;
+white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.laypop .lp-sl.lp-empty .lp-tx b{opacity:.5;font-weight:600}
+.laypop .lp-ft{display:flex;gap:7px;align-items:center;margin-top:8px;padding-top:9px;border-top:1px solid var(--menuLine)}
+.laypop .lp-ft input{flex:1;min-width:0;font:inherit;font-size:calc(11.5px * var(--fz));padding:7px 10px;
+border:.5px solid var(--line);border-radius:9px;background:#fff;color:#111}
+.laypop .lp-ft .lp-ok{flex-shrink:0;font-size:calc(11.5px * var(--fz));font-weight:800;color:#fff;background:var(--red);
+border:none;padding:8px 13px;border-radius:9px}
+.laypop .lp-ft .lp-ok:hover{filter:brightness(1.07)}
+.laypop .lp-ft .lp-ok:active{transform:scale(.97)}
+.laypop .lp-note{font-size:calc(10px * var(--fz));opacity:.6;line-height:1.45;margin:8px 2px 0}
 @media (prefers-reduced-motion:reduce){body.editing .ap .icon,body.editing .dk{animation:none}}
 
 /* 페이지 도트 */
@@ -1343,6 +1377,9 @@ background:color-mix(in srgb,var(--ok) 12%,var(--menuBg));color:var(--ok);font-s
     <button class="sact" id="tile4" title="열린 창을 4분할로 정렬 (Ctrl/⌘+4) · 창을 화면 네 모서리로 끌어도 4분할됩니다">
       <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18M3 12h18"/></svg>
       4분할</button>
+    <button class="sact" id="laySaveBtn" title="지금 배치에 이름을 붙여 NAS에 저장 (계정별 최대 5개)">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v6h8V3"/><path d="M8 21v-6h8v6"/></svg>
+      현재 배치 저장</button>
     <button class="sact" id="resetLayout" title="아이콘·위젯 배치를 기본값으로">
       <svg class="ic" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
       배치 초기화</button>
@@ -1432,6 +1469,18 @@ background:color-mix(in srgb,var(--ok) 12%,var(--menuBg));color:var(--ok);font-s
   <button class="mi out" data-mact="logout">
     <svg class="ic" viewBox="0 0 24 24"><path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>로그아웃</button>
 </div>
+<!-- 현재 배치 저장 (상태바 "현재 배치 저장" 버튼이 여는 작은 플로팅창) -->
+<div class="laypop" id="layPop" role="dialog" aria-modal="false" aria-label="현재 배치 저장">
+  <div class="lp-hd"><h4>현재 배치 저장</h4><span class="lp-cnt" id="layPopCnt"></span>
+    <button class="lp-x" data-laypop="close" aria-label="닫기">&times;</button></div>
+  <div id="layPopRows"></div>
+  <div class="lp-ft">
+    <input id="layPopName" maxlength="24" placeholder="배치 이름 (예: 기본 배치)" aria-label="배치 이름">
+    <button class="lp-ok" data-laypop="save">저장</button>
+  </div>
+  <div class="lp-note" id="layPopNote"></div>
+</div>
+
 <!-- 스티커 메모 (포스트잇) -->
 <div class="stickies" id="stickies">
   <div class="stool"><b>메모</b><span class="tn" id="stCnt"></span>
@@ -2599,12 +2648,15 @@ function renderDock(){
 
 /* ── 배치 저장 (사용자 계정별로 이 브라우저에 보관) ── */
 const resetBtn=document.getElementById('resetLayout');
+const laySaveBtn=document.getElementById('laySaveBtn');   /* 배치가 기본값과 달라지면 초기화 버튼과 함께 나타남 */
 const tile4Btn=document.getElementById('tile4');
 tile4Btn.addEventListener('click',tileQuarters);
 const sameLayout=()=>JSON.stringify(layout)===JSON.stringify(LAYOUT_DEFAULT);
 const isDefault=()=>sameLayout() && dockOrder.join()===DOCK_DEFAULT.join();
 function saveLayout(){
-  resetBtn.classList.toggle('show',!isDefault());
+  const changed=!isDefault();                       /* 앱·위젯을 옮기거나 크기를 바꾼 상태 */
+  resetBtn.classList.toggle('show',changed);
+  if(laySaveBtn) laySaveBtn.classList.toggle('show',changed);
   store.set(LKEY,JSON.stringify({user:USER.mail,layout,dock:dockOrder,theme,zones}));
 }
 function loadLayout(){
@@ -2639,7 +2691,7 @@ function loadLayout(){
 function resetLayout(){
   layout=LAYOUT_DEFAULT.map(o=>({...o})); dockOrder=[...DOCK_DEFAULT];
   zones=JSON.parse(JSON.stringify(ZONES_BUILTIN));
-  renderGrid(); renderDock(); saveLayout();
+  renderGrid(); renderDock(); saveLayout(); layPopClose();
   toast('홈 화면 배치를 기본값으로 되돌렸습니다');
 }
 resetBtn.addEventListener('click',resetLayout);
@@ -4075,21 +4127,21 @@ async function layPut(slots){
 }
 async function laySaveSlot(name,replaceId){
   const snap=laySnapshot();
-  if(!snap.home){ toast('저장할 배치가 없습니다'); return; }
+  if(!snap.home){ toast('저장할 배치가 없습니다'); return false; }
   const prev=replaceId?layState.slots.find(x=>x.id===replaceId):null;
   const nm=String(name||'').trim().slice(0,24) || (prev&&prev.name) || ('배치 '+(layState.slots.length+1));   /* 덮어쓰기는 기존 이름 유지 */
   const slot={id:replaceId||('s'+Date.now().toString(36)),name:nm,ts:new Date().toISOString(),data:snap};
   let slots;
   if(replaceId){
-    if(!prev) return;
-    if(!confirm(`'${prev.name}' 슬롯을 지금 배치로 덮어쓸까요?`)) return;
+    if(!prev) return false;
+    if(!confirm(`'${prev.name}' 슬롯을 지금 배치로 덮어쓸까요?`)) return false;
     slots=layState.slots.map(x=>x.id===replaceId?slot:x);
   }else{
-    if(layState.slots.length>=LAY_MAX){ toast('슬롯이 '+LAY_MAX+'개 모두 찼습니다. 기존 슬롯을 덮어써 주세요'); return; }
+    if(layState.slots.length>=LAY_MAX){ toast('슬롯이 '+LAY_MAX+'개 모두 찼습니다. 기존 슬롯을 덮어써 주세요'); return false; }
     slots=[...layState.slots,slot];
   }
-  try{ await layPut(slots); layRender(); toast(`'${nm}' 배치를 저장했습니다`); }
-  catch(err){ toast(err.message); }
+  try{ await layPut(slots); layRender(); layPopRender(); toast(`'${nm}' 배치를 저장했습니다`); return true; }
+  catch(err){ toast(err.message); return false; }
 }
 function layApplySlot(id){
   const sl=layState.slots.find(x=>x.id===id); if(!sl) return;
@@ -4137,6 +4189,84 @@ function layRender(){
        <button class="sbtn" data-lay="save">현재 배치 저장</button><span class="m">${layState.slots.length}/${LAY_MAX}</span></div>`;
 }
 async function layRefresh(){ await layFetch(); layRender(); }
+
+/* ── 현재 배치 저장 플로팅창 (상태바 버튼 → 슬롯 고르고 저장). 불러오기·삭제는 설정 창에 그대로 ── */
+const layPop=document.getElementById('layPop');
+let layPopSel=null;                 /* 고른 슬롯 id. null 이면 "새 슬롯으로 저장" */
+const layPopOn=()=>!!layPop&&layPop.classList.contains('on');
+function layPopPlace(){
+  if(!layPop||!laySaveBtn) return;
+  const r=laySaveBtn.getBoundingClientRect(), w=Math.min(320,window.innerWidth-24);
+  layPop.style.width=w+'px';
+  layPop.style.left=Math.max(12,Math.min(Math.round(r.left+r.width/2-w/2),window.innerWidth-w-12))+'px';
+  layPop.style.right='auto';
+  layPop.style.top=Math.round(r.bottom+8)+'px';
+}
+function layPopRender(){
+  if(!layPopOn()) return;
+  const rows=document.getElementById('layPopRows'), cnt=document.getElementById('layPopCnt'),
+        note=document.getElementById('layPopNote'), ft=layPop.querySelector('.lp-ft'), inp=document.getElementById('layPopName');
+  if(!rows) return;
+  if(!layState.ok){
+    cnt.textContent=''; ft.style.display='none';
+    rows.innerHTML=`<div class="lp-note" style="margin:6px 2px 2px">NAS에 저장할 수 없습니다 — ${esc(layState.err||'연결을 확인해 주세요')}</div>`;
+    note.innerHTML='프로필 메뉴 → <b>내 홈 배치</b>에서 파일로 저장할 수 있습니다.';
+    return;
+  }
+  ft.style.display='flex';
+  cnt.textContent=layState.slots.length+'/'+LAY_MAX;
+  let html='';
+  for(let i=0;i<LAY_MAX;i++){
+    const sl=layState.slots[i];
+    const sel=sl?(layPopSel===sl.id):(layPopSel===null&&i===layState.slots.length);
+    html+=`<button class="lp-sl${sel?' lp-on':''}${sl?'':' lp-empty'}" data-laypop="pick" data-id="${sl?esc(sl.id):''}">
+      <span class="lp-no">${sel?'✓':i+1}</span>
+      <span class="lp-tx"><b>${sl?esc(sl.name):'슬롯 '+(i+1)+' · 비어 있음'}</b>
+      <i>${sl?'저장 '+esc(layFmt(sl.ts))+' · 고르면 덮어씁니다':'새 배치로 저장'}</i></span></button>`;
+  }
+  rows.innerHTML=html;
+  const cur=layPopSel?layState.slots.find(x=>x.id===layPopSel):null;
+  if(inp){
+    if(document.activeElement!==inp) inp.value=cur?cur.name:'';
+    inp.placeholder=cur?'이름을 바꾸려면 입력':'배치 이름 (예: 기본 배치)';
+  }
+  note.textContent='아이콘·위젯 배치와 Dock·배경만 저장합니다 (메모는 저장되지 않습니다). 불러오기·삭제는 프로필 메뉴의 "내 홈 배치"에서.';
+}
+async function layPopOpen(){
+  if(!layPop) return;
+  layPopPlace(); layPop.classList.add('on');
+  const rows=document.getElementById('layPopRows');
+  if(rows) rows.innerHTML='<div class="lp-note" style="margin:6px 2px 2px">불러오는 중…</div>';
+  await layFetch();
+  layPopSel=(layState.ok&&layState.slots.length>=LAY_MAX)?layState.slots[0].id:null;   /* 꽉 찼으면 첫 슬롯 덮어쓰기로 시작 */
+  layPopRender();
+  const inp=document.getElementById('layPopName'); if(inp) setTimeout(()=>inp.focus(),60);
+}
+function layPopClose(){ if(layPop) layPop.classList.remove('on'); }
+async function layPopSave(){
+  const inp=document.getElementById('layPopName');
+  if(await laySaveSlot(inp?inp.value:'',layPopSel)) layPopClose();
+}
+if(laySaveBtn) laySaveBtn.addEventListener('click',e=>{ e.stopPropagation(); layPopOn()?layPopClose():layPopOpen(); });
+document.addEventListener('click',e=>{
+  const a=e.target.closest('[data-laypop]');
+  if(a){
+    e.preventDefault();
+    const act=a.dataset.laypop;
+    if(act==='pick'){ layPopSel=a.dataset.id||null; layPopRender();
+      const i=document.getElementById('layPopName'); if(i) i.focus(); }
+    else if(act==='save') layPopSave();
+    else if(act==='close') layPopClose();
+    return;
+  }
+  if(layPopOn()&&!e.target.closest('#layPop,#laySaveBtn')) layPopClose();
+});
+document.addEventListener('keydown',e=>{
+  if(!layPopOn()) return;
+  if(e.key==='Escape'){ e.stopPropagation(); layPopClose(); }
+  else if(e.key==='Enter'&&e.target&&e.target.id==='layPopName'){ e.preventDefault(); layPopSave(); }
+});
+window.addEventListener('resize',()=>{ if(layPopOn()) layPopPlace(); });
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-lay]'); if(!b) return; e.preventDefault();
   const act=b.dataset.lay, id=b.dataset.id;
