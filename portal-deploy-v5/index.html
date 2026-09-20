@@ -3046,7 +3046,9 @@ function openApp(id,origin){
     focusWin(id); syncHome(); return;
   }
   const ar=area();
-  const w=Math.min((a.w||720)*1.3, ar.w-40), h=Math.min((a.h||520)*1.3, ar.h-30);
+  /* 창 크기 = APPS 에 적힌 w×h 그대로. 화면이 더 작으면 화면에 맞춰 줄인다.
+     (2026-09-20: 원본 디자인의 ×1.3 배율을 뺌 — 실제 앱이 1600×1000 이라 화면을 꽉 채워 너무 컸음) */
+  const w=Math.min(a.w||720, ar.w-40), h=Math.min(a.h||520, ar.h-30);
   const off=(cascade++%6)*28;
   let x=ar.x+Math.max(20,(ar.w-w)/2-120)+off, y=ar.y+Math.max(14,(ar.h-h)/2-30)+off;
   x=Math.min(x, ar.x+ar.w-w-10); y=Math.min(y, ar.y+ar.h-h-10);
