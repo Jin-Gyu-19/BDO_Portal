@@ -2110,8 +2110,9 @@ const APPS = {
   shaudit:{name:'SH Audit Platform', sub:'감사 플랫폼 · 재무제표 구조화', short:'SH', bg:'linear-gradient(150deg,#E81A3B,#8E0F24)', w:1600, h:1000, url:'/audit/index.html'},
   taxagent:{name:'TAX Agent',sub:'연결 주소 등록 대기',short:'TAX',bg:'linear-gradient(150deg,#E7A027,#B96B10)',w:520,h:340,body:()=>`<div class="empty"><div class="bigicon img" style="${icoBg('taxagent')}"></div><div class="t">TAX Agent</div><div class="d">앱 아이콘이 추가되었습니다.<br>연결할 사이트 주소는 아직 등록되지 않았습니다.</div></div>`},
   expense:{name:'경비청구', sub:'경비 청구 · 정산', short:'경비', bg:'linear-gradient(150deg,#309CF4,#07368B)', w:1280, h:900,
-    get url(){ return extUrl(7000,7005); }, auth:'popup',   /* 2026-09-20 연결. http 7000 / https 7005, 접속 호스트를 따라감(XBRL·회의실과 동일).
-                                                               포털과 같은 MS SSO 를 쓰므로 회의실처럼 auth:'popup' — 포털에 SSO 로 로그인한 상태면 안내 없이 바로 열린다 */
+    get url(){ return extUrl(7000,7005); }, auth:'popup', authAlways:true,   /* 2026-09-20 연결. http 7000 / https 7005, 접속 호스트를 따라감(XBRL·회의실과 동일).
+                                                               MS 로그인이 필요하므로 회의실처럼 auth:'popup'. 다만 포털과 다른 Entra 앱이라
+                                                               iframe 안의 MS 로그인이 거부되므로 authAlways:true 로 항상 팝업 로그인을 먼저 거친다 */
     body:()=>`
     <div class="empty"><div class="bigicon img" style="${icoBg('expense')}"></div>
       <div class="t">경비청구</div><div class="d">경비청구 사이트에 연결하지 못했습니다.<br>잠시 후 다시 시도하거나 관리자에게 문의하세요.</div>
@@ -3014,7 +3015,10 @@ const authGate=(id,a)=>`<div class="auth-gate" data-auth-gate="${id}">
     <button type="button" class="ag-btn" data-auth-login="${id}">로그인 창 열기</button>
     <span class="ag-skip" data-auth-skip="${id}">이미 로그인했어요 · 바로 열기</span>
   </div>`;
-const frameBody=(id,a)=>{ const gate=a.auth==='popup' && !authDone(id) && !USER.sso;   /* 포털에 SSO로 로그인했으면 같은 MS 세션이라 바로 연다 */
+/* authAlways:true 인 앱은 포털이 SSO 로그인 상태여도 안내 화면을 먼저 띄운다.
+   포털과 다른 Entra 앱을 쓰면 MS 로그인이 대화형이라 iframe 안에서 'X-Frame-Options: DENY' 로 막히기 때문
+   (경비청구에서 실제로 발생: login.microsoftonline.com 연결을 거부했습니다. 2026-09-20) */
+const frameBody=(id,a)=>{ const gate=a.auth==='popup' && !authDone(id) && (a.authAlways || !USER.sso);   /* 포털과 같은 Entra 앱이면 같은 MS 세션이라 바로 연다 */
   return `<div class="wbody frame"><iframe class="appframe" ${gate?'data-src':'src'}="${appUrl(a)}" title="${esc(a.name)}" allow="clipboard-read; clipboard-write; fullscreen"></iframe>`+
   (gate?authGate(id,a):`<div class="app-loading"><div class="spinner"></div><span>${esc(a.name)} 불러오는 중…</span></div>`)+`</div>`; };
 /* 게이트 해제: iframe을 실제로 로드하고 스피너를 붙인다 */
