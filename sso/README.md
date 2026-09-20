@@ -100,6 +100,24 @@ sudo curl -fsSL -o PretendardVariable.woff2 https://cdn.jsdelivr.net/gh/orioncac
 # 약 2MB 면 정상. 그다음 nginx 설정 교체(3번 절차: 백업 → 복사 → nginx -t → reload)
 ```
 
+## 8. 내 홈 배치 NAS 저장 (2026-09-20 — 계정별 슬롯 5개)
+포털 설정 창의 **내 홈 배치 (NAS 저장)**. 클라이언트는 항상 `/layouts/me.json` 하나만 부르고, **실제 파일은 nginx 가 로그인 계정(`X-Auth-Request-Preferred-Username`)으로 정한다** — 주소를 바꿔도 남의 배치는 못 읽고 못 덮어쓴다. 쓰기는 `/_lw/layouts/` → `sh-dl-writer`(포털 폴더가 `:ro` 라서).
+```
+# (1) 폴더 만들기 (컨테이너의 nginx 사용자가 써야 하므로 777)
+cd /volume1/sh-pf/docker/nginx-html/portal && sudo mkdir -p layouts && sudo chmod 777 layouts && ls -ld layouts
+# (2) dl-writer 재생성 (layouts 마운트가 추가됨)
+cd /volume1/sh-pf/docker/sh-platform/dl-writer
+RAW=https://raw.githubusercontent.com/Jin-Gyu-19/BDO_Portal/claude/awesome-hopper-cmd4wg/infra/dl-writer
+sudo curl -fsSL -o docker-compose.dl-writer.yml $RAW/docker-compose.dl-writer.yml && sudo curl -fsSL -o dl-writer.conf $RAW/dl-writer.conf
+sudo docker-compose -f docker-compose.dl-writer.yml up -d --force-recreate && sleep 3 && sudo docker ps --filter name=sh-dl-writer
+# (3) 메인 nginx 설정 교체 (3번 절차와 동일: 백업 → 복사 → 검사 → reload)
+cd /volume1/sh-pf/docker/sh-platform/nginx && sudo cp default.conf default.conf.bak_$(date +%Y%m%d_%H%M%S)
+curl -fsSL -o /tmp/default.conf https://raw.githubusercontent.com/Jin-Gyu-19/BDO_Portal/claude/awesome-hopper-cmd4wg/sso/nginx-default.conf && sudo cp /tmp/default.conf default.conf
+sudo docker exec sh-nginx nginx -t && sudo docker exec sh-nginx nginx -s reload
+```
+확인: 포털 → 프로필 메뉴 → "내 홈 배치 (저장 · 불러오기)" → 이름 적고 저장 → 목록에 뜸. 다른 PC에서 같은 계정으로 로그인해도 같은 슬롯이 보이면 성공.
+저장 파일은 `portal/layouts/<계정UPN>.json` 하나(슬롯 5개가 그 안에). 설정이 아직 없으면 화면에 "NAS에 저장할 수 없습니다"가 뜨고 파일 방식은 그대로 쓸 수 있다.
+
 ## 롤백 (즉시)
 ```
 cd /volume1/sh-pf/docker/sh-platform/nginx

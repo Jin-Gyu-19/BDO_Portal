@@ -15,7 +15,7 @@
 | `docs/` | 작업 인수인계서, NAS 인프라 변경보고서(SH-AX-INFRA-001) | 배경·제약 사항 |
 | `infra/reference/` | 초기 인프라 구축본(compose, nginx.conf, .env.example) | 운영본과 다름. 참고만 |
 | `design-new/` | 새 포털 디자인 원본(CDN판, 2026-09-16 수령). 배포본은 이 파일에 앱 연결만 얹은 것 | diff 기준점. 수정하지 말 것 |
-| `infra/dl-writer/` | 다운로드 파일 쓰기 전용 미니 nginx(`sh-dl-writer`, host 모드 `127.0.0.1:4181`) compose + conf. `sh-nginx`의 html 마운트가 `:ro`라 포털 관리 화면의 업로드를 이쪽이 받음 | 적용 절차 `sso/README.md` 5번 |
+| `infra/dl-writer/` | 쓰기 전용 미니 nginx(`sh-dl-writer`, host 모드 `127.0.0.1:4181`) compose + conf. `sh-nginx`의 html 마운트가 `:ro`라 **다운로드 파일(관리자)·내 홈 배치(본인)** 업로드를 이쪽이 받음 | 적용 절차 `sso/README.md` 5번·8번 |
 | `infra/db-backup/` | 수리된 `backup.sh`(NAS `scripts/backup.sh`와 동일하게 유지) + 수리 경위 | 2026-09-18 적용 |
 | `sso/` | MS SSO 구성: oauth2-proxy compose·`.env.sso.example`·SSO판 nginx `default.conf`(+`/downloads/` 쓰기 location)·Entra 앱 등록 절차·적용 순서(README) | **NAS 적용 완료(2026-09-18)** — NAS의 실제 파일과 동일하게 유지할 것. `/downloads/` 쓰기 설정은 **NAS 미적용**(README 5번) |
 
@@ -47,7 +47,7 @@
 
 ## 포털 구조 (핵심) — 2026-09-16 새 디자인
 
-`portal-deploy-v5/index.html` — **단일 HTML 파일**(약 650KB, 아이콘 PNG/WebP 60개 내장, 탭 아이콘은 SVG data URI). Pretendard 폰트는 `@font-face`로 NAS `portal/fonts/PretendardVariable.woff2`를 먼저 찾고 없으면 jsdelivr CDN 폴백(2026-09-19 NAS 적용 완료 — `portal/fonts/PretendardVariable.woff2` 2,057,688바이트, nginx `/fonts/` 캐시 location. 올리는 법: `sso/README.md` 7번). 콘솔의 favicon 404·Edge Tracking Prevention 경고는 이걸로 사라짐. 백엔드·DB·빌드 과정 없음. 정적 파일입니다 (네트워크 호출은 `/oauth2/userinfo`(SSO 사용자)·`/downloads/manifest.json`(다운로드 배지 목록), 그리고 관리자 전용 다운로드 관리 화면의 `/downloads/` PUT/DELETE 뿐. 없으면 조용히 건너뜀).
+`portal-deploy-v5/index.html` — **단일 HTML 파일**(약 650KB, 아이콘 PNG/WebP 60개 내장, 탭 아이콘은 SVG data URI). Pretendard 폰트는 `@font-face`로 NAS `portal/fonts/PretendardVariable.woff2`를 먼저 찾고 없으면 jsdelivr CDN 폴백(2026-09-19 NAS 적용 완료 — `portal/fonts/PretendardVariable.woff2` 2,057,688바이트, nginx `/fonts/` 캐시 location. 올리는 법: `sso/README.md` 7번). 콘솔의 favicon 404·Edge Tracking Prevention 경고는 이걸로 사라짐. 백엔드·DB·빌드 과정 없음. 정적 파일입니다 (네트워크 호출은 `/oauth2/userinfo`(SSO 사용자)·`/downloads/manifest.json`(다운로드 배지 목록)·`/layouts/me.json`(내 홈 배치 슬롯), 그리고 관리자 전용 다운로드 관리 화면의 `/downloads/` PUT/DELETE 뿐. 없으면 조용히 건너뜀).
 
 iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페이스·타임시트·메모·공지)과 앱 아이콘이 10×5 격자에 놓이고, 앱을 누르면 창이 열립니다. 하단 Dock, ⌘K 검색, "홈 편집" 서랍, 스티커 메모, AI 칼 플로팅 챗봇이 있습니다. **로그인 화면은 없습니다. 접속하면 바로 홈**입니다 (2026-09-16 결정. 인증은 SSO 도입 때 nginx 단에서 처리).
 
@@ -93,7 +93,10 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
 - **Dock = 최근 사용한 앱 4개** (`DOCK_RECENT=true`, `DOCK_N=4`, 2026-09-17). `openApp()`·`triggerDownload()`·Dock의 메모 클릭이 `noteRecent(id)`를 불러 맨 앞으로 올리고 `sh-portal:<id>:recent` 키에 저장. 4개가 안 차면 `DOCK_DEFAULT`(리뷰함·일정·팀·메모)로 채움. 칼(`ai`)은 제외. 이 모드에서는 Dock 아이콘 드래그·Dock에 놓기가 꺼져 있음(`DOCK_RECENT=false`로 되돌리면 예전 수동 Dock).
 - `openKal()` / 칼 답변은 키워드 규칙. `USER` 상수가 표시 이름·이메일.
 - **SSO 사용자**: 스크립트 맨 앞 `loadSsoUser()`가 `/oauth2/userinfo`를 **동기 XHR**로 읽어 `USER`를 덮어씀(id·mail=`preferredUsername`(UPN) 소문자, name=`email` 항목 — oauth2-proxy 설정 `OIDC_EMAIL_CLAIM=name` 으로 표시 이름을 email 자리에 실음. `user`는 sub 라 쓰지 않음, admin=`groups`에 `Admin`, sso=true). 저장 키(`LKEY`·`MKEY`·`RKEY`·`KKEY`)가 `USER.id`로 만들어지므로 **계정별 배치**가 됨. 프록시가 없으면(404·로컬 파일) 목업 윤길배 유지. `paintUser()`가 인사말·프로필 버튼·프로필 카드에 반영하고 `body.is-admin`/`is-sso` 클래스를 붙임.
-- **내 홈 배치 저장/불러오기**(프로필 메뉴, `data-portal-backup`): `portalBackupDownload()`가 배치·Dock·배경·그룹·메모·최근 앱을 JSON 파일로 내려받고, `portalBackupImport()`가 검증 후 `store.set`(접두어 키)으로 복원하고 새로고침. 다른 PC로 옮길 때 씀. 화면엔 버튼 없음(메뉴에서만).
+- **내 홈 배치 슬롯 — NAS 저장**(2026-09-20): 프로필 메뉴 "내 홈 배치 (저장 · 불러오기)"(`data-mact="layhome"`) → 설정 창의 `#layHome` 섹션. **계정마다 최대 5개**(`LAY_MAX`) 슬롯에 이름을 붙여 저장하고, 다른 PC에서 로그인해도 그대로 불러옴. 배치·Dock·배경·그룹·최근 앱만 저장하고 **메모는 넣지 않음**(불러와도 메모는 그대로).
+  - 주소는 항상 `/layouts/me.json` 하나. **실제 파일은 nginx 가 로그인 계정(`X-Auth-Request-Preferred-Username`)으로 정하므로 남의 배치는 읽지도 덮어쓰지도 못함**(`sso/nginx-default.conf` 의 `location = /layouts/me.json`). 쓰기는 `/_lw/layouts/` → `sh-dl-writer`(포털 폴더가 `:ro`). 적용 절차는 `sso/README.md` 8번, NAS 폴더는 `chmod 777 layouts`.
+  - 코드: `layFetch()`(GET, 404면 빈 목록) · `layPut()`(PUT) · `laySaveSlot(name,replaceId)`(덮어쓰기는 기존 이름 유지) · `layApplySlot()`(기존 `portalBackupValidate()`로 검증 후 `store.set` → 새로고침) · `layDeleteSlot()` · `layRender()`. 설정 창을 열 때 `layRefresh()`.
+  - **파일로 주고받기**(`portalBackupDownload/Import`, `data-portal-backup`)는 같은 섹션 안에 링크로 남겨둠 — 메모까지 포함한 전체 백업이 필요하거나 NAS 저장이 안 될 때 쓰는 폴백.
 - 프로필 메뉴 "로그아웃": SSO면 `ssoLogout()` → `/oauth2/sign_out?rd=<MS logout>` → 포털 복귀. 아니면 토스트만.
 
 ---

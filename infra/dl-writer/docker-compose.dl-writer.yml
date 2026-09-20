@@ -8,8 +8,8 @@
 #
 #  왜 따로 띄우나: 메인 nginx(sh-nginx)는 포털 폴더를 읽기 전용(:ro)으로 마운트하고 있어 파일을 못 쓴다.
 #  compose 의 nginx 서비스는 건드리지 않는 것이 규칙이므로, downloads 폴더만 쓰기 가능하게 마운트한
-#  작은 nginx 를 host 모드 127.0.0.1:4181 에 띄우고, 메인 nginx 가 관리자 확인(auth_request) 후
-#  PUT/DELETE 만 여기로 넘긴다. 외부에서 4181 로 직접 접근할 수 없다(loopback 리슨).
+#  작은 nginx 를 host 모드 127.0.0.1:4181 에 띄우고, 메인 nginx 가 인증 확인(auth_request) 후
+#  PUT/DELETE 만 여기로 넘긴다(다운로드 파일은 관리자만, 홈 배치는 본인 것만). 외부에서 4181 로 직접 접근할 수 없다(loopback 리슨).
 # ============================================================
 version: "3.9"
 
@@ -24,3 +24,4 @@ services:
     volumes:
       - ./dl-writer.conf:/etc/nginx/conf.d/default.conf:ro
       - /volume1/sh-pf/docker/nginx-html/portal/downloads:/srv/downloads
+      - /volume1/sh-pf/docker/nginx-html/portal/layouts:/srv/layouts
