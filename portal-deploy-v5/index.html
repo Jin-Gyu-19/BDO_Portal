@@ -2109,9 +2109,12 @@ const APPS = {
   /* ── 실제 연결 앱: url이 있으면 창 안에 iframe으로 열린다 (NAS nginx 경로 · XBRL은 :4000 직접) ── */
   shaudit:{name:'SH Audit Platform', sub:'감사 플랫폼 · 재무제표 구조화', short:'SH', bg:'linear-gradient(150deg,#E81A3B,#8E0F24)', w:1600, h:1000, url:'/audit/index.html'},
   taxagent:{name:'TAX Agent',sub:'연결 주소 등록 대기',short:'TAX',bg:'linear-gradient(150deg,#E7A027,#B96B10)',w:520,h:340,body:()=>`<div class="empty"><div class="bigicon img" style="${icoBg('taxagent')}"></div><div class="t">TAX Agent</div><div class="d">앱 아이콘이 추가되었습니다.<br>연결할 사이트 주소는 아직 등록되지 않았습니다.</div></div>`},
-  expense:{name:'경비청구', sub:'연결 주소 등록 대기', short:'경비', bg:'linear-gradient(150deg,#309CF4,#07368B)', w:560, h:380, body:()=>`
+  expense:{name:'경비청구', sub:'경비 청구 · 정산', short:'경비', bg:'linear-gradient(150deg,#309CF4,#07368B)', w:1280, h:900,
+    get url(){ return extUrl(7000,7005); }, auth:'popup',   /* 2026-09-20 연결. http 7000 / https 7005, 접속 호스트를 따라감(XBRL·회의실과 동일).
+                                                               포털과 같은 MS SSO 를 쓰므로 회의실처럼 auth:'popup' — 포털에 SSO 로 로그인한 상태면 안내 없이 바로 열린다 */
+    body:()=>`
     <div class="empty"><div class="bigicon img" style="${icoBg('expense')}"></div>
-      <div class="t">경비청구</div><div class="d">연결할 경비청구 사이트 주소가 아직 등록되지 않았습니다.<br>현재는 앱 아이콘과 홈 배치만 이용할 수 있습니다.</div>
+      <div class="t">경비청구</div><div class="d">경비청구 사이트에 연결하지 못했습니다.<br>잠시 후 다시 시도하거나 관리자에게 문의하세요.</div>
     </div>`},
   rev:{name:'리뷰함', sub:'47건 대기', short:'조서', bg:G.rev, fg:'#6E4A0E', badge:47, w:760, h:520, body:()=>`
     <table class="tbl">
