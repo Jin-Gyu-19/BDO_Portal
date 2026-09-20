@@ -1568,6 +1568,7 @@ function ssoLogout(){
   location.href='/oauth2/sign_out?rd='+encodeURIComponent(ms);
 }
 const LKEY='sh-portal:'+USER.id+':v7';
+const BKEY='sh-portal:'+USER.id+':laybase';   /* 마지막으로 슬롯에 저장·불러온 배치의 서명. 이것과 같으면 '저장할 변동사항 없음' */
 /* ── 시간대별 인사말 (1분마다 갱신) ── */
 function greetText(d=new Date()){
   const h=d.getHours(), day=d.getDay();
@@ -2648,16 +2649,26 @@ function renderDock(){
 
 /* ── 배치 저장 (사용자 계정별로 이 브라우저에 보관) ── */
 const resetBtn=document.getElementById('resetLayout');
-const laySaveBtn=document.getElementById('laySaveBtn');   /* 배치가 기본값과 달라지면 초기화 버튼과 함께 나타남 */
+const laySaveBtn=document.getElementById('laySaveBtn');
+/* 상태바의 '현재 배치 저장'·'배치 초기화'는 저장하지 않은 변동사항이 있을 때만 보인다.
+   슬롯에 저장하거나 슬롯을 불러오면 그 상태가 기준(layBase)이 되어 두 버튼이 사라진다.
+   한 번도 저장한 적이 없으면 기준은 기본 배치. */
+let layBase=store.get(BKEY)||'';
 const tile4Btn=document.getElementById('tile4');
 tile4Btn.addEventListener('click',tileQuarters);
 const sameLayout=()=>JSON.stringify(layout)===JSON.stringify(LAYOUT_DEFAULT);
 const isDefault=()=>sameLayout() && dockOrder.join()===DOCK_DEFAULT.join();
+const laySig=()=>JSON.stringify({user:USER.mail,layout,dock:dockOrder,theme,zones});
+function paintLayActions(){
+  const dirty=layBase?(laySig()!==layBase):!isDefault();   /* 저장한 적 없으면 기본 배치가 기준 */
+  resetBtn.classList.toggle('show',dirty&&!isDefault());   /* 이미 기본 배치면 되돌릴 게 없음 */
+  if(laySaveBtn) laySaveBtn.classList.toggle('show',dirty);
+}
+function layMarkSaved(){ layBase=store.get(LKEY)||''; store.set(BKEY,layBase); paintLayActions(); }
 function saveLayout(){
-  const changed=!isDefault();                       /* 앱·위젯을 옮기거나 크기를 바꾼 상태 */
-  resetBtn.classList.toggle('show',changed);
-  if(laySaveBtn) laySaveBtn.classList.toggle('show',changed);
-  store.set(LKEY,JSON.stringify({user:USER.mail,layout,dock:dockOrder,theme,zones}));
+  const raw=laySig();
+  store.set(LKEY,raw);
+  paintLayActions();
 }
 function loadLayout(){
   try{
@@ -4092,6 +4103,7 @@ function addTaxAppsOnce(){
 }
 loadLayout(); applyTheme(theme,false);
 renderGrid(); renderDock(); saveLayout();
+if(layBase==='@reload') layMarkSaved();   /* 슬롯을 불러온 직후 — 방금 불러온 배치를 기준으로 */
 /* Portable personal settings: only this portal's three supported records. */
 /* ══════════ 내 홈 배치 슬롯 — NAS 저장 (계정별 최대 5개) · 2026-09-20 ══════════
    nginx 가 /layouts/me.json 을 "로그인한 본인 계정 파일"로 연결한다(sso/nginx-default.conf).
@@ -4140,7 +4152,7 @@ async function laySaveSlot(name,replaceId){
     if(layState.slots.length>=LAY_MAX){ toast('슬롯이 '+LAY_MAX+'개 모두 찼습니다. 기존 슬롯을 덮어써 주세요'); return false; }
     slots=[...layState.slots,slot];
   }
-  try{ await layPut(slots); layRender(); layPopRender(); toast(`'${nm}' 배치를 저장했습니다`); return true; }
+  try{ await layPut(slots); layMarkSaved(); layRender(); layPopRender(); toast(`'${nm}' 배치를 저장했습니다`); return true; }
   catch(err){ toast(err.message); return false; }
 }
 function layApplySlot(id){
@@ -4149,6 +4161,7 @@ function layApplySlot(id){
     const clean=portalBackupValidate(sl.data);
     if(!confirm(`'${sl.name}' 배치로 바꿀까요? 지금 배치는 사라집니다 (메모는 그대로 남습니다).`)) return;
     store.set(LKEY,JSON.stringify(clean.home)); store.set(RKEY,JSON.stringify(clean.recent||[]));
+    store.set(BKEY,'@reload');
     location.reload();
   }catch(err){ alert(err&&err.message||'이 슬롯을 불러오지 못했습니다.'); }
 }
