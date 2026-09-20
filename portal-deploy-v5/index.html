@@ -2289,10 +2289,11 @@ precheck:{name:'사전심리도우미', sub:'수임 전 사전심리 지원', sh
   qms:{name:'QMS 자동화', sub:'품질관리(QMS) 자동화', short:'QMS', bg:'linear-gradient(160deg,#9B7BEA,#6A3FD6)', w:760, h:520},
   prerisk:{name:'계약전위험평가조서 자동화 도구', sub:'계약 전 위험평가 · QRM', short:'위험', bg:'linear-gradient(160deg,#3FBF9A,#1A8C6E)', w:760, h:520},
   enreport:{name:'영문보고서 초안 작성 자동화 Tool', sub:'영문 보고서 초안 · Footing 연계', short:'EN', bg:'linear-gradient(160deg,#5B8DEF,#2F5FD0)', w:760, h:520},
-  vuln:{name:'취약점 진단', sub:'보안 취약점 진단 도구', short:'진단', bg:G.aud, w:1280, h:900,
-    get url(){ return extUrl(7010,7011)+'?embed=1'; }},   /* 2026-09-20 연결. http 7010 / https 7011(HTTPS 종단) — 접속 호스트를 따라감.
-                                                            ?embed=1 은 회의실·경비청구와 같은 임베드 모드 규약(앱이 자기 상단 바·로그아웃을 숨김).
-                                                            MS 로그인을 쓰지 않아 auth 게이트 없음(XBRL 과 같은 방식). 창 1280×900 은 콘텐츠 폭을 재보지 못한 임시값 */
+  vuln:{name:'취약점 진단', sub:'ISMS-P 보안 취약점 진단', short:'진단', bg:G.aud, w:1600, h:1000, url:'/ismsp/admin?embed=1'},
+  /* 2026-09-20 연결. 앱은 127.0.0.1:7010 에 있고, 포털 nginx 가 /ismsp/ 로 프록시한다(sso/nginx-default.conf).
+     포털과 같은 주소(https 8080)라 혼합 콘텐츠·자체서명 인증서 경고·frame-ancestors·방화벽 포트가 전부 불필요.
+     MS 로그인을 쓰지 않으므로 auth 게이트 없음. 관리자 화면만 임베드 대상(사용자 화면은 ismsp:// 프로토콜을 호출해 iframe 불가).
+     가로는 full 레이아웃(내부 컨테이너 1180px 가운데 정렬)이라 창을 1600×1000 으로 넓게 잡음. */
   koaudrep:{name:'국문감사보고서 대사검증', sub:'국문 감사보고서 대사 · 검증', short:'KO', bg:'linear-gradient(160deg,#3E7FB5,#245C8C)', w:860, h:900, url:'/apps/ko-audit-recon.html'},   /* 창 = 페이지 콘텐츠 폭 760px 에 맞춤 (2026-09-20 측정) */
   enaudrep:{name:'영문감사보고서 대사검증', sub:'영문 감사보고서 대사 · 검증', short:'EN', bg:'linear-gradient(160deg,#4C86E8,#2E5FC4)', w:880, h:900, url:'/apps/en-audit-recon.html'},   /* 창 = 페이지 콘텐츠 폭 780px 에 맞춤 (2026-09-20 측정) */
   enwriter:{name:'영문감사보고서 자동작성', sub:'영문 감사보고서 초안 자동 작성', short:'EN', bg:'linear-gradient(160deg,#6F6FE0,#4A47B8)', w:920, h:900, url:'/apps/en-audit-write.html'},   /* 창 = 페이지 콘텐츠 폭 820px 에 맞춤 (2026-09-20 측정) */

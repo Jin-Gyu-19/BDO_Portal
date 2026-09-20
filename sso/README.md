@@ -126,6 +126,20 @@ sudo docker exec sh-nginx nginx -t && sudo docker exec sh-nginx nginx -s reload
 > UPN 형식(`^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+$`)이 아니면 `__deny__/none.json` 으로 보내 읽기는 404, 쓰기는 dl-writer 가 403.
 > 참고로 정규식에 `[/\\]` 처럼 백슬래시를 넣으면 nginx 문자열 처리에서 `[/\]` 로 줄어들어 `pcre2_compile() failed` 가 난다. 쓰지 말 것.
 
+## 9. 취약점 진단(ISMS-P) 프록시 (2026-09-20)
+앱은 NAS 의 `127.0.0.1:7010` 에서 돌고 `/ismsp/` 경로를 씁니다. 포털이 https(8080)이라 `http://…:7010` 을 그대로 iframe 에 넣으면 **혼합 콘텐츠로 차단**되고, 앱이 가진 https(7011)는 자체 서명이라 PC 마다 인증서 경고를 통과해야 합니다. 그래서 **포털 nginx 가 `/ismsp/` 를 프록시**합니다 — 주소가 `https://192.168.100.25:8080/ismsp/admin` 이 되어 위 문제가 전부 사라지고, 방화벽에 7010·7011 을 열 필요도 없습니다(VPN 포함).
+```
+cd /volume1/sh-pf/docker/sh-platform/nginx && sudo cp default.conf default.conf.bak_$(date +%Y%m%d_%H%M%S)
+sudo curl -fsSL -o default.conf "https://raw.githubusercontent.com/Jin-Gyu-19/BDO_Portal/claude/awesome-hopper-cmd4wg/sso/nginx-default.conf?v=$(date +%s)"
+sudo chmod 644 default.conf
+sudo docker exec sh-nginx nginx -t && sudo docker exec sh-nginx nginx -s reload
+```
+확인: `https://192.168.100.25:8080/ismsp/admin` 이 열리면 성공. 포털에서는 취약점 진단 아이콘.
+- `proxy_pass` 에 URI 를 붙이지 않아 `/ismsp/...` 경로가 그대로 전달됩니다. 앱 쪽 경로 설정 변경 불필요.
+- 로그인 계정을 `X-Auth-Request-Preferred-Username` 헤더로 넘깁니다. 앱이 HMAC 서명 링크(`/ismsp/sso?u=…&s=…`) 대신 이 헤더를 믿어도 됩니다(요청이 127.0.0.1 에서만 오고 oauth2-proxy 가 검증한 값).
+- 앱 `.env` 의 `ISMSP_FRAME_ANCESTORS` 는 같은 origin 이 되므로 불필요합니다(`'self'` 로 충분).
+- 502 가 나면 앱이 7010 에서 듣고 있는지 확인: `sudo ss -tlnp | grep :7010`
+
 ## 롤백 (즉시)
 ```
 cd /volume1/sh-pf/docker/sh-platform/nginx
