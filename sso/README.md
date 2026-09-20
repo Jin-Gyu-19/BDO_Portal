@@ -118,6 +118,14 @@ sudo docker exec sh-nginx nginx -t && sudo docker exec sh-nginx nginx -s reload
 확인: 포털 → 프로필 메뉴 → "내 홈 배치 (저장 · 불러오기)" → 이름 적고 저장 → 목록에 뜸. 다른 PC에서 같은 계정으로 로그인해도 같은 슬롯이 보이면 성공.
 저장 파일은 `portal/layouts/<계정UPN>.json` 하나(슬롯 5개가 그 안에). 설정이 아직 없으면 화면에 "NAS에 저장할 수 없습니다"가 뜨고 파일 방식은 그대로 쓸 수 있다.
 
+> **왜 `map` 을 쓰나** (2026-09-20 삽질 기록)
+> nginx 의 `if` 는 **rewrite 단계**에서 도는데 `auth_request` 는 그보다 뒤인 **access 단계**라,
+> `if ($lay_user = "")` 같은 검사는 값이 아직 비어 있어 **항상 403** 이 난다.
+> 그래서 계정 검사·파일명 결정을 http 블록의 `map $lay_user $lay_file` 로 옮겼다.
+> map 은 값을 **쓰는 순간**(= `try_files`·`proxy_pass` 가 도는 content 단계) 계산되므로 계정이 제대로 잡힌다.
+> UPN 형식(`^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+$`)이 아니면 `__deny__/none.json` 으로 보내 읽기는 404, 쓰기는 dl-writer 가 403.
+> 참고로 정규식에 `[/\\]` 처럼 백슬래시를 넣으면 nginx 문자열 처리에서 `[/\]` 로 줄어들어 `pcre2_compile() failed` 가 난다. 쓰지 말 것.
+
 ## 롤백 (즉시)
 ```
 cd /volume1/sh-pf/docker/sh-platform/nginx
