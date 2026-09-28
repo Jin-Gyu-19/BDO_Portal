@@ -109,6 +109,11 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
   - **떠날 때 저장**: 입력 후 400ms 지연 저장 전에 창을 닫아도 `pagehide`/`visibilitychange`에서 저장. 단 **`memoDirty`일 때만** — 무조건 저장하면 오래 열어둔 다른 탭이 닫히면서 최신 메모를 옛 내용으로 덮어씀.
   - **칼**: `kalSend()`가 받아들였을 때만 `true` → 호출한 쪽이 그때만 입력칸을 비움(답변 중 질문 소실 방지). 대화 지우기(`kalReset()`)가 예약된 답변·앱 실행을 취소(`kalTimer`·`kalGen`).
   - **창**: 최소화 직전 상태(일반·최대화·분할)를 `w.prev`에 기억했다가 다시 열 때 복원 + `paintMaxBtn()`·`syncChrome()`.
+- **백엔드 없는 개선 4종**(2026-09-28, 외부 개발 가이드 검토 후 반영):
+  - **칼 부정 표현**: `kalIntent()`가 `null|{id,neg}`를 돌려줌. `KAL_NEG`("열지 마", "안 열어도 돼", "필요 없어", "don't" 등)에 걸리면 앱을 열지 않고 "○○은 열지 않을게요". "A 말고 B"는 B를 엶. 조사는 `josaTop()`.
+  - **메모 휴지통 + 되돌리기**: 삭제는 `trashMemo()` → 휴지통(`TKEY`=`sh-portal:memo-trash:<id>`, 30일·최대 200개, 빈 메모는 안 넣음) + 토스트의 "되돌리기" 버튼(`toast(msg,act)`, 6초). 메모 관리창의 휴지통 버튼으로 보기 전환(`memoTrashView`) → 복원(`restoreMemo`, `MEMO_MAX` 지킴)·영구 삭제·비우기.
+  - **다른 탭 메모 변경 감지**: `storage` 이벤트로 `MKEY`·`TKEY` 변경을 받음. 이 탭에 저장 안 한 편집이 없으면(`!memoDirty`) 그대로 채택, 있으면 `mergeRemoteMemos()`가 메모별로 최신 `ts`를 고르고 이 탭에만 있는 메모는 유지. 편집 중인 붙임 메모의 포커스·커서는 `repaintMemosKeepFocus()`가 복원.
+  - **⌘K 검색에 메모 포함**: `match()`가 검색할 때마다 `memos`를 봄(INDEX에 안 넣음). 제목(첫 줄)·본문·초성, 같은 단계면 앱·프로젝트가 먼저(+0.5). 결과를 고르면 `openMemoAt(id)`. `paintSpot()`는 모든 글자를 `esc()`로 그림(메모 내용은 사용자 입력).
 - 프로필 메뉴 "로그아웃": SSO면 `ssoLogout()` → `/oauth2/sign_out?rd=<MS logout>` → 포털 복귀. 아니면 토스트만.
 
 ---
