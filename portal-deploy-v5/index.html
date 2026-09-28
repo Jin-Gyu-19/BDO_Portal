@@ -3009,9 +3009,13 @@ function focusTop(){
   wins.forEach(v=>v.el.classList.remove('active'));
   if(top) focusWin(top);
 }
-/* SSO(팝업 로그인) 앱: 이 브라우저 세션에서 로그인을 마쳤다고 표시해 두면 다음부터는 바로 iframe으로 연다 */
-const authDone=id=>{ try{ return sessionStorage.getItem('sh-portal:auth:'+id)==='1'; }catch(e){ return false; } };
-const setAuthDone=(id,v)=>{ try{ v?sessionStorage.setItem('sh-portal:auth:'+id,'1'):sessionStorage.removeItem('sh-portal:auth:'+id); }catch(e){} };
+/* SSO(팝업 로그인) 앱: 로그인을 마쳤다고 표시해 두면 다음부터는 바로 iframe으로 연다.
+   2026-09-28: sessionStorage → localStorage. 탭을 새로 열 때마다 안내 화면이 다시 떠서 번거로웠다.
+   이제 브라우저(프로필)당 한 번만 뜬다. 앱 쪽 로그인이 풀려 화면이 비면 창 제목줄의 자물쇠 버튼으로 다시 로그인. */
+const AUTH_KEY=id=>'sh-portal:auth:'+id;
+const authDone=id=>{ try{ return localStorage.getItem(AUTH_KEY(id))==='1'; }catch(e){ return false; } };
+const setAuthDone=(id,v)=>{ try{ v?localStorage.setItem(AUTH_KEY(id),'1'):localStorage.removeItem(AUTH_KEY(id)); }catch(e){}
+  try{ sessionStorage.removeItem(AUTH_KEY(id)); }catch(e){}   /* 예전 방식으로 남은 값 정리 */ };
 const authGate=(id,a)=>`<div class="auth-gate" data-auth-gate="${id}">
     <div class="ag-ico"><svg class="ic" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
     <div class="ag-t">${esc(a.name)}은(는) Microsoft 로그인이 필요합니다</div>
