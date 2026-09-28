@@ -162,6 +162,9 @@ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 background:rgba(28,33,40,.9);color:#fff;font-size:calc(12px * var(--fz));font-weight:600;padding:9px 16px;border-radius:99px;
 box-shadow:0 10px 30px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
 .toast.on{opacity:1;transform:translateX(-50%)}
+.toast.act.on{pointer-events:auto}
+.toast .tact{margin-left:12px;background:none;border:none;color:#FFB3C0;font:inherit;font-weight:800;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.toast .tact:hover{color:#fff}
 
 /* ══ 홈 화면 ══ */
 .home{position:fixed;inset:var(--statusH) 0 var(--dockH);display:flex;flex-direction:column;gap:28px;
@@ -767,6 +770,9 @@ font-size:calc(10.5px * var(--fz));color:var(--txt3);flex-wrap:wrap}
 .medit textarea{flex:1;border:none;outline:none;resize:none;padding:16px 18px 22px;font:inherit;font-size:calc(13px * var(--fz));
 line-height:1.7;color:var(--ink);background:#fff;min-height:0}
 .medit textarea::placeholder{color:var(--txt3)}
+.memo.trashv .mhd .mnew,.memo.trashv .mfoot [data-memo="showall"],.memo.trashv .mfoot [data-memo="hideall"],.memo.trashv .mfoot [data-memo="clean"]{display:none}
+.mi2.mtrash{cursor:default}.mi2.mtrash:hover{background:transparent}
+.mi2 .mtb{display:flex;gap:5px;margin-top:6px}
 .mempty{padding:20px 14px;text-align:center;font-size:calc(11px * var(--fz));color:var(--txt3)}
 body.compact .memo{flex-direction:column}
 body.compact .mlist{width:auto;max-height:42%;border-right:none;border-bottom:.5px solid var(--line)}
@@ -1606,6 +1612,35 @@ function loadMemos(){
 let memoDirty=false;   /* 입력했지만 아직 400ms 지연 저장 전인 변경이 있는지 */
 function saveMemos(){ memoDirty=false; return store.set(MKEY,JSON.stringify(memos)); }
 const MEMO_MAX=100;   /* 새 메모 한도 (2026-09-28 결정). 이미 넘게 가진 사람의 메모는 지우지 않고, 새로 만들기만 막는다 */
+/* ── 메모 휴지통 (2026-09-28, 개발 가이드 — 메모 복구). 이 브라우저에 30일 보관, 최대 200개.
+      지우면 바로 없애지 않고 여기로 옮기고 '되돌리기' 토스트를 띄운다. 빈 메모는 넣지 않는다 ── */
+const TKEY='sh-portal:memo-trash:'+USER.id, TRASH_DAYS=30, TRASH_MAX=200;
+let memoTrash=[], memoTrashView=false;
+function loadTrash(){
+  try{ const o=JSON.parse(store.get(TKEY)||'[]'), cut=Date.now()-TRASH_DAYS*864e5;
+    memoTrash=(Array.isArray(o)?o:[]).filter(m=>m&&typeof m.id==='string'&&typeof m.t==='string'&&Number.isFinite(m.ts)
+      &&Number.isFinite(m.deletedAt)&&m.deletedAt>=cut).slice(0,TRASH_MAX);
+  }catch(e){ memoTrash=[]; }
+}
+const saveTrash=()=>store.set(TKEY,JSON.stringify(memoTrash));
+function trashMemo(m){
+  memos=memos.filter(x=>x!==m);
+  if(!m.t.trim()){ toast('빈 메모를 삭제했습니다'); return; }
+  memoTrash=[{...m,deletedAt:Date.now()},...memoTrash.filter(x=>x.id!==m.id)].slice(0,TRASH_MAX); saveTrash();
+  toast('메모를 휴지통으로 옮겼습니다',{label:'되돌리기',fn:()=>restoreMemo(m.id)});
+}
+function restoreMemo(id){
+  const i=memoTrash.findIndex(x=>x.id===id); if(i<0) return false;
+  if(memos.length>=MEMO_MAX){ toast(`메모가 ${MEMO_MAX}개라 복원할 수 없습니다. 다른 메모를 먼저 지워 주세요`); return false; }
+  const {deletedAt,...m}=memoTrash[i]; memoTrash.splice(i,1);
+  if(memos.some(x=>x.id===m.id)) m.id='m'+Date.now().toString(36);   /* 드물게 같은 ID가 이미 있으면 새 ID */
+  m.ts=Date.now(); memos.unshift(m); saveTrash(); saveMemos();
+  memoCur=m.id; memoTrashView=false;
+  if(typeof paintMemo==='function'){ paintMemo(); paintStickies(); paintMemoWidget(); }
+  toast('메모를 복원했습니다'); return true;
+}
+function purgeMemo(id){ memoTrash=memoTrash.filter(x=>x.id!==id); saveTrash(); paintMemo(); }
+const trashLeft=m=>{ const d=Math.max(0,Math.ceil((m.deletedAt+TRASH_DAYS*864e5-Date.now())/864e5)); return d?d+'일 후 영구 삭제':'오늘 영구 삭제'; };
 const esc=t=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 /* ── 실제 앱 주소: NAS(nginx)에서 열면 상대 경로, 파일을 로컬에서 열면 NAS 절대 주소 ── */
 const NAS_BASE='https://192.168.100.25:8080';   /* 2026-09-18 포트 교체: https 8080 (DSM) → nginx http 8081 */
@@ -1788,7 +1823,7 @@ function memoLines(){
   if(!ms.length) return '<div class="mempty">메모가 없습니다. 눌러서 첫 메모를 붙여 보세요</div>';
   return ms.map(m=>`<div class="drow"><span class="dd tn">${fmtMemoTs(m.ts)}</span><span class="t">${memoTitle(m)}</span></div>`).join('');
 }
-loadMemos();
+loadMemos(); loadTrash();
 
 const THEMES={
   gray :{n:'연회색', sn:'연회색', d:'번짐 없는 단색 기본'},
@@ -2322,7 +2357,9 @@ precheck:{name:'사전심리도우미', sub:'수임 전 사전심리 지원', sh
         <div class="mhd"><b>메모</b><span class="mcnt tn" id="memoCnt"></span><button class="mnew" data-memo="new">+ 새 메모</button></div>
         <div class="mitems" id="memoList"></div>
         <div class="mfoot"><button class="msub" data-memo="showall">모두 바탕에 붙이기</button><button class="msub" data-memo="hideall">모두 접기</button>
-          <button class="msub warn" data-memo="clean">빈 메모 정리</button></div>
+          <button class="msub warn" data-memo="clean">빈 메모 정리</button>
+          <button class="msub" data-memo="trash" id="memoTrashBtn">휴지통</button>
+          <button class="msub warn" data-memo="trashempty" id="memoTrashEmpty" hidden>휴지통 비우기</button></div>
       </aside>
       <section class="medit">
         <div class="mtool"><span id="memoMeta"></span>
@@ -3736,9 +3773,12 @@ libq.addEventListener('keydown',e=>{ if(e.key==='Escape'){ e.preventDefault(); c
 const profBtn=document.getElementById('profBtn'), pmenu=document.getElementById('pmenu'),
       toastEl=document.getElementById('toast'), swatches=document.getElementById('swatches');
 let toastT;
-function toast(msg){
-  toastEl.textContent=msg; toastEl.classList.add('on');
-  clearTimeout(toastT); toastT=setTimeout(()=>toastEl.classList.remove('on'),2200);
+function toast(msg,act){   /* act={label,fn} 이면 버튼을 붙이고 6초 동안 띄운다 (되돌리기 등) */
+  toastEl.textContent=msg; toastEl.classList.toggle('act',!!act);
+  if(act){ const b=document.createElement('button'); b.type='button'; b.className='tact'; b.textContent=act.label;
+    b.addEventListener('click',()=>{ toastEl.classList.remove('on'); act.fn(); }); toastEl.appendChild(b); }
+  toastEl.classList.add('on');
+  clearTimeout(toastT); toastT=setTimeout(()=>toastEl.classList.remove('on'),act?6000:2200);
 }
 function menu(open){
   pmenu.classList.toggle('on',open);
@@ -3778,6 +3818,23 @@ function paintMemo(){
   const ta=document.getElementById('memoText'), meta=document.getElementById('memoMeta'),
         cnt=document.getElementById('memoCnt'), cols=document.getElementById('memoColors'),
         pin=document.getElementById('memoPin');
+  const root=list.closest('.memo'); if(root) root.classList.toggle('trashv',memoTrashView);
+  const tb=document.getElementById('memoTrashBtn'), te=document.getElementById('memoTrashEmpty');
+  if(tb){ tb.textContent=memoTrashView?'메모로 돌아가기':'휴지통'+(memoTrash.length?' '+memoTrash.length:''); tb.classList.toggle('on',memoTrashView); }
+  if(te) te.hidden=!(memoTrashView&&memoTrash.length);
+  if(memoTrashView){   /* 휴지통 보기 — 편집은 복원한 뒤에 */
+    cnt.textContent='휴지통 '+memoTrash.length;
+    list.innerHTML=memoTrash.length?memoTrash.map(m=>`<div class="mi2 mtrash">
+        <span class="mdot" style="background:${STK_COLORS[m.c]||STK_COLORS.y}"></span>
+        <span class="mtx"><span class="mt">${memoTitle(m)}</span><span class="ms"><span class="tn">${trashLeft(m)}</span> ${memoBody(m)}</span>
+          <span class="mtb"><button class="msub" data-mtrash="restore" data-tid="${esc(m.id)}">복원</button><button class="msub warn" data-mtrash="purge" data-tid="${esc(m.id)}">영구 삭제</button></span></span></div>`).join('')
+      :`<div class="mempty">휴지통이 비어 있습니다. 지운 메모는 ${TRASH_DAYS}일 동안 여기 보관됩니다</div>`;
+    ta.value=''; ta.dataset.mid=''; ta.disabled=true; cols.innerHTML='';
+    meta.textContent='휴지통 — 복원하면 편집할 수 있어요';
+    pin.textContent='바탕에 붙이기'; pin.classList.remove('on');
+    document.querySelectorAll('.memo [data-memo="del"],.memo [data-memo="pin"]').forEach(b=>b.toggleAttribute('disabled',true));
+    return;
+  }
   const ms=sortedMemos();
   if(!memos.some(m=>m.id===memoCur)) memoCur=ms[0]?ms[0].id:null;
   cnt.textContent=ms.length+' / '+MEMO_MAX;
@@ -3800,8 +3857,10 @@ function paintMemo(){
 }
 function memoAct(a){
   const cur=memos.find(m=>m.id===memoCur);
-  if(a==='new'){ const m=newSticky(); if(m) memoCur=m.id; }
-  else if(a==='del'&&cur){ memos=memos.filter(m=>m!==cur); memoCur=null; toast('메모를 삭제했습니다'); }
+  if(a==='new'){ const m=newSticky(); if(m){ memoCur=m.id; memoTrashView=false; } }
+  else if(a==='del'&&cur){ trashMemo(cur); memoCur=null; }
+  else if(a==='trash'){ memoTrashView=!memoTrashView; }
+  else if(a==='trashempty'){ if(memoTrash.length&&confirm(`휴지통의 메모 ${memoTrash.length}개를 영구 삭제할까요? 되돌릴 수 없습니다.`)){ memoTrash=[]; saveTrash(); } }
   else if(a==='pin'&&cur){ cur.open=cur.open===false; if(cur.open) showStickies(); }
   else if(a==='showall'){ memos.forEach(m=>m.open=true); showStickies(); }
   else if(a==='hideall'){ memos.forEach(m=>m.open=false); hideStickies(); }
@@ -3813,6 +3872,11 @@ function memoAct(a){
 document.addEventListener('click',e=>{
   const a=e.target.closest('.memo [data-memo]');
   if(a){ memoAct(a.dataset.memo); return; }
+  const tr=e.target.closest('.memo [data-mtrash]');
+  if(tr){ const id=tr.dataset.tid;
+    if(tr.dataset.mtrash==='restore') restoreMemo(id);
+    else if(confirm('이 메모를 영구 삭제할까요? 되돌릴 수 없습니다.')) purgeMemo(id);
+    return; }
   const c=e.target.closest('[data-mcolor]');
   if(c){ const m=memos.find(x=>x.id===memoCur); if(m){ m.c=c.dataset.mcolor; saveMemos(); paintMemo(); paintStickies(); } return; }
   const it=e.target.closest('[data-mid]');
@@ -3894,7 +3958,7 @@ sboard.addEventListener('click',e=>{
     if(!m.t.trim()) memos=memos.filter(x=>x!==m);   /* 빈 메모는 접을 때 정리 */
     else m.open=false;
     saveMemos(); paintStickies(); paintMemoWidget(); if(!openMemos().length) hideStickies(); }
-  else if(a.dataset.sact==='del'){ memos=memos.filter(x=>x!==m); saveMemos(); paintStickies(); paintMemoWidget();
+  else if(a.dataset.sact==='del'){ trashMemo(m); saveMemos(); paintStickies(); paintMemoWidget();
     if(wins.has('memo')) paintMemo();
     toast('메모를 삭제했습니다'); if(!openMemos().length) hideStickies(); }
 });
