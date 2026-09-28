@@ -642,7 +642,8 @@ display:flex;align-items:center;justify-content:center}
 .bar i{display:block;height:100%;border-radius:3px;background:var(--red)}
 .tagp{font-size:calc(10px * var(--fz));font-weight:700;padding:2.5px 8px;border-radius:99px;white-space:nowrap}
 .tagp.f{background:#FDECEF;color:var(--red)}.tagp.r{background:#EAF3FB;color:var(--blue)}
-.tagp.o{background:#E9F6EF;color:var(--ok)}.tagp.a{background:#FDF3E6;color:var(--amber)}
+.tagp.o{background:#E9F6EF;color:var(--ok)}
+.tagp.save-bad{display:none} html.store-fail .tagp.save-ok{display:none} html.store-fail .tagp.save-bad{display:inline}.tagp.a{background:#FDF3E6;color:var(--amber)}
 .apptabs{display:flex;gap:6px;margin:14px 0 4px}
 .apptabs span{font-size:calc(12px * var(--fz));font-weight:700;padding:7px 15px;border-radius:9px;color:var(--txt2);
   background:var(--wgTrack);cursor:pointer}
@@ -1583,7 +1584,15 @@ paintGreet(); setInterval(paintGreet,60*1000);
 if(document.getElementById('profBtn')) paintUser(); else document.addEventListener('DOMContentLoaded',paintUser);   /* 스크립트가 마크업 뒤에 있으므로 즉시 칠하고, 아니면 DOM 준비 후 */
 /* 저장소가 막힌 환경(샌드박스 iframe·앱 웹뷰)에서도 페이지가 죽지 않도록 */
 const finalMemory={"sh-portal:yoon.gb:v7":"{\"user\":\"yoon.gb@shcpa.kr\",\"layout\":[{\"k\":\"z\",\"id\":\"audit\",\"r\":1,\"c\":5,\"rs\":1,\"cs\":6},{\"k\":\"a\",\"id\":\"shaudit\",\"r\":1,\"c\":10,\"rs\":1,\"cs\":1},{\"k\":\"z\",\"id\":\"admin\",\"r\":2,\"c\":7,\"rs\":1,\"cs\":4},{\"k\":\"z\",\"id\":\"tax\",\"r\":2,\"c\":5,\"rs\":1,\"cs\":2},{\"k\":\"w\",\"id\":\"team\",\"r\":1,\"c\":3,\"rs\":1,\"cs\":2},{\"k\":\"w\",\"id\":\"timesheet\",\"r\":2,\"c\":3,\"rs\":2,\"cs\":2},{\"k\":\"w\",\"id\":\"notice\",\"r\":4,\"c\":1,\"rs\":2,\"cs\":4},{\"k\":\"w\",\"id\":\"memo\",\"r\":3,\"c\":1,\"rs\":1,\"cs\":2},{\"k\":\"w\",\"id\":\"dday\",\"r\":1,\"c\":1,\"rs\":2,\"cs\":2},{\"k\":\"a\",\"id\":\"jet\",\"r\":1,\"c\":5,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"footing\",\"r\":1,\"c\":6,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"fin\",\"r\":1,\"c\":8,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"taxagent\",\"r\":2,\"c\":5,\"rs\":1,\"cs\":1},{\"k\":\"z\",\"id\":\"ai\",\"r\":3,\"c\":5,\"rs\":1,\"cs\":5},{\"k\":\"a\",\"id\":\"notice\",\"r\":2,\"c\":7,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"settings\",\"r\":2,\"c\":9,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"expense\",\"r\":2,\"c\":8,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"markettool\",\"r\":1,\"c\":7,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"dart\",\"r\":1,\"c\":9,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"room\",\"r\":2,\"c\":10,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"xbrl\",\"r\":3,\"c\":5,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"dsdroll\",\"r\":3,\"c\":6,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"k1118\",\"r\":3,\"c\":7,\"rs\":1,\"cs\":1},{\"k\":\"a\",\"id\":\"pdfguard\",\"r\":3,\"c\":8,\"rs\":1,\"cs\":1}],\"dock\":[\"rev\",\"cal\",\"team\",\"memo\"],\"theme\":\"gray\",\"zones\":{\"audit\":{\"n\":\"감사\",\"dot\":\"#D3374F\"},\"tax\":{\"n\":\"세무\",\"dot\":\"#DFA748\"},\"admin\":{\"n\":\"공통\",\"dot\":\"#5C6E80\"},\"ai\":{\"n\":\"AI · 자동화\",\"dot\":\"#232B36\"},\"z_mtslau9x\":{\"n\":\"업무 지원\",\"dot\":\"#C7519A\"}}}","sh-portal:memo:yoon.gb":"[{\"id\":\"m1\",\"t\":\"알파테크 매출 절사 테스트\\n12/28~31 표본 3건 — 인도조건 확인 필요, 검수확인서 1건 미비\",\"ts\":1789514842597,\"c\":\"y\"},{\"id\":\"m2\",\"t\":\"4/15 파트너 월례회의 안건\\n- ISQM1 보고서 진행 상황\\n- 상반기 필수 교육 이수율\\n- 신규 수임 검토 2건\",\"ts\":1789360042597,\"c\":\"b\"},{\"id\":\"m3\",\"t\":\"감마물산 현장 종료 전 확인\\n재고 실사 차이 조정, 우발부채 질문서 회신\",\"ts\":1789187242597,\"c\":\"p\"}]","sh-portal:yoon.gb:kal":"1"};
-const store={get(k){try{const v=localStorage.getItem("sh-final-20260916:"+k);if(v!==null)return v;}catch(e){}return finalMemory[k]??null;},set(k,v){finalMemory[k]=String(v);try{localStorage.setItem("sh-final-20260916:"+k,v);}catch(e){}}};
+const store={get(k){try{const v=localStorage.getItem("sh-final-20260916:"+k);if(v!==null)return v;}catch(e){}return finalMemory[k]??null;},set(k,v){finalMemory[k]=String(v);try{localStorage.setItem("sh-final-20260916:"+k,v);document.documentElement.classList.remove('store-fail');return true;}catch(e){storeFailed(e);return false;}}};
+/* 브라우저 저장 실패(용량 초과·저장 차단)를 조용히 넘기지 않는다 (2026-09-28, 코드 검토 03).
+   화면 전체에 store-fail 표시를 붙이고(설정 창의 '자동 저장' → '저장 실패'), 10초에 한 번 알린다.
+   함수 선언이라 어디서 불려도 안전(호이스팅). 알림은 다음 틱으로 미뤄 초기화 전 호출에도 깨지지 않게 한다. */
+function storeFailed(e){
+  document.documentElement.classList.add('store-fail');
+  const now=Date.now(); if(now-(storeFailed.at||0)<10000) return; storeFailed.at=now;
+  setTimeout(()=>{ try{ toast('브라우저 저장 공간이 부족해 저장하지 못했습니다. 메모 일부를 지우거나 설정 → "파일로 저장"으로 내보내 주세요'); }catch(_){} },0);
+}
 /* ══════════ 메모 (계정별로 이 브라우저에 자동 저장) ══════════ */
 const MKEY='sh-portal:memo:'+USER.id;
 const MEMO_SEED=[{"id":"m1","t":"알파테크 매출 절사 테스트\n12/28~31 표본 3건 — 인도조건 확인 필요, 검수확인서 1건 미비","ts":1789514842597,"c":"y"},{"id":"m2","t":"4/15 파트너 월례회의 안건\n- ISQM1 보고서 진행 상황\n- 상반기 필수 교육 이수율\n- 신규 수임 검토 2건","ts":1789360042597,"c":"b"},{"id":"m3","t":"감마물산 현장 종료 전 확인\n재고 실사 차이 조정, 우발부채 질문서 회신","ts":1789187242597,"c":"p"}];
@@ -1591,10 +1600,12 @@ let memos=[];
 function loadMemos(){
   try{ const o=JSON.parse(store.get(MKEY)||'null');
     if(Array.isArray(o)) memos=o.filter(m=>m&&typeof m.id==='string'&&typeof m.t==='string'&&Number.isFinite(m.ts))
-      .map(m=>({id:m.id,t:m.t,ts:m.ts,c:m.c,x:m.x,y:m.y,z:m.z,open:m.open!==false})).slice(0,300); }catch(e){}
+      .map(m=>({id:m.id,t:m.t,ts:m.ts,c:m.c,x:m.x,y:m.y,z:m.z,open:m.open!==false})); }catch(e){}   /* 개수로 자르지 않는다 — 한도는 새로 만들 때만 (검토 04) */
   if(!memos.length && store.get(MKEY)===null) memos=MEMO_SEED.map(m=>({...m}));
 }
-function saveMemos(){ store.set(MKEY,JSON.stringify(memos)); }
+let memoDirty=false;   /* 입력했지만 아직 400ms 지연 저장 전인 변경이 있는지 */
+function saveMemos(){ memoDirty=false; return store.set(MKEY,JSON.stringify(memos)); }
+const MEMO_MAX=100;   /* 새 메모 한도 (2026-09-28 결정). 이미 넘게 가진 사람의 메모는 지우지 않고, 새로 만들기만 막는다 */
 const esc=t=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 /* ── 실제 앱 주소: NAS(nginx)에서 열면 상대 경로, 파일을 로컬에서 열면 NAS 절대 주소 ── */
 const NAS_BASE='https://192.168.100.25:8080';   /* 2026-09-18 포트 교체: https 8080 (DSM) → nginx http 8081 */
@@ -1634,9 +1645,13 @@ function applyDlManifest(m){
     const a=APPS[id]; if(!a){ console.warn('[downloads] 모르는 앱 키:',id); continue; }
     const e=(d&&typeof d==='object')?d:{};
     if(!a._orig) a._orig={name:a.name,sub:a.sub};                     /* 코드에 적힌 원래 이름 — 관리자가 비우면 여기로 복귀 */
-    a.name=e.name?String(e.name).slice(0,40):a._orig.name;              /* 관리자 화면에서 바꾼 이름·부제 (manifest.json 의 name/sub) */
-    a.sub =e.sub ?String(e.sub).slice(0,60):a._orig.sub;
-    if(!e.file) delete a.dl; else a.dl={file:String(e.file),ver:e.ver?String(e.ver):'',date:e.date?String(e.date):''};
+    /* manifest.json 은 모든 사용자 화면에 그대로 그려지므로 HTML 특수문자를 들이지 않는다 (2026-09-28 검토 추가 발견) */
+    const clean=v=>String(v).replace(/[<>&"'`]/g,'').trim();
+    a.name=(e.name&&clean(e.name).slice(0,40))||a._orig.name;          /* 관리자 화면에서 바꾼 이름·부제 (manifest.json 의 name/sub) */
+    a.sub =(e.sub &&clean(e.sub).slice(0,60))||a._orig.sub;
+    if(!e.file) delete a.dl;
+    else if(/[<>&"'`]/.test(String(e.file))){ console.warn('[downloads] 파일명에 쓸 수 없는 문자:',e.file); delete a.dl; }
+    else a.dl={file:String(e.file),ver:e.ver?clean(e.ver).slice(0,20):'',date:e.date?clean(e.date).slice(0,20):''};
     n++;
   }
   if(n && typeof renderGrid==='function'){ renderGrid(); renderDock(); }
@@ -1694,7 +1709,8 @@ function dlAdminRenameOpen(id,row){ const a=APPS[id], box=row.querySelector('.dl
     <div class="m" style="margin-top:4px">비우고 저장하면 원래 이름(${esc((a._orig||a).name)})으로 돌아갑니다. 모든 사용자에게 바로 적용됩니다.</div>`;
   box.querySelector('.dla-name').focus(); }
 async function dlAdminRenameSave(id,row){
-  const a=APPS[id], name=row.querySelector('.dla-name').value.trim(), sub=row.querySelector('.dla-sub').value.trim();
+  const strip=v=>v.replace(/[<>&"'`]/g,'').trim();   /* applyDlManifest 와 같은 규칙 — 저장되는 값을 화면과 일치시킴 */
+  const a=APPS[id], name=strip(row.querySelector('.dla-name').value), sub=strip(row.querySelector('.dla-sub').value);
   const cur={...(dlManifest[id]||{})}; delete cur.name; delete cur.sub;
   if(name) cur.name=name; if(sub) cur.sub=sub;
   const next={...dlManifest}; if(Object.keys(cur).length) next[id]=cur; else delete next[id];
@@ -2344,7 +2360,7 @@ precheck:{name:'사전심리도우미', sub:'수임 전 사전심리 지원', sh
           <div class="rt"><button class="sbtn" data-reset="1">기본값으로 되돌리기</button></div></div>
         <div class="r" style="grid-template-columns:1fr auto"><div><div class="t">저장 위치</div>
           <div class="m">${USER.mail} 계정 · 이 브라우저</div></div>
-          <div class="rt"><span class="tagp r">자동 저장</span></div></div>
+          <div class="rt"><span class="tagp r save-ok">자동 저장</span><span class="tagp f save-bad" title="브라우저 저장 공간 부족 또는 저장 차단">저장 실패</span></div></div>
       </div>
 
       ${layHtml()}
@@ -2537,7 +2553,7 @@ function makeItem(o){
   if(o.k==='z'){
     const z=zones[o.id]; if(!z) return null;
     el.className='zone'; el.style.setProperty('--zdot',z.dot);
-    el.innerHTML=`<span class="zl"><i></i>${z.n}<small class="tn">${zoneApps(o).length}</small></span>
+    el.innerHTML=`<span class="zl"><i></i>${esc(z.n)}<small class="tn">${zoneApps(o).length}</small></span>
       <button class="rsz" title="그룹 크기 조정" aria-label="그룹 크기 조정">
         <svg viewBox="0 0 12 12"><path d="M10 4v6H4M10 10L3 3"/></svg></button>`;
     return el;
@@ -2576,7 +2592,7 @@ function renderCompact(){
       if(half){ el.classList.add('half'); el.style.gridColumn='span '+(MC/2); }
       /* 열 수 = 앱 수(최대 칸 수) — 앱이 적어도 오른쪽이 비지 않게 양끝으로 벌린다 */
       el.style.setProperty('--mzc', Math.max(1, Math.min(apps.length, half?MC/2:MC)));
-      el.innerHTML=`<div class="zl"><i></i>${z.n}<small class="tn">${apps.length}</small></div><div class="mzapps"></div>`;
+      el.innerHTML=`<div class="zl"><i></i>${esc(z.n)}<small class="tn">${apps.length}</small></div><div class="mzapps"></div>`;
       const box=el.querySelector('.mzapps');
       apps.forEach(a=>{ const ae=makeItem(a); if(ae){ ae.style.gridArea=''; box.appendChild(ae); } });
       hgrid.appendChild(el);
@@ -2686,7 +2702,7 @@ function loadLayout(){
       const z={};
       Object.entries(o.zones).forEach(([id,v])=>{
         if(/^[a-z0-9_]{1,24}$/.test(id) && v && typeof v.n==='string' && /^#[0-9A-Fa-f]{6}$/.test(v.dot||''))
-          z[id]={n:v.n.slice(0,20), dot:v.dot};
+          z[id]={n:v.n.replace(/[<>&"'`]/g,'').slice(0,20)||'그룹', dot:v.dot};   /* 저장된 값도 특수문자 제거 (검토 01) */
       });
       if(Object.keys(z).length || Object.keys(o.zones).length===0) zones=z;
     }
@@ -3057,7 +3073,9 @@ function openApp(id,origin){
   noteRecent(id);   /* 칼은 우측 하단 플로팅 챗봇으로 연다 */
   if(wins.has(id)){
     const w=wins.get(id);
-    if(w.state==='min'){ w.el.style.display='flex'; w.el.classList.remove('min'); w.state='normal'; }
+    if(w.state==='min'){ w.el.style.display='flex'; w.el.classList.remove('min');
+      w.state=(w.prev&&w.prev.state)||'normal'; w.zone=w.prev?w.prev.zone:null; w.prev=null;   /* 최소화 전 상태로 (검토 07) */
+      paintMaxBtn(id); syncChrome(); }
     focusWin(id); syncHome(); return;
   }
   const ar=area();
@@ -3119,6 +3137,7 @@ function closeApp(id){
 }
 function minApp(id){
   const w=wins.get(id); if(!w) return;
+  if(w.state!=='min') w.prev={state:w.state, zone:w.zone};   /* 최소화 직전 상태(일반·최대화·분할) 기억 (검토 07) */
   w.el.style.animation=''; w.el.classList.add('min'); w.state='min'; w.zone=null;
   w.el.classList.remove('active');
   setTimeout(()=>{ if(w.state==='min') w.el.style.display='none'; },210);
@@ -3444,8 +3463,9 @@ function deleteZone(id){
   layout=layout.filter(o=>!(o.k==='z'&&o.id===id)); delete zones[id];
   renderGrid(); saveLayout(); toast(n+' 그룹을 삭제했습니다 (앱은 그대로 남아 있어요)');
 }
+const zoneNameClean=n=>String(n||'').replace(/[<>&"'`]/g,'').trim().slice(0,20);   /* 구역 이름에 HTML 특수문자 금지 (검토 01) */
 function renameZone(id,name){
-  name=name.trim().slice(0,20); if(!name||!zones[id]) return;
+  name=zoneNameClean(name); if(!name||!zones[id]) return;
   zones[id].n=name; renderGrid(); saveLayout();
 }
 function recolorZone(id,dot){
@@ -3453,7 +3473,7 @@ function recolorZone(id,dot){
   zones[id].dot=dot; renderGrid(); saveLayout();
 }
 function createZone(name,dot,cs){
-  name=name.trim().slice(0,20);
+  name=zoneNameClean(name);
   if(!name){ toast('그룹 이름을 입력해 주세요'); return false; }
   const id='z_'+Date.now().toString(36);
   zones[id]={n:name, dot:ZONE_COLORS.includes(dot)?dot:ZONE_COLORS[5]};
@@ -3760,7 +3780,7 @@ function paintMemo(){
         pin=document.getElementById('memoPin');
   const ms=sortedMemos();
   if(!memos.some(m=>m.id===memoCur)) memoCur=ms[0]?ms[0].id:null;
-  cnt.textContent=ms.length;
+  cnt.textContent=ms.length+' / '+MEMO_MAX;
   list.innerHTML=ms.length?ms.map(m=>`<button class="mi2${m.id===memoCur?' on':''}" data-mid="${m.id}">
       <span class="mdot" style="background:${STK_COLORS[m.c]||STK_COLORS.y}"></span>
       <span class="mtx"><span class="mt">${memoTitle(m)}</span>
@@ -3769,6 +3789,7 @@ function paintMemo(){
     :'<div class="mempty">메모가 없습니다. ‘+ 새 메모’로 시작하세요</div>';
   const cur=memos.find(m=>m.id===memoCur);
   if(ta.dataset.mid!==(cur?cur.id:'')){ ta.dataset.mid=cur?cur.id:''; ta.value=cur?cur.t:''; }
+  else if(cur && document.activeElement!==ta && ta.value!==cur.t) ta.value=cur.t;   /* 같은 메모를 붙임 메모에서 고친 경우 — 입력 중이 아니면 최신으로 (검토 02) */
   ta.disabled=!cur;
   cols.innerHTML=Object.entries(STK_COLORS).map(([k,c])=>
     `<button data-mcolor="${k}" class="${cur&&(cur.c||'y')===k?'on':''}" style="background:${c}" title="색"></button>`).join('');
@@ -3779,7 +3800,7 @@ function paintMemo(){
 }
 function memoAct(a){
   const cur=memos.find(m=>m.id===memoCur);
-  if(a==='new'){ const m=newSticky(); memoCur=m.id; }
+  if(a==='new'){ const m=newSticky(); if(m) memoCur=m.id; }
   else if(a==='del'&&cur){ memos=memos.filter(m=>m!==cur); memoCur=null; toast('메모를 삭제했습니다'); }
   else if(a==='pin'&&cur){ cur.open=cur.open===false; if(cur.open) showStickies(); }
   else if(a==='showall'){ memos.forEach(m=>m.open=true); showStickies(); }
@@ -3798,13 +3819,25 @@ document.addEventListener('click',e=>{
   if(it){ memoCur=it.dataset.mid; paintMemo(); }
 });
 let memoSaveT;
+/* 편집기에 들어가는 순간 다른 쪽에서 바뀐 최신 내용으로 맞춘다 — 400ms 지연 저장 사이에 옮겨와도 덮어쓰지 않게 (검토 02) */
+document.addEventListener('focusin',e=>{
+  const t=e.target;
+  if(t.id==='memoText'){ const cur=memos.find(m=>m.id===memoCur); if(cur&&t.value!==cur.t) t.value=cur.t; }
+  else if(t.classList&&t.classList.contains('stxt')){ const m=stickyOf(t); if(m&&t.value!==m.t) t.value=m.t; }
+});
 document.addEventListener('input',e=>{
   if(e.target.id!=='memoText') return;
   const cur=memos.find(m=>m.id===memoCur); if(!cur) return;
-  cur.t=e.target.value; cur.ts=Date.now();
+  cur.t=e.target.value; cur.ts=Date.now(); memoDirty=true;
   clearTimeout(memoSaveT);
   memoSaveT=setTimeout(()=>{ saveMemos(); paintMemo(); paintStickies(); paintMemoWidget(); },400);
 });
+
+/* 마지막 입력 직후 창을 닫아도 400ms 지연 저장분을 잃지 않게 (검토 03) */
+/* 남은 변경이 있을 때만 저장한다 — 무조건 저장하면 오래 열어둔 다른 탭이 닫히면서 최신 메모를 옛 내용으로 덮어쓴다 */
+const flushMemos=()=>{ if(!memoDirty) return; clearTimeout(memoSaveT); clearTimeout(stkSaveT); saveMemos(); };
+window.addEventListener('pagehide',flushMemos);
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') flushMemos(); });
 
 /* ══════════ 스티커 메모 동작 ══════════ */
 const STK_COLORS={y:'#FFF59D',p:'#FBC8D9',g:'#CFF0C8',b:'#CFE5FF',o:'#FFD9A8'};
@@ -3843,6 +3876,7 @@ function paintStickies(){
   });
 }
 function newSticky(from){
+  if(memos.length>=MEMO_MAX){ toast(`메모는 최대 ${MEMO_MAX}개까지 만들 수 있습니다. 쓰지 않는 메모를 지운 뒤 다시 시도해 주세요`); return null; }
   const m={id:'m'+Date.now().toString(36), t:'', ts:Date.now(), c:from?(from.c||'y'):'y', open:true, z:++stkZ};
   if(from&&Number.isFinite(from.x)){ m.x=from.x+30; m.y=from.y+30; }
   memos.unshift(m); saveMemos(); paintStickies(); paintMemoWidget();
@@ -3873,7 +3907,7 @@ let stkSaveT;
 sboard.addEventListener('input',e=>{
   if(!e.target.classList.contains('stxt')) return;
   const m=stickyOf(e.target); if(!m) return;
-  m.t=e.target.value; m.ts=Date.now();
+  m.t=e.target.value; m.ts=Date.now(); memoDirty=true;
   clearTimeout(stkSaveT);
   stkSaveT=setTimeout(()=>{ saveMemos(); paintMemoWidget(); if(wins.has('memo')) paintMemo();
     const t=e.target.closest('.stky')?.querySelector('.sft .tn'); if(t) t.textContent=fmtMemoTs(m.ts); },400);
@@ -3913,7 +3947,7 @@ document.addEventListener('click',e=>{
   const kq=e.target.closest('.wg [data-kq]');
   if(kq){ kalSend(kq.dataset.kq); return; }   /* 위젯은 대화창과 따로 동작, 내용만 공유 */
   const kgo=e.target.closest('.wg [data-kgo]');
-  if(kgo){ const inp=kgo.parentElement.querySelector('.kin'); if(inp.value.trim()){ kalSend(inp.value); inp.value=''; } else inp.focus(); return; }
+  if(kgo){ const inp=kgo.parentElement.querySelector('.kin'); if(inp.value.trim()){ if(kalSend(inp.value)) inp.value=''; } else inp.focus(); return; }
   if(e.target.closest('.wg .kin,.wg .klines')) return;   /* 입력칸·대화 기록을 눌러도 대화창이 열리지 않는다 */
   const dlb=e.target.closest('.dlb');
   if(dlb){ e.preventDefault(); e.stopPropagation(); triggerDownload(dlb.dataset.dl); return; }   /* 배지 → 창 대신 바로 다운로드 */
@@ -3981,7 +4015,9 @@ function kalPush(role,html,log=true){
   if(log){ kalLog.push({r:role,t:html}); paintKalWidget(); }
   return d;
 }
-function kalReset(){ kalChat.innerHTML=''; kalLog.length=0; kalBusy=false; KAL_SEED.forEach(([r,t])=>kalPush(r,t)); }
+/* 대화를 지우면 예약된 답변·앱 실행도 취소한다. kalGen 으로 늦게 도착한 답변을 무효화 (검토 06) */
+let kalTimer=0, kalGen=0;
+function kalReset(){ clearTimeout(kalTimer); kalGen++; kalChat.innerHTML=''; kalLog.length=0; kalBusy=false; KAL_SEED.forEach(([r,t])=>kalPush(r,t)); }
 kalReset();
 function openKal(){
   if(kalHidden()) setKalHidden(false,true);   /* 검색·서랍에서 열면 숨긴 버튼도 다시 나타난다 */
@@ -4016,19 +4052,23 @@ function kalIntent(text){
   }
   return null;
 }
-function kalSend(text){
-  text=(text||'').trim(); if(!text||kalBusy) return;
+function kalSend(text){   /* 받아들였으면 true — 호출한 쪽은 true 일 때만 입력칸을 비운다 (검토 05) */
+  text=(text||'').trim(); if(!text) return false;
+  if(kalBusy){ toast('칼이 답변하는 중이에요. 끝나면 다시 보내 주세요'); return false; }
   kalPush('me',text.replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])));
   kalIn.value=''; kalGo.classList.add('off'); kalBusy=true;
   const typing=kalPush('ai','<i></i><i></i><i></i>',false); typing.classList.add('typing');
   const appId=kalIntent(text);
   const hit=appId?null:KAL_ANS.find(([re])=>re.test(text));
-  const ans=appId?`<b>${APPS[appId].name}</b>${josa(APPS[appId].name)} 열었습니다.`:hit?hit[1]:`<b>“${text.slice(0,24)}${text.length>24?'…':''}”</b>에 대해 찾아보고 있어요. 관련 조서·공지·프로젝트를 모아 정리해 드릴게요. 우선 리뷰함과 프로젝트 현황을 확인해 보시겠어요?`;
+  const ans=appId?`<b>${esc(APPS[appId].name)}</b>${josa(APPS[appId].name)} 열었습니다.`:hit?hit[1]:`<b>“${esc(text.slice(0,24))}${text.length>24?'…':''}”</b>에 대해 찾아보고 있어요. 관련 조서·공지·프로젝트를 모아 정리해 드릴게요. 우선 리뷰함과 프로젝트 현황을 확인해 보시겠어요?`;
   paintKalWidget();
-  setTimeout(()=>{ typing.classList.remove('typing'); typing.innerHTML=ans; kalChat.scrollTop=kalChat.scrollHeight; kalBusy=false;
+  const gen=kalGen;
+  kalTimer=setTimeout(()=>{ if(gen!==kalGen) return;   /* 그사이 대화를 지웠으면 버린다 */
+    typing.classList.remove('typing'); typing.innerHTML=ans; kalChat.scrollTop=kalChat.scrollHeight; kalBusy=false;
     kalLog.push({r:'ai',t:ans}); paintKalWidget();
     if(appId) openApp(appId);                   /* 앱을 열어 달라는 요청이면 실행 */
   },appId?450:700+Math.min(900,text.length*25));
+  return true;
 }
 kalfab.addEventListener('click',toggleKal);
 /* 우클릭(터치는 0.5초 길게 누르기) → 메뉴: 열기/접기 · 대화 지우기 · 숨기기 */
@@ -4058,7 +4098,7 @@ document.getElementById('kalForm').addEventListener('submit',e=>{ e.preventDefau
 kalIn.addEventListener('input',()=>kalGo.classList.toggle('off',!kalIn.value.trim()));
 hgrid.addEventListener('keydown',e=>{
   const inp=e.target.closest('.wg .kin'); if(!inp) return;
-  if(e.key==='Enter'){ e.preventDefault(); if(inp.value.trim()){ kalSend(inp.value); inp.value=''; } }
+  if(e.key==='Enter'){ e.preventDefault(); if(inp.value.trim()){ if(kalSend(inp.value)) inp.value=''; } }
   else if(e.key==='Escape') inp.blur();
 });
 paintKalWidget();
@@ -4332,7 +4372,7 @@ function portalBackupValidate(data){
     return {k:it.k,id:it.id,r:it.r,c:it.c,rs:it.rs,cs:it.cs};
   });
   if(!h.dock.every(id=>typeof id==='string'&&/^[a-z0-9_]{1,40}$/.test(id)))fail();
-  if(!Array.isArray(data.memos)||data.memos.length>300)fail();
+  if(!Array.isArray(data.memos)||data.memos.length>1000)fail();   /* 파일 형식 이상 방지용 상한(정책 한도 MEMO_MAX 와 별개) */
   const cleanMemos=data.memos.map(m=>{
     if(!m||typeof m.id!=='string'||!/^m[a-z0-9_-]{1,80}$/i.test(m.id)||typeof m.t!=='string'||m.t.length>200000||!Number.isFinite(m.ts))fail();
     const out={id:m.id,t:m.t,ts:m.ts,c:Object.hasOwn(STK_COLORS,m.c)?m.c:'y',open:m.open!==false};

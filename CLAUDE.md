@@ -101,6 +101,14 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
   - 플로팅창 코드: `layPopOpen/Close/Render/Save/Place()`, 고른 슬롯은 `layPopSel`(null이면 새 슬롯). CSS 클래스는 전역 `.empty`·`.hd`·`.no`·`.cnt`·`.x`와 부딪혀서 **전부 `lp-` 접두어**를 붙였음(`.lp-sl`·`.lp-on`·`.lp-empty`…). 새로 넣을 때도 접두어 유지할 것.
   - 코드: `layFetch()`(GET, 404면 빈 목록) · `layPut()`(PUT) · `laySaveSlot(name,replaceId)`(덮어쓰기는 기존 이름 유지) · `layApplySlot()`(기존 `portalBackupValidate()`로 검증 후 `store.set` → 새로고침) · `layDeleteSlot()` · `layRender()`. 설정 창을 열 때 `layRefresh()`.
   - **파일로 주고받기**(`portalBackupDownload/Import`, `data-portal-backup`)는 같은 섹션 안에 링크로 남겨둠 — 메모까지 포함한 전체 백업이 필요하거나 NAS 저장이 안 될 때 쓰는 폴백.
+- **코드 검토 반영**(2026-09-28, 외부 검토 보고서 — 검토 대상은 9/7 옛 시안 `sample-21`이었으나 같은 로직이 현재 파일에 남아 있어 재현 후 수정):
+  - **HTML 특수문자 차단**: 칼 답변의 질문 인용·구역 이름·**관리자가 바꾸는 앱 이름(manifest.json)**에 `<>&"'\`` 가 들어가지 않게 함. 구역 이름은 `zoneNameClean()`, 앱 이름은 `applyDlManifest()`/`dlAdminRenameSave()`에서 제거, 그릴 때도 `esc()`. 앱 이름은 모든 직원 화면에 그대로 그려지므로 **원천(manifest)에서 막는 게 핵심**. 파일명에 이런 문자가 있으면 배지를 붙이지 않음.
+  - **저장 실패 알림**: `store.set()`이 성공/실패를 돌려주고, 실패하면 `html.store-fail` + 10초에 한 번 토스트(`storeFailed()`). 설정 창의 "자동 저장" 표시가 "저장 실패"로 바뀜.
+  - **메모 한도 `MEMO_MAX=100`**(새로 만들 때만 막음). 불러올 때 개수로 자르지 않음 — 이미 100개 넘게 가진 사람의 메모는 지우지 않음. 백업 파일 검사 상한은 1000(형식 이상 방지용, 정책 한도와 별개). 메모 관리창 개수 표시는 `N / 100`.
+  - **메모 동기화**: 관리창과 붙임 메모가 같은 메모를 번갈아 고쳐도 최신 내용을 이어받음(`paintMemo()` + `focusin` 동기화).
+  - **떠날 때 저장**: 입력 후 400ms 지연 저장 전에 창을 닫아도 `pagehide`/`visibilitychange`에서 저장. 단 **`memoDirty`일 때만** — 무조건 저장하면 오래 열어둔 다른 탭이 닫히면서 최신 메모를 옛 내용으로 덮어씀.
+  - **칼**: `kalSend()`가 받아들였을 때만 `true` → 호출한 쪽이 그때만 입력칸을 비움(답변 중 질문 소실 방지). 대화 지우기(`kalReset()`)가 예약된 답변·앱 실행을 취소(`kalTimer`·`kalGen`).
+  - **창**: 최소화 직전 상태(일반·최대화·분할)를 `w.prev`에 기억했다가 다시 열 때 복원 + `paintMaxBtn()`·`syncChrome()`.
 - 프로필 메뉴 "로그아웃": SSO면 `ssoLogout()` → `/oauth2/sign_out?rd=<MS logout>` → 포털 복귀. 아니면 토스트만.
 
 ---
