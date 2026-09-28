@@ -4043,14 +4043,22 @@ const KAL_APP_ALIAS={aud:['sh audit','audit','감사 플랫폼','감사플랫폼
   room:['회의실','예약','회의실 예약'],team:['팀 스페이스','팀스페이스','스페이스'],timesheet:['타임시트','근무시간','투입시간']};
 /* 을/를 — 마지막 글자의 받침으로 고른다 (한글이 아니면 '을(를)') */
 const josa=n=>{ const c=n.charCodeAt(n.length-1); if(c<0xAC00||c>0xD7A3) return '을(를)'; return (c-0xAC00)%28?'을':'를'; };
+const josaTop=n=>{ const c=n.charCodeAt(n.length-1); if(c<0xAC00||c>0xD7A3) return '은(는)'; return (c-0xAC00)%28?'은':'는'; };
+/* '열지 마'·'안 열어도 돼'처럼 열지 말라는 말 (2026-09-28, 개발 가이드 — 부정 표현 구분).
+   '열'이 들어 있다는 이유만으로 실행하면 '리뷰함 열지 마'에 리뷰함이 열렸다. */
+const KAL_NEG=/지\s*(마|말|않)|면\s*안\s*(돼|되)|(^|\s)안\s*(열|켜|띄|실행|보여|들어|이동)|필요\s*없|\b(don'?t|do\s+not|never)\b/;
+/* 결과: null(앱 요청 아님) | {id, neg}. neg=true 면 열지 않는다. 'A 말고 B 열어줘'는 '말고' 뒤만 본다 */
 function kalIntent(text){
-  const t=text.toLowerCase();
+  let t=text.toLowerCase();
+  const k=t.lastIndexOf('말고'); if(k>=0) t=t.slice(k+2);
   if(!/열|실행|켜|띄워|보여|들어가|이동|open|launch/.test(t)) return null;
-  for(const [id,al] of Object.entries(KAL_APP_ALIAS)){
-    if(!APPS[id]) continue;
-    if(al.some(a=>t.includes(a)) || t.includes(APPS[id].name.toLowerCase())) return id;
+  let id=null;
+  for(const [a,al] of Object.entries(KAL_APP_ALIAS)){
+    if(!APPS[a]) continue;
+    if(al.some(x=>t.includes(x)) || t.includes(APPS[a].name.toLowerCase())){ id=a; break; }
   }
-  return null;
+  if(KAL_NEG.test(t)) return {id, neg:true};
+  return id?{id, neg:false}:null;
 }
 function kalSend(text){   /* 받아들였으면 true — 호출한 쪽은 true 일 때만 입력칸을 비운다 (검토 05) */
   text=(text||'').trim(); if(!text) return false;
@@ -4058,9 +4066,10 @@ function kalSend(text){   /* 받아들였으면 true — 호출한 쪽은 true �
   kalPush('me',text.replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])));
   kalIn.value=''; kalGo.classList.add('off'); kalBusy=true;
   const typing=kalPush('ai','<i></i><i></i><i></i>',false); typing.classList.add('typing');
-  const appId=kalIntent(text);
-  const hit=appId?null:KAL_ANS.find(([re])=>re.test(text));
-  const ans=appId?`<b>${esc(APPS[appId].name)}</b>${josa(APPS[appId].name)} 열었습니다.`:hit?hit[1]:`<b>“${esc(text.slice(0,24))}${text.length>24?'…':''}”</b>에 대해 찾아보고 있어요. 관련 조서·공지·프로젝트를 모아 정리해 드릴게요. 우선 리뷰함과 프로젝트 현황을 확인해 보시겠어요?`;
+  const it=kalIntent(text), neg=!!(it&&it.neg), appId=it&&!neg?it.id:null;
+  const hit=(appId||neg)?null:KAL_ANS.find(([re])=>re.test(text));
+  const ans=neg?(it.id?`알겠습니다. <b>${esc(APPS[it.id].name)}</b>${josaTop(APPS[it.id].name)} 열지 않을게요.`:'알겠습니다. 열지 않을게요.')
+    :appId?`<b>${esc(APPS[appId].name)}</b>${josa(APPS[appId].name)} 열었습니다.`:hit?hit[1]:`<b>“${esc(text.slice(0,24))}${text.length>24?'…':''}”</b>에 대해 찾아보고 있어요. 관련 조서·공지·프로젝트를 모아 정리해 드릴게요. 우선 리뷰함과 프로젝트 현황을 확인해 보시겠어요?`;
   paintKalWidget();
   const gen=kalGen;
   kalTimer=setTimeout(()=>{ if(gen!==kalGen) return;   /* 그사이 대화를 지웠으면 버린다 */
