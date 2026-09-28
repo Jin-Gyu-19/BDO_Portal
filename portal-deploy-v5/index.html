@@ -1603,10 +1603,11 @@ function storeFailed(e){
 const MKEY='sh-portal:memo:'+USER.id;
 const MEMO_SEED=[{"id":"m1","t":"알파테크 매출 절사 테스트\n12/28~31 표본 3건 — 인도조건 확인 필요, 검수확인서 1건 미비","ts":1789514842597,"c":"y"},{"id":"m2","t":"4/15 파트너 월례회의 안건\n- ISQM1 보고서 진행 상황\n- 상반기 필수 교육 이수율\n- 신규 수임 검토 2건","ts":1789360042597,"c":"b"},{"id":"m3","t":"감마물산 현장 종료 전 확인\n재고 실사 차이 조정, 우발부채 질문서 회신","ts":1789187242597,"c":"p"}];
 let memos=[];
+const cleanMemos=o=>o.filter(m=>m&&typeof m.id==='string'&&typeof m.t==='string'&&Number.isFinite(m.ts))
+  .map(m=>({id:m.id,t:m.t,ts:m.ts,c:m.c,x:m.x,y:m.y,z:m.z,open:m.open!==false}));
 function loadMemos(){
   try{ const o=JSON.parse(store.get(MKEY)||'null');
-    if(Array.isArray(o)) memos=o.filter(m=>m&&typeof m.id==='string'&&typeof m.t==='string'&&Number.isFinite(m.ts))
-      .map(m=>({id:m.id,t:m.t,ts:m.ts,c:m.c,x:m.x,y:m.y,z:m.z,open:m.open!==false})); }catch(e){}   /* 개수로 자르지 않는다 — 한도는 새로 만들 때만 (검토 04) */
+    if(Array.isArray(o)) memos=cleanMemos(o); }catch(e){}   /* 개수로 자르지 않는다 — 한도는 새로 만들 때만 (검토 04) */
   if(!memos.length && store.get(MKEY)===null) memos=MEMO_SEED.map(m=>({...m}));
 }
 let memoDirty=false;   /* 입력했지만 아직 400ms 지연 저장 전인 변경이 있는지 */
@@ -3895,6 +3896,33 @@ document.addEventListener('input',e=>{
   cur.t=e.target.value; cur.ts=Date.now(); memoDirty=true;
   clearTimeout(memoSaveT);
   memoSaveT=setTimeout(()=>{ saveMemos(); paintMemo(); paintStickies(); paintMemoWidget(); },400);
+});
+
+/* ── 다른 탭에서 저장한 메모를 받아온다 (2026-09-28, 개발 가이드 — 여러 탭 동시 편집) ──
+   이 탭에 저장 안 된 입력이 없으면 그대로 받아들이고, 있으면 메모별로 더 최근에 고친 쪽을 남겨 합친다.
+   다른 탭에서 지운 메모는, 이 탭의 내용이 휴지통에 들어간 내용과 같으면 따라서 지우고
+   다르면(= 여기서 저장 전 입력이 더 있으면) 살린다 — 시각이 아니라 내용으로 판단해 입력을 조용히 잃지 않게. */
+function mergeRemoteMemos(remote){
+  if(!memoDirty){ memos=remote; return false; }
+  const trashed=new Map(memoTrash.map(m=>[m.id,m.t])), out=[], seen=new Set();
+  for(const r of remote){ const l=memos.find(x=>x.id===r.id); out.push(l&&l.ts>r.ts?l:r); seen.add(r.id); }
+  for(const l of memos){ if(seen.has(l.id)) continue; if(trashed.has(l.id)&&trashed.get(l.id)===l.t) continue; out.unshift(l); }
+  memos=out; return true;
+}
+function repaintMemosKeepFocus(){   /* 붙임 메모를 다시 그려도 입력 중인 칸의 커서를 지킨다 */
+  const a=document.activeElement, st=a&&a.classList&&a.classList.contains('stxt')?stickyOf(a):null;
+  const sel=st?[a.selectionStart,a.selectionEnd]:null;
+  paintMemo(); if(stickiesOn) paintStickies(); paintMemoWidget();
+  if(st){ const t=sboard.querySelector(`[data-sid="${st.id}"] .stxt`); if(t){ t.focus(); try{ t.setSelectionRange(...sel); }catch(_){} } }
+}
+window.addEventListener('storage',e=>{
+  const P='sh-final-20260916:';
+  if(e.key===P+TKEY){ loadTrash(); paintMemo(); return; }
+  if(e.key!==P+MKEY) return;
+  let o; try{ o=JSON.parse(e.newValue||'[]'); }catch(_){ return; }
+  if(!Array.isArray(o)) return;
+  if(mergeRemoteMemos(cleanMemos(o))) toast('다른 탭에서 바뀐 메모를 함께 반영했습니다');
+  repaintMemosKeepFocus();
 });
 
 /* 마지막 입력 직후 창을 닫아도 400ms 지연 저장분을 잃지 않게 (검토 03) */
