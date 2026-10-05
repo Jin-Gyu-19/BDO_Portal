@@ -53,7 +53,8 @@ services:
       OAUTH2_PROXY_PASS_ACCESS_TOKEN: "false"
       OAUTH2_PROXY_PASS_USER_HEADERS: "true"
       # ── 로그아웃 후 Microsoft 로그아웃 페이지로 보내기 위해 허용 ──
-      OAUTH2_PROXY_WHITELIST_DOMAINS: "login.microsoftonline.com"
+      # 회의실(:3501)·경비청구(:7005)에서 로그인 시작 시 그 포트로 돌아가도록 허용 (2026-10-05)
+      OAUTH2_PROXY_WHITELIST_DOMAINS: "login.microsoftonline.com,192.168.100.25:3501,192.168.100.25:7005"
       # ── 로그 ──
       OAUTH2_PROXY_REQUEST_LOGGING: "false"
       OAUTH2_PROXY_STANDARD_LOGGING: "true"

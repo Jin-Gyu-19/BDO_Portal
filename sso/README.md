@@ -140,6 +140,39 @@ sudo docker exec sh-nginx nginx -t && sudo docker exec sh-nginx nginx -s reload
 - 앱 `.env` 의 `ISMSP_FRAME_ANCESTORS` 는 같은 origin 이 되므로 불필요합니다(`'self'` 로 충분).
 - 502 가 나면 앱이 7010 에서 듣고 있는지 확인: `sudo ss -tlnp | grep :7010`
 
+## 10. 회의실(:3501)·경비청구(:7005)를 포털 로그인으로 (2026-10-05)
+두 앱은 자체 MS 로그인을 써서 포털 창 안에서 열 때마다 팝업 로그인이 필요했고, 로그인 기록이 없는 사람은
+크롬의 "공용 페이지에서 로컬 네트워크… 차단"(iframe 안에서 MS 로그인 → 사내 IP 로 돌아오는 이동을 막음)에 걸렸다.
+브라우저 쿠키는 **포트를 구분하지 않으므로** 포털(8080)의 `_sh_portal` 쿠키가 3501·7005 에도 간다 →
+두 앱 앞에 포털 nginx 의 로그인 검사를 끼우면 **포털 로그인 한 번으로 통과**한다. 주소(`https://…:3501`, `:7005`)는 그대로.
+
+```
+https 3501 → (DSM) → http://localhost:3502 (sh-nginx, 로그인 검사) → 회의실 앱 127.0.0.1:3500
+https 7005 → (DSM) → http://localhost:7006 (sh-nginx, 로그인 검사) → 경비청구 앱 127.0.0.1:7000
+```
+- 앱에 넘기는 헤더: `X-Auth-Request-Preferred-Username`(계정 UPN) · `X-Auth-Request-Name`(표시 이름, UTF-8) · `X-Auth-Request-Groups`(앱 역할, 예 `Admin`).
+  클라이언트가 같은 이름으로 보내도 nginx 가 덮어쓴다. 3502·7006 은 127.0.0.1·::1 만 허용(LAN 직접 접속 403).
+- 미로그인이면 `/oauth2/start?rd=https://<호스트>:3501/…` → MS 로그인 → 콜백(8080) → 원래 주소로. 그래서 oauth2-proxy
+  `OAUTH2_PROXY_WHITELIST_DOMAINS` 에 `192.168.100.25:3501`·`:7005` 를 추가했다(`docker-compose.sso.yml`).
+- 로그아웃은 앱에서 `/oauth2/sign_out?rd=<MS 로그아웃 주소(인코딩)>` 로 보내면 된다(포털 `ssoLogout()` 과 같음 — 포털도 같이 로그아웃됨).
+
+**순서** — 어느 단계에서 멈춰도 서비스가 끊기지 않게 짰다.
+1. **포트 확인** (아무것도 안 나와야 함): `sudo netstat -tlnp 2>/dev/null | grep -E ':(3502|7006) '`
+2. **nginx + oauth2-proxy 적용** (사용자 영향 없음 — 새 포트만 열림)
+   ```
+   cd /volume1/sh-pf/docker/sh-platform/nginx && sudo cp default.conf default.conf.bak_$(date +%Y%m%d_%H%M%S) && sudo curl -fsSL -o default.conf "https://raw.githubusercontent.com/Jin-Gyu-19/BDO_Portal/claude/awesome-hopper-cmd4wg/sso/nginx-default.conf?v=$(date +%s)" && sudo chmod 644 default.conf && sudo docker exec sh-nginx nginx -t && sudo docker exec sh-nginx nginx -s reload
+   cd /volume1/sh-pf/docker/sh-platform/sso && sudo cp docker-compose.sso.yml docker-compose.sso.yml.bak_$(date +%Y%m%d_%H%M%S) && sudo curl -fsSL -o docker-compose.sso.yml "https://raw.githubusercontent.com/Jin-Gyu-19/BDO_Portal/claude/awesome-hopper-cmd4wg/sso/docker-compose.sso.yml?v=$(date +%s)" && sudo docker-compose -f docker-compose.sso.yml up -d && sleep 3 && sudo docker logs --tail 3 sh-oauth2-proxy
+   ```
+   oauth2-proxy 재생성은 몇 초. 세션은 Redis 에 있어 아무도 로그아웃되지 않는다.
+3. **앱 수정·재배포** (각 앱 담당): 자체 MS 로그인 제거, 위 헤더로 사용자 식별, **127.0.0.1 에만 리슨**.
+   앱이 지금 `/oauth2/...` 경로를 자체 로그인에 쓰고 있다면 4번을 3번과 동시에 해야 한다(그 경로를 nginx 가 가로챔).
+4. **DSM 역방향 프록시 대상 변경**: 제어판 → 로그인 포털 → 고급 → 역방향 프록시에서
+   `3501` 규칙의 대상 포트 3500 → **3502**, `7005` 규칙의 대상 포트 7000 → **7006** (호스트 `localhost` 그대로, WebSocket 헤더 유지).
+5. **확인**: 포털에 로그인한 브라우저로 `https://192.168.100.25:3501` → 로그인 화면 없이 열림. 시크릿 창으로 열면 MS 로그인 → 3501 로 돌아옴.
+6. **포털 재배포**: 회의실·경비청구의 팝업 로그인 안내(`auth:'popup'`)를 뺀 포털을 올린다(앱 수정이 끝난 뒤에만 — 먼저 올리면 iframe 안에서 앱 자체 MS 로그인이 막힘).
+
+되돌리기: DSM 규칙의 대상 포트를 3500·7000 으로 되돌리면 즉시 예전 경로(앱 자체 로그인). nginx 블록은 남겨 둬도 무해.
+
 ## 롤백 (즉시)
 ```
 cd /volume1/sh-pf/docker/sh-platform/nginx
@@ -152,4 +185,4 @@ sudo cp default.conf.bak_<시각> default.conf && sudo docker exec sh-nginx ngin
 - 클라이언트 비밀 만료(24개월) 전 갱신. 만료되면 전원 로그인 불가.
 - 세션 12시간(`OAUTH2_PROXY_COOKIE_EXPIRE`). 연장하려면 compose 값 변경 후 `up -d`.
 - 관리자 추가/제거는 Entra 의 `SH-Platform-Admins` 그룹 멤버십으로만. 포털 코드 수정 불필요.
-- 2차 과제: XBRL 을 nginx `/xbrl/` 경로로 끌어와 게이트 안에 넣기. 회의실은 자체 SSO 유지(팝업 로그인).
+- 2차 과제: XBRL 을 nginx `/xbrl/` 경로로 끌어와 게이트 안에 넣기. 회의실·경비청구는 10번(포털 로그인 따라가기)으로 전환 중(2026-10-05).

@@ -114,6 +114,7 @@ iPad/macOS식 **홈 화면 + 창 시스템**입니다. 위젯(일정·팀 스페
   - **메모 휴지통 + 되돌리기**: 삭제는 `trashMemo()` → 휴지통(`TKEY`=`sh-portal:memo-trash:<id>`, 30일·최대 200개, 빈 메모는 안 넣음) + 토스트의 "되돌리기" 버튼(`toast(msg,act)`, 6초). 메모 관리창의 휴지통 버튼으로 보기 전환(`memoTrashView`) → 복원(`restoreMemo`, `MEMO_MAX` 지킴)·영구 삭제·비우기.
   - **다른 탭 메모 변경 감지**: `storage` 이벤트로 `MKEY`·`TKEY` 변경을 받음. 이 탭에 저장 안 한 편집이 없으면(`!memoDirty`) 그대로 채택, 있으면 `mergeRemoteMemos()`가 메모별로 최신 `ts`를 고르고 이 탭에만 있는 메모는 유지. 편집 중인 붙임 메모의 포커스·커서는 `repaintMemosKeepFocus()`가 복원.
   - **⌘K 검색에 메모 포함**: `match()`가 검색할 때마다 `memos`를 봄(INDEX에 안 넣음). 제목(첫 줄)·본문·초성, 같은 단계면 앱·프로젝트가 먼저(+0.5). 결과를 고르면 `openMemoAt(id)`. `paintSpot()`는 모든 글자를 `esc()`로 그림(메모 내용은 사용자 입력).
+- **회의실·경비청구를 포털 로그인으로 전환 중**(2026-10-05, `sso/README.md` 10번): 포털 nginx 에 `listen 3502`(→ 회의실 127.0.0.1:3500)·`listen 7006`(→ 경비청구 127.0.0.1:7000) 로그인 검사 블록을 추가하고, DSM 역방향 프록시 3501·7005 의 대상을 그쪽으로 돌린다. 쿠키가 포트를 구분하지 않아 포털 로그인 한 번으로 통과. 앱은 자체 MS 로그인을 빼고 `X-Auth-Request-Preferred-Username`·`-Name`·`-Groups` 헤더를 쓴다. **앱 수정이 끝나기 전에는 포털의 `room`·`expense` 에서 `auth:'popup'`(·`authAlways`)을 빼지 말 것** — 먼저 빼면 iframe 안에서 앱 자체 MS 로그인이 막힌다.
 - 프로필 메뉴 "로그아웃": SSO면 `ssoLogout()` → `/oauth2/sign_out?rd=<MS logout>` → 포털 복귀. 아니면 토스트만.
 
 ---
